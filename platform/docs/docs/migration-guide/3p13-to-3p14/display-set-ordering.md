@@ -28,6 +28,9 @@ study browser sort picker sorted the list in place.
 - In the `thumbnailTray` order, the direction reverses the picked sort only.
   Ties, for example the display sets of one split series, keep the default order.
 - `getMostRecentDisplaySet()` still gives the display set that was added last.
+- `createStudyBrowserTabs` no longer calls `useSystem`. Give the
+  `displaySetService` as the fifth argument:
+  `createStudyBrowserTabs(uids, studyDisplayList, displaySets, undefined, displaySetService)`.
 
 **What changes for you:** code that reads `getActiveDisplaySets()` by position
 gets the default order, not the load order. The hanging protocols get the

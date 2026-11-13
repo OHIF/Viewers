@@ -43,7 +43,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     );
   };
 
-  const wrappedPanelSegmentationWithTools = props => {
+  const PanelSegmentationWithTools = props => {
     const { t } = useTranslation('SegmentationPanel');
     const tKey = `${props.segmentationRepresentationTypes?.[0] ?? 'Segmentation'} tools`;
     const tValue = t(tKey);
@@ -100,25 +100,27 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',
       label: i18n.t('SegmentationPanel:Labelmap'),
-      component: props =>
-        wrappedPanelSegmentationWithTools({
-          ...props,
-          segmentationRepresentationTypes: [
+      component: props => (
+        <PanelSegmentationWithTools
+          {...props}
+          segmentationRepresentationTypes={[
             SegmentationRepresentations.Labelmap,
             SegmentationRepresentations.Surface,
-          ],
-        }),
+          ]}
+        />
+      ),
     },
     {
       name: 'panelSegmentationWithToolsContour',
       iconName: 'tab-contours',
       iconLabel: 'Segmentation',
       label: i18n.t('SegmentationPanel:Contour'),
-      component: props =>
-        wrappedPanelSegmentationWithTools({
-          ...props,
-          segmentationRepresentationTypes: [SegmentationRepresentations.Contour],
-        }),
+      component: props => (
+        <PanelSegmentationWithTools
+          {...props}
+          segmentationRepresentationTypes={[SegmentationRepresentations.Contour]}
+        />
+      ),
     },
   ];
 };

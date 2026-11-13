@@ -24,6 +24,8 @@ export default [
       // `CS3D_REF` line (.scripts/ci/cs3d-apply-ref.sh). Neither is OHIF code,
       // so neither counts against the lint budget.
       'libs/**',
+      // Local, git-ignored scratch files; CI never sees them.
+      'temp/**',
       ...compilerScope.ignoreGlobs,
     ],
   },

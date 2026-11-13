@@ -12,24 +12,18 @@ let mockDisplaySetSort = null;
 const mockDefaultOrder = (a, b) =>
   a.displaySetInstanceUID === 'ds-2' ? -1 : b.displaySetInstanceUID === 'ds-2' ? 1 : 0;
 
-jest.mock('../contextProviders/SystemProvider', () => ({
-  useSystem: () => ({
-    servicesManager: {
-      services: {
-        displaySetService: {
-          getDisplaySetByUID: uid => mockDisplaySets.find(ds => ds.displaySetInstanceUID === uid),
-          getSortCriteria: () => mockSortCriteriaFor(mockDisplaySetSort, mockDefaultOrder),
-        },
-      },
-    },
-  }),
-}));
+const displaySetService = {
+  getDisplaySetByUID: uid => mockDisplaySets.find(ds => ds.displaySetInstanceUID === uid),
+  getSortCriteria: () => mockSortCriteriaFor(mockDisplaySetSort, mockDefaultOrder),
+};
 
 const seriesNumbersShown = (displaySets = mockDisplaySets) =>
   createStudyBrowserTabs(
     ['study'],
     [{ studyInstanceUid: 'study' }],
-    [...displaySets]
+    [...displaySets],
+    undefined,
+    displaySetService
   )[0].studies[0].displaySets.map(ds => ds.SeriesNumber);
 
 const bySeriesNumber = (a, b) => a.SeriesNumber - b.SeriesNumber;
