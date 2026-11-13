@@ -985,6 +985,11 @@ function commandsModule({
     arrowTextCallback: async ({ callback, data }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
+      // ArrowAnnotateTool removes a just-drawn annotation when its text
+      // callback returns a falsy label. Saving an empty label should keep
+      // the arrow (same as Cancel), so skip the callback for new
+      // annotations (no `data` means the annotation is new, not edited).
+      const isNewAnnotation = !data;
 
       if (!labelConfig) {
         const label = await callInputDialog({
@@ -994,6 +999,9 @@ function commandsModule({
           defaultValue: data?.data?.label || '',
         });
 
+        if (isNewAnnotation && !label) {
+          return;
+        }
         callback?.(label);
         return;
       }
@@ -1003,6 +1011,9 @@ function commandsModule({
         labelConfig,
         renderContent,
       });
+      if (isNewAnnotation && !value) {
+        return;
+      }
       callback?.(value);
     },
 
