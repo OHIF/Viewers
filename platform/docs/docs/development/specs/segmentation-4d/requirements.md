@@ -49,7 +49,8 @@ to change this document.
 
 - Different time points of one segmentation in different viewports at the same time. All
   viewports show the same time point of a segmentation (`SEG4D-U-6`). A later change can allow
-  this, when viewports can be grouped by time point.
+  this, when viewports can be grouped by time point; see
+  [cornerstonejs/cornerstone3D#3074](https://github.com/cornerstonejs/cornerstone3D/issues/3074).
 
 ## 3. Definitions
 
@@ -105,4 +106,5 @@ item when it shows a different time point.
 
 **SEG4D-U-11 — Save and load**
 When the user saves a segmentation of a 4D series and loads it again, the segmentation shall keep
-its choice of "All time points" or "Each time point". *Not implemented yet.*
+its choice of "All time points" or "Each time point". *Not implemented yet; see
+[OHIF/Viewers#6426](https://github.com/OHIF/Viewers/issues/6426).*
