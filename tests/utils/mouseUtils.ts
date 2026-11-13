@@ -1,5 +1,7 @@
 import { Page } from 'playwright-test-coverage';
 
+export type MouseButton = 'left' | 'right' | 'middle';
+
 interface WindowWithMousePosition extends Window {
   mouseX: number;
   mouseY: number;

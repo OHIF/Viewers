@@ -10,6 +10,8 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  // Off by default; can lose the WebGL context on some devices. See configurationFiles.md.
+  // lossyDownsampling: { final: true, interactive: true, interleavedLoading: true },
   studyPrefetcher: {
     enabled: true,
     displaySetsCount: 2,
@@ -27,7 +29,6 @@ window.config = {
         wadoUriRoot: '/wado',
         qidoRoot: '/pacs/dicom-web',
         wadoRoot: '/pacs/dicom-web',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         dicomUploadEnabled: true,
@@ -43,7 +44,6 @@ window.config = {
         wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -70,7 +70,6 @@ window.config = {
         name: 'DCM4CHEE',
         qidoRoot: 'http://localhost:5000/dicomweb',
         wadoRoot: 'http://localhost:5000/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: true,
         supportsStow: true,
         imageRendering: 'wadors',

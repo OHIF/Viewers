@@ -2,6 +2,12 @@
  * Modifies a bulkDataURI to ensure it is absolute based on the DICOMWeb configuration and
  * instance data. The modification is in-place.
  *
+ * The steps run in this order: `bulkDataURI.transform`, then `startsWith`/`prefixWith`, then the
+ * resolution against the wado root below. Each step sees the result of the previous step.
+ *
+ * The function is not idempotent when `transform` is not: a second call on the same value applies
+ * `transform` again. Call it once per value, or pass a config without `transform`.
+ *
  * If the bulkDataURI is relative to the series or study (according to the DICOM standard),
  * it is made absolute by prepending the relevant paths.
  *
@@ -29,10 +35,11 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
   const { startsWith, prefixWith = '' } = uriConfig;
   if (startsWith && BulkDataURI.startsWith(startsWith)) {
     BulkDataURI = prefixWith + BulkDataURI.substring(startsWith.length);
-    value.BulkDataURI = BulkDataURI;
   }
+  // The branches below do not rewrite absolute URIs or /path URIs with a relative wadoRoot
+  value.BulkDataURI = BulkDataURI;
 
-  if (!BulkDataURI.startsWith('http') && !value.BulkDataURI.startsWith('/')) {
+  if (!BulkDataURI.startsWith('http') && !BulkDataURI.startsWith('/')) {
     const { StudyInstanceUID, SeriesInstanceUID } = instance;
     const isInstanceStart = BulkDataURI.startsWith('instances/') || BulkDataURI.startsWith('../');
     if (

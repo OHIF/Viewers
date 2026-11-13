@@ -11,7 +11,11 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: ['@ohif/extension-default.customizationModule.theme'],
+  customizationService: {
+    // A `?customization=gpu/<preset>` URL module applies after this block, so it wins.
+    bootstrap: { 'cornerstone.gpuSettingsPreset': 'medium' },
+    global: ['@ohif/extension-default.customizationModule.theme'],
+  },
 
   // URL-driven customizations (?customization=). The `default` prefix (no
   // slashes) is used for values without a leading slash; every other prefix
@@ -31,6 +35,10 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  // Lossy downsampling for the tests and the deploy previews. `final` reduces
+  // a volume texture to fit the `cornerstone.gpuSettingsPreset` above.
+  // config/default.js keeps final downsampling off.
+  lossyDownsampling: { final: true },
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,
   maxNumRequests: {
@@ -119,7 +127,6 @@ window.config = {
         wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'thumbnail',
         thumbnailRequestStrategy: 'fetch',
@@ -146,7 +153,6 @@ window.config = {
         wadoUriRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -171,7 +177,6 @@ window.config = {
         wadoUriRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
         qidoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
         wadoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -196,7 +201,6 @@ window.config = {
         name: 'DCM4CHEE',
         qidoRoot: 'http://localhost:5000/dicomweb',
         wadoRoot: 'http://localhost:5000/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: true,
         supportsStow: true,
         imageRendering: 'wadors',
@@ -221,7 +225,6 @@ window.config = {
         wadoUriRoot: 'http://localhost/pacs/dicom-web',
         qidoRoot: 'http://localhost/pacs/dicom-web',
         wadoRoot: 'http://localhost/pacs/dicom-web',
-        qidoSupportsIncludeField: true,
         supportsReject: true,
         dicomUploadEnabled: true,
         imageRendering: 'wadors',

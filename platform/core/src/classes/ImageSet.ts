@@ -89,6 +89,26 @@ class ImageSet {
    * @returns images - reference to images after sorting
    */
   sort(customizationService): Image[] {
+    return this.sortInstances(this.images, customizationService);
+  }
+
+  /**
+   * The same default ordering as {@link sort}, applied to a supplied list rather
+   * than to `this.images`.
+   *
+   * Split rules need this order as a *base* they can layer a rule's own
+   * comparator over (see `@cornerstonejs/metadata`'s `orderInstancesForRule`),
+   * and the split engine asks for a whole-list sort because the position sort
+   * below is one: `sortImagesByPatientPosition` picks a reference instance and
+   * projects the rest onto its normal, which no `(a, b)` comparator expresses.
+   *
+   * Extracted rather than reimplemented on the split-rule side so there is one
+   * definition of OHIF's default instance order. It reads `this.isReconstructable`,
+   * so it must run after the image-list attributes are applied.
+   *
+   * @param images - the list to order; sorted in place and returned.
+   */
+  sortInstances(images: Image[], customizationService): Image[] {
     // Check instanceSort customization
     const customizedSortingCriteria =
       customizationService.getCustomization('instanceSortingCriteria');
@@ -100,14 +120,14 @@ class ImageSet {
     const userSpecifiedCriteria = customizedSortingCriteria.defaultSortFunctionName;
     // Prefer customized sort function when available
     if (typeof combinedSortFunctions[userSpecifiedCriteria] === 'function') {
-      return this.images.sort(combinedSortFunctions[userSpecifiedCriteria]);
+      return images.sort(combinedSortFunctions[userSpecifiedCriteria]);
     }
     // If image position patient is not available, sort by InstanceNumber
-    if (!this.isReconstructable || !isValidForPositionSort(this.images)) {
-      return this.images.sort(instancesSortCriteria.sortByInstanceNumber);
+    if (!this.isReconstructable || !isValidForPositionSort(images)) {
+      return images.sort(instancesSortCriteria.sortByInstanceNumber);
     }
     // Do image position patient sorting as default sort
-    return sortImagesByPatientPosition(this.images);
+    return sortImagesByPatientPosition(images);
   }
 
   /**
