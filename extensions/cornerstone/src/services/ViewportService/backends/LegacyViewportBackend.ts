@@ -15,6 +15,7 @@ import type { StackViewportData, VolumeViewportData } from '../../../types/Corne
 import type { IViewportBackend, StackMountContext, VolumeMountContext } from './IViewportBackend';
 import type { IViewportServiceInternals } from './IViewportServiceInternals';
 import { DataIdRegistry } from './dataIdRegistry';
+import getStackLutProperties from '../../../utils/getStackLutProperties';
 
 // Mirrors WITH_ORIENTATION in CornerstoneViewportService (inlined to avoid a
 // value import that would create a backend -> service circular dependency).
@@ -245,7 +246,8 @@ export class LegacyViewportBackend implements IViewportBackend {
         vp.setProperties(properties);
       }
     } else {
-      vp.setProperties(properties);
+      /** A stack may get the per-volume Map a volume viewport (e.g. MPR) saved */
+      vp.setProperties(getStackLutProperties(properties) ?? {});
     }
   }
 
