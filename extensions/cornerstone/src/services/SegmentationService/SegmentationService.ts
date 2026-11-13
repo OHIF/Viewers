@@ -447,6 +447,11 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       label?: string;
       /** The caller invented the label, so the user has not chosen a name. */
       labelIsGenerated?: boolean;
+      /**
+       * For a 4D display set: the 0-based time point of a 3D labelmap that all
+       * time points share.  When not set, each time point has its own labelmap.
+       */
+      timePointIndex?: number;
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, LABELMAP, options);
@@ -484,6 +489,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       label?: string;
       /** The caller invented the label, so the user has not chosen a name. */
       labelIsGenerated?: boolean;
+      timePointIndex?: number;
     }
   ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
@@ -493,9 +499,13 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     // A 4D segmentation is one segmentation with one labelmap image for each
     // frame of every time point. Cornerstone tools shows and edits the
     // labelmap images of the time point that the volume shows; RLE keeps the
-    // many labelmap images small.
-    const referenceImageIds = displaySet.imageIds;
-    const derivedImages = await (displaySet.isDynamicVolume
+    // many labelmap images small.  With `timePointIndex`, it is instead one 3D
+    // labelmap of that time point, which shows on every time point.
+    const sharedTimePoint =
+      options?.timePointIndex !== undefined &&
+      displaySet.dynamicVolumeInfo?.timePoints?.[options.timePointIndex];
+    const referenceImageIds = sharedTimePoint || displaySet.imageIds;
+    const derivedImages = await (displaySet.isDynamicVolume && !sharedTimePoint
       ? imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds, {
           voxelRepresentation: csEnums.VoxelManagerEnum.RLE,
         })
