@@ -448,9 +448,11 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       /** The caller invented the label, so the user has not chosen a name. */
       labelIsGenerated?: boolean;
       /**
-       * For a 4D display set: the 0-based time point of a 3D labelmap that all
-       * time points share.  When not set, each time point has its own labelmap.
+       * For a 4D display set.  'all' (the default) makes one 3D labelmap that
+       * all time points share; 'each' makes a labelmap for each time point.
        */
+      timePointScope?: 'all' | 'each';
+      /** For 'all': the 0-based time point of the labelmap.  Default: the middle one. */
       timePointIndex?: number;
     }
   ): Promise<string> {
@@ -489,6 +491,7 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       label?: string;
       /** The caller invented the label, so the user has not chosen a name. */
       labelIsGenerated?: boolean;
+      timePointScope?: 'all' | 'each';
       timePointIndex?: number;
     }
   ): Promise<string> {
@@ -496,16 +499,18 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
-    // A 4D segmentation is one segmentation with one labelmap image for each
-    // frame of every time point. Cornerstone tools shows and edits the
-    // labelmap images of the time point that the volume shows; RLE keeps the
-    // many labelmap images small.  With `timePointIndex`, it is instead one 3D
-    // labelmap of that time point, which shows on every time point.
-    const sharedTimePoint =
-      options?.timePointIndex !== undefined &&
-      displaySet.dynamicVolumeInfo?.timePoints?.[options.timePointIndex];
-    const referenceImageIds = sharedTimePoint || displaySet.imageIds;
-    const derivedImages = await (displaySet.isDynamicVolume && !sharedTimePoint
+    // A 4D segmentation is one 3D labelmap of one time point, which shows on
+    // every time point.  A labelmap with 'each' has one labelmap image for each
+    // frame of every time point; Cornerstone tools shows and edits the images
+    // of the time point on display, and RLE keeps the many images small.
+    const timePoints = displaySet.isDynamicVolume && displaySet.dynamicVolumeInfo?.timePoints;
+    const eachTimePoint =
+      timePoints && segmentationType === LABELMAP && options?.timePointScope === 'each';
+    const referenceImageIds =
+      timePoints && !eachTimePoint
+        ? timePoints[options?.timePointIndex ?? Math.floor(timePoints.length / 2)]
+        : displaySet.imageIds;
+    const derivedImages = await (eachTimePoint
       ? imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds, {
           voxelRepresentation: csEnums.VoxelManagerEnum.RLE,
         })

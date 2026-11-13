@@ -1346,6 +1346,7 @@ describe('SegmentationService', () => {
         },
         FrameOfReferenceUID: 'frameOfReferenceUID',
         label: 'Segmentation 2',
+        timePointScope: 'each' as const,
       };
 
       const retrievedSegmentationId = await service.createLabelmapForDisplaySet(
@@ -1387,6 +1388,31 @@ describe('SegmentationService', () => {
       });
 
       expect(retrievedSegmentationId).toEqual(segmentationId);
+    });
+
+    it('creates one labelmap of the middle time point for a dynamic volume by default', async () => {
+      const displaySet = {
+        imageIds: ['a1', 'a2', 'b1', 'b2', 'c1', 'c2'],
+        isDynamicVolume: true,
+        dynamicVolumeInfo: {
+          timePoints: [
+            ['a1', 'a2'],
+            ['b1', 'b2'],
+            ['c1', 'c2'],
+          ],
+        },
+      } as unknown as AppTypes.DisplaySet;
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([] as csTypes.IImage[]);
+      jest.spyOn(cstSegmentation.state, 'getSegmentations').mockReturnValue([]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+      await service.createLabelmapForDisplaySet(displaySet);
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenLastCalledWith(['b1', 'b2']);
+
+      await service.createLabelmapForDisplaySet(displaySet, { timePointIndex: 2 });
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenLastCalledWith(['c1', 'c2']);
     });
 
     it('should create a dedicated color LUT and remember its index so every viewport representation reuses it', async () => {

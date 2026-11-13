@@ -73,12 +73,13 @@ export async function createSegmentationForViewport(
   // A 4D labelmap that applies to all time points is one 3D labelmap of the
   // time point on display.
   let timePointIndex: number | undefined;
+  let timePointScope: TimePointScope | undefined;
   if (displaySet.isDynamicVolume && segmentationType === SegmentationRepresentations.Labelmap) {
-    const scope = options.timePointScope ?? (await promptTimePointScope(uiDialogService));
-    if (!scope) {
+    timePointScope = options.timePointScope ?? (await promptTimePointScope(uiDialogService));
+    if (!timePointScope) {
       return undefined;
     }
-    if (scope === 'all') {
+    if (timePointScope === 'all') {
       const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const volumeId = csViewport?.getVolumeId?.();
       const groupNumber = volumeId && cache.getVolume(volumeId)?.dimensionGroupNumber;
@@ -91,6 +92,7 @@ export async function createSegmentationForViewport(
     segmentationId,
     labelIsGenerated: !options.label,
     segments: _createDefaultSegments(options.createInitialSegment),
+    timePointScope,
     timePointIndex,
   };
 
