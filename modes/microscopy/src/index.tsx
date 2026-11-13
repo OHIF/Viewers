@@ -44,7 +44,10 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: ({ servicesManager }: withAppTypes) => {
-      const { toolbarService } = servicesManager.services;
+      const { toolbarService, microscopyService } = servicesManager.services;
+
+      // Annotations outlive series switches, so each visit starts without any.
+      microscopyService.clear();
 
       toolbarService.register(toolbarButtons);
       toolbarService.updateSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);

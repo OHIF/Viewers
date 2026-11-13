@@ -25,7 +25,12 @@ export default async function loadSR(
 
   const { rois, labels } = await _getROIsFromToolState(microscopyService, naturalizedDataset, FrameOfReferenceUID);
 
-  const managedViewer = managedViewers[0];
+  // Annotations are kept per viewer series, so add the ROIs to the viewer showing
+  // this SR rather than to another slide's viewer of the same study.
+  const managedViewer =
+    managedViewers.find(
+      viewer => viewer.seriesInstanceUID === microscopySRDisplaySet.SeriesInstanceUID
+    ) ?? managedViewers[0];
 
   for (let i = 0; i < rois.length; i++) {
     // NOTE: When saving Microscopy SR, we are attaching identifier property
