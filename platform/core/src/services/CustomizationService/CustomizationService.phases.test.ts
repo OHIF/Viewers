@@ -127,4 +127,28 @@ describe('CustomizationService phase-tagged loading', () => {
     service.applyModeCustomizations(['viewer']);
     expect(service.getCustomization('banner')).toBe('viewer');
   });
+
+  it('skips a split module that does not apply, and records the error for the display sets', async () => {
+    const service = new CustomizationService({ commandsManager, configuration: {} });
+    service.init(makeExtensionManager());
+    service.setCustomizations(
+      { useMetadataDisplaySet: { displaySetRuleOrder: ['volume3d'] } },
+      service.Scope.Default
+    );
+    const importFn = jest.fn(async () => ({
+      global: {
+        useMetadataDisplaySet: { displaySetRuleOrder: { $spliceById: [['missing', 0, 'x']] } },
+      },
+    }));
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    try {
+      await service.loadCustomizationModules(['A'], { policy, importFn });
+      expect(() => service.applyGlobalCustomizations()).not.toThrow();
+      const value = service.getCustomization('useMetadataDisplaySet');
+      expect(value.displaySetRuleOrder).toEqual(['volume3d']);
+      expect(value.moduleErrors).toEqual([expect.stringContaining('missing')]);
+    } finally {
+      consoleError.mockRestore();
+    }
+  });
 });
