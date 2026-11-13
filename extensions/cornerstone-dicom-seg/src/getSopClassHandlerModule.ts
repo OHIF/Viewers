@@ -1,6 +1,6 @@
 import { utils, Types as OhifTypes, DicomMetadataStore, classes, log } from '@ohif/core';
 import i18n from '@ohif/i18n';
-import { metaData, eventTarget, utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
+import { metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
@@ -24,6 +24,7 @@ const SEG_LOAD_LOG_PREFIX = '[SEG load]';
 // loader. Hard-coded to 16 for now; intended to become configurable (and to
 // pair with the full-instance prefetch capability) in a follow-up.
 const SEG_FRAME_DECODE_CONCURRENCY = 16;
+
 
 function _normalizeImageId(imageId: string | string[] | undefined): string | undefined {
   if (imageId == null) {
@@ -79,7 +80,9 @@ function _ensureSegImageIdMetadataRegistered(
 
   const StudyInstanceUID = instance.StudyInstanceUID as string | undefined;
   const SeriesInstanceUID = instance.SeriesInstanceUID as string | undefined;
-  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as string | undefined;
+  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as
+    | string
+    | undefined;
 
   if (!StudyInstanceUID || !SeriesInstanceUID || !SOPInstanceUID) {
     return;
@@ -110,20 +113,28 @@ function _ensureSegInstanceMetadataAvailable(
 
   const StudyInstanceUID = instance.StudyInstanceUID as string | undefined;
   const SeriesInstanceUID = instance.SeriesInstanceUID as string | undefined;
-  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as string | undefined;
+  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as
+    | string
+    | undefined;
 
   const storedInstance =
     StudyInstanceUID && SeriesInstanceUID && SOPInstanceUID
       ? DicomMetadataStore.getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID)
       : undefined;
 
-  classes.MetadataProvider.addCustomMetadata(imageId, 'instance', storedInstance || instance);
+  classes.MetadataProvider.addCustomMetadata(
+    imageId,
+    'instance',
+    storedInstance || instance
+  );
 }
 
 function _getSegDataSource(extensionManager, instance: Record<string, unknown>) {
   const StudyInstanceUID = instance.StudyInstanceUID as string | undefined;
   const SeriesInstanceUID = instance.SeriesInstanceUID as string | undefined;
-  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as string | undefined;
+  const SOPInstanceUID = (instance.SOPInstanceUID || instance.SopInstanceUID) as
+    | string
+    | undefined;
 
   let localUrl: string | undefined;
 
@@ -509,9 +520,9 @@ async function _loadSegments({
   // per-frame, while a slow large fetch is still the fastest way to all frames.
   const loadMultiframeAsPart10 =
     (dataSource?.getConfig?.()?.loadMultiframeAsPart10 as boolean | undefined) ??
-    (customizationService?.getCustomization?.('cornerstone.segmentation.loadMultiframeAsPart10') as
-      | boolean
-      | undefined) ??
+    (customizationService?.getCustomization?.(
+      'cornerstone.segmentation.loadMultiframeAsPart10'
+    ) as boolean | undefined) ??
     true;
 
   let prefetch;
@@ -534,14 +545,12 @@ async function _loadSegments({
       {
         metadataProvider: metaData,
         tolerance,
-        parserType: getSegmentationParserType(segDisplaySet.SOPClassUID, customizationService),
+        parserType: getSegmentationParserType(
+          segDisplaySet.SOPClassUID,
+          customizationService
+        ),
         frameImageIds,
         concurrency: SEG_FRAME_DECODE_CONCURRENCY,
-        // One labelmap image for each frame of every time point of a 4D
-        // series: RLE keeps that small.
-        ...(referencedDisplaySet.isDynamicVolume && {
-          voxelRepresentation: csEnums.VoxelManagerEnum.RLE,
-        }),
       }
     );
   } finally {
@@ -579,8 +588,8 @@ async function _loadSegments({
 
   Object.assign(segDisplaySet, results);
 
-  const labelMapImageIds = (results as { labelMapImages?: { imageId: string }[][] }).labelMapImages
-    ?.flat()
+  const labelMapImageIds = (results as { labelMapImages?: { imageId: string }[][] })
+    .labelMapImages?.flat()
     .map(image => image.imageId);
 
   log.debug(SEG_LOAD_LOG_PREFIX, 'SEG parse complete', {

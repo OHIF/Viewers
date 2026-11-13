@@ -75,7 +75,10 @@ export async function createSegmentationForViewport(
   let timePointIndex: number | undefined;
   let timePointScope: TimePointScope | undefined;
   if (displaySet.isDynamicVolume && segmentationType === SegmentationRepresentations.Labelmap) {
-    timePointScope = options.timePointScope ?? (await promptTimePointScope(uiDialogService));
+    timePointScope = options.timePointScope;
+    if (!timePointScope) {
+      timePointScope = await promptTimePointScope(uiDialogService);
+    }
     if (!timePointScope) {
       return undefined;
     }
