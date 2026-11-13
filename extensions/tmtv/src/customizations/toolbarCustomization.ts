@@ -164,6 +164,13 @@ const toolbarButtons = [
     },
   },
   {
+    id: 'Mode',
+    uiType: 'ohif.modeSelector',
+    props: {
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
     id: 'WindowLevel',
     uiType: 'ohif.toolButton',
     props: {
@@ -477,7 +484,7 @@ const toolbarButtons = [
  * `tmtv.toolbarSections` customization.
  */
 export const toolbarSections: Record<string, string[]> = {
-  [TOOLBAR_SECTIONS.primary]: ['MeasurementTools', 'Zoom', 'Pan', 'WindowLevel', 'Crosshairs'],
+  [TOOLBAR_SECTIONS.primary]: ['MeasurementTools', 'Zoom', 'Mode', 'Pan', 'WindowLevel', 'Crosshairs'],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
 

@@ -34,6 +34,7 @@ import CaptureViewportModal from './CaptureViewportModal.json';
 import Tools from './Tools.json';
 import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import ToolbarModeSelector from './ToolbarModeSelector.json';
 import USAnnotationPanel from './USAnnotationPanel.json';
 import EncapsulatedDocument from './EncapsulatedDocument.json';
 
@@ -75,6 +76,7 @@ export default {
     Tools,
     Hps,
     ToolbarLayoutSelector,
+    ToolbarModeSelector,
     USAnnotationPanel,
     EncapsulatedDocument,
   },

@@ -147,6 +147,13 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'Mode',
+    uiType: 'ohif.modeSelector',
+    props: {
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',
     props: {
