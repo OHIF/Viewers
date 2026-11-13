@@ -302,19 +302,11 @@ rule claims to the SOP class handlers of the mode (`SP-PIPE-8`). *Satisfies `SP-
 **SP-PIPE-21**
 WHEN an id occurs more than once in the rule order, the compile step shall keep the first place of
 the id, drop the later places, and write one console warning that names the id. *Satisfies
-`SP-FIX-5`.*
+`SP-FIX-5`, `SP-SAFE-7`.*
 
 > A repeated id is the same rule, so its later place can never claim an instance. Two modules that
 > add the same rule, for example `split/usTimeClusters` and `split/optional/usTimeClusters`, each
 > insert the id. Before this rule, the repeated id stopped all display set creation.
-
-**SP-PIPE-22**
-A split module that adds a rule shall put its id just before the default rule that it refines
-(`$spliceById`), and not first (`$unshift`), unless the rule must precede every default rule.
-*Satisfies `SP-FIX-5`, `SP-FIX-6`.*
-
-> Then the order of the rules does not depend on the load order of the modules. `split/decimation`
-> stays first, because it applies to any large single-frame series.
 
 **SP-PIPE-9**
 IF the engine throws for a series, THEN the display set service shall create no further display
@@ -504,7 +496,6 @@ difference. *Satisfies `SP-REUSE-2`.*
 | `SP-PIPE-19` | `platform/core/src/services/CustomizationService/CustomizationService.test.js`: "applies $spliceById with an id as the position" |
 | `SP-PIPE-20` | `DisplaySetService.test.ts`: "falls unmatched instances through to the legacy handlers" |
 | `SP-PIPE-21` | `compileSplitRules.test.ts`: "an id of the order that is not in the registry is an error; a repeated id keeps its first place" |
-| `SP-PIPE-22` | `optionalRules.test.ts` of `@cornerstonejs/metadata`: "gives one rule order for any load order of the files" |
 | `SP-EXPR`, `SP-FORM-7`, `SP-FORM-8` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `displaySetRules.test.ts`, `expression.test.ts`) |
 | `SP-PIPE-2`, `SP-PIPE-3`, `SP-PIPE-14` | `platform/core/src/services/DisplaySetService/compileSplitRules.test.ts` |
 | `SP-PIPE-9` | `DisplaySetService.test.ts`, the run-time part of `split rule errors` |

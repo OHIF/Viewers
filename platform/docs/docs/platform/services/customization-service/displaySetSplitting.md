@@ -244,6 +244,13 @@ instance. OHIF keeps the first place of the id, and writes one warning in the
 console. This happens when two modules add the same rule, for example
 `split/usTimeClusters` and `split/optional/usTimeClusters`.
 
+The rules depend on their order: the first rule that matches an instance
+claims it. To reduce conflicts between modules, put a new rule just before the
+default rule that it refines, with `$spliceById`, and not first with
+`$unshift`. The split modules of OHIF and the optional rules of CS3D do this.
+This suggestion does not remove the conflicts: two modules that claim the same
+instances still give a result that depends on their order.
+
 :::caution
 A custom rule that claims video, whole-slide, ECG, SEG, RTSTRUCT, parametric
 map or another object with a dedicated extension must name the `handler` of

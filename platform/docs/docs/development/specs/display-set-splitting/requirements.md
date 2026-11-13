@@ -210,6 +210,13 @@ off.
 WHERE a deployment removes the catch-all rule from the rule order, the system shall give an
 instance that no rule claims to the display of its extension, as when the split rules are off.
 
+**SP-FIX-12**
+WHILE the rule order holds the localizer rule, the system shall show the localizer images of a
+series as a display set that does not open as a volume.
+
+> A scout in a volume breaks the MPR (§1). A deployment that wants a localizer series as a volume
+> removes the localizer rule from the rule order.
+
 **SP-FIX-10**
 The documentation shall state what an extension must add so that its display sets show while the
 split rules are on.
@@ -341,6 +348,9 @@ study, and shall show the user an error that names the rule.
 > One rule set applies to every study, so an error in the rule set blocks the load of every
 > study. This is the same as other errors that prevent the load of a study. The error stays until
 > the rule set changes.
+>
+> A rule id that occurs again in the rule order is the same rule. It is not an error. The system
+> uses the first place of the id, and writes a warning to the log.
 
 **SP-SAFE-4**
 The default rules shall not claim an instance that a dedicated extension handles.
@@ -417,6 +427,7 @@ the groups `SP-FORM`, `SP-PIPE`, `SP-EXPR`, `SP-DEPLOY`, and `SP-SRV`.
 | `SP-DET` | `platform/core/src/services/DisplaySetService/DisplaySetService.test.ts` |
 | `SP-FIX-9` | `DisplaySetService.test.ts` ("gives an unknown name the unsupported handler"), and the `unsupported` rule tests of `@cornerstonejs/metadata` |
 | `SP-FIX-10` | A review of the migration guide *Display set split rules and SOP class handlers* |
+| `SP-FIX-12` | `displaySetRules.test.ts` of `@cornerstonejs/metadata` ("marks the localizers of a mixed series as not a volume, also when they are parallel") |
 | `SP-READ-4`, `SP-READ-6` | `extensions/default/src/displaySetSplitting/makeDisplaySetFromInstanceGroup.test.ts`, and the `groupId` tests in `displaySetRules.test.ts` of `@cornerstonejs/metadata` |
 | `SP-SAFE-1`, `SP-SAFE-2` | The safe function and raw selector tests of `@cornerstonejs/metadata` (`compile.test.ts`, `displaySetRules.test.ts`, `expression.test.ts`) |
 | `SP-SAFE-3` | `DisplaySetService.test.ts`, the run-time part of `split rule errors` |
