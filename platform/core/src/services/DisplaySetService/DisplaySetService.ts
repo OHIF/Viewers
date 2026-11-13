@@ -17,19 +17,29 @@ import type {
   SplitRuleCompileError,
   SplitRuleCustomizationEntry,
 } from './compileSplitRules';
+import { compare, seriesSortCriteria } from '../../utils/sortStudy';
+import { getDateTimeSortKey } from '../../utils/latestInstanceDateTime';
 
 export type DisplaySetSort = {
   sortFn: (a: DisplaySet, b: DisplaySet) => number;
   direction: 'ascending' | 'descending';
 };
 
+/**
+ * A named display set order:
+ * - `default`: the system default order, the `sortingCriteria` customization.
+ * - `thumbnailTray`: the thumbnail tray order. The studies are newest first, and
+ *   the series of a study follow the sort picked in the study browser.
+ */
+export type DisplaySetOrder = 'default' | 'thumbnailTray';
+
 type DisplaySetComparator = (a: DisplaySet, b: DisplaySet) => number;
 
 /**
- * The series order to show once a sort has been picked: the picked sort, with
- * ties (e.g. series sharing a date) broken by the default order, all in the
- * picked direction, so the result does not depend on the order the display
- * sets arrive in.  Without a picked sort it is the default order.
+ * The series order once a sort has been picked: the picked sort in the picked
+ * direction, with ties broken by the default order. Only the picked sort
+ * reverses, so the display sets of one split series keep their default order
+ * in both directions. Without a picked sort it is the default order.
  */
 export function sortCriteriaFor(
   displaySetSort: DisplaySetSort | null,
@@ -38,10 +48,35 @@ export function sortCriteriaFor(
   if (!displaySetSort) {
     return defaultSortCriteria;
   }
-  return (a, b) => {
-    const comparison = displaySetSort.sortFn(a, b) || defaultSortCriteria?.(a, b) || 0;
-    return displaySetSort.direction === 'descending' ? -comparison : comparison;
-  };
+  const sign = displaySetSort.direction === 'descending' ? -1 : 1;
+  return (a, b) => sign * displaySetSort.sortFn(a, b) || defaultSortCriteria?.(a, b) || 0;
+}
+
+const studyDateTimeKey = (displaySet: DisplaySet) => {
+  const instance = displaySet.instance ?? displaySet.instances?.[0];
+  return getDateTimeSortKey(instance?.StudyDate, instance?.StudyTime);
+};
+
+/**
+ * The study order of the thumbnail tray: newest study first. Each study gets one
+ * key (its earliest display set date/time), because a derived object of a study
+ * can carry another `StudyTime`, and a key per display set would split the study.
+ */
+function compareTrayStudyFor(displaySets: DisplaySet[]): DisplaySetComparator {
+  const studyKeys = new Map<string, string>();
+  for (const displaySet of displaySets) {
+    const key = studyDateTimeKey(displaySet);
+    const known = studyKeys.get(displaySet.StudyInstanceUID);
+    if (known === undefined || compare(key, known) < 0) {
+      studyKeys.set(displaySet.StudyInstanceUID, key);
+    }
+  }
+  const keyOf = (displaySet: DisplaySet) =>
+    studyKeys.get(displaySet.StudyInstanceUID) ?? studyDateTimeKey(displaySet);
+  return (a, b) =>
+    a.StudyInstanceUID === b.StudyInstanceUID
+      ? 0
+      : compare(keyOf(b), keyOf(a)) || compare(a.StudyInstanceUID, b.StudyInstanceUID);
 }
 
 /**
@@ -265,11 +300,11 @@ export default class DisplaySetService extends PubSubService {
   // that fewer events need to be fired when creating multiple display sets
   protected activeDisplaySetsChanged = false;
 
-  // The sort last applied through sortDisplaySets.  The study browser builds its
-  // thumbnail list from this rather than from the order of activeDisplaySets,
-  // because it regroups the display sets by study, and the sort picker reads it
-  // back so that closing and reopening the picker keeps the user's choice.
+  /** The sort picked in the study browser; it sets the `thumbnailTray` order only. */
   protected displaySetSort: DisplaySetSort | null = null;
+
+  /** The display set added last; `activeDisplaySets` is in default order, not add order. */
+  protected mostRecentDisplaySetUID: string | undefined;
 
   /**
    * The split rule failures at run time, by StudyInstanceUID (SP-SAFE-3). A
@@ -318,6 +353,7 @@ export default class DisplaySetService extends PubSubService {
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];
     this.activeDisplaySetsMap.clear();
+    this.mostRecentDisplaySetUID = undefined;
     this.handlersByName = new Map();
     this.warnedHandlerNames.clear();
     for (const id of SOPClassHandlerIds) {
@@ -441,14 +477,25 @@ export default class DisplaySetService extends PubSubService {
 
   _addActiveDisplaySets(displaySets: DisplaySet[]) {
     const { activeDisplaySets, activeDisplaySetsMap } = this;
+    let added = false;
 
     displaySets.forEach(displaySet => {
       if (!activeDisplaySetsMap.has(displaySet.displaySetInstanceUID)) {
         this.activeDisplaySetsChanged = true;
+        added = true;
         activeDisplaySets.push(displaySet);
         activeDisplaySetsMap.set(displaySet.displaySetInstanceUID, displaySet);
+        this.mostRecentDisplaySetUID = displaySet.displaySetInstanceUID;
       }
     });
+    if (added) {
+      this._sortActiveDisplaySets();
+    }
+  }
+
+  /** Keeps `activeDisplaySets` in the default order, whatever the load order is. */
+  protected _sortActiveDisplaySets(): void {
+    this.activeDisplaySets.sort(this.getSortCriteria('default'));
   }
 
   /**
@@ -490,9 +537,13 @@ export default class DisplaySetService extends PubSubService {
   }
 
   public getMostRecentDisplaySet(): DisplaySet {
-    return this.activeDisplaySets[this.activeDisplaySets.length - 1];
+    return this.activeDisplaySetsMap.get(this.mostRecentDisplaySetUID);
   }
 
+  /**
+   * @returns the active display sets in the default order. Do not sort the
+   * returned array: use `getDisplaySets({ order })` for another order.
+   */
   public getActiveDisplaySets(): DisplaySet[] {
     return this.activeDisplaySets;
   }
@@ -564,6 +615,8 @@ export default class DisplaySetService extends PubSubService {
     if (!displaySet) {
       return;
     }
+    // New metadata can change the sort keys.
+    this._sortActiveDisplaySets();
 
     // broadcast event to update listeners with the new displaySets
     this._broadcastEvent(EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED, {
@@ -676,6 +729,7 @@ export default class DisplaySetService extends PubSubService {
     displaySetStore.clearDisplaySets();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
+    this.mostRecentDisplaySetUID = undefined;
     // A sort picked for one study does not carry over to the next one.
     this.displaySetSort = null;
     this.splitRuleFailures.clear();
@@ -1311,15 +1365,16 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
+   * Sets the series sort of the thumbnail tray (the `thumbnailTray` order).
+   * It does not change `activeDisplaySets`, which keeps the default order, so
+   * the hanging protocols and the other users of the default order see no
+   * change. Ties under `sortFn` keep the default order.
    *
-   * @param sortFn function to sort the display sets
-   * @param direction direction to sort the display sets.  Ascending means
-   *    increasing in value, which will typically put the lowest series numbers
-   *    first, with low priority display sets last with newest first.
-   *    The meaning of this flag may change to leave the image/non-image display
-   *    set sorting alone and only affect sorting within groups, or have additional
-   *    values for specific changes to the sort.
-   * @returns void
+   * @param sortFn compares two display sets, ascending; returns 0 on a tie
+   * @param direction `descending` reverses `sortFn`, but not the default order
+   *    that breaks its ties
+   * @param suppressEvent true to send no `DISPLAY_SET_ORDER_CHANGED` and no
+   *    `DISPLAY_SETS_CHANGED`
    */
   public sortDisplaySets(
     sortFn: (a: DisplaySet, b: DisplaySet) => number,
@@ -1327,29 +1382,43 @@ export default class DisplaySetService extends PubSubService {
     suppressEvent = false
   ): void {
     this.displaySetSort = { sortFn, direction };
-    this.activeDisplaySets.sort(sortFn);
-    if (direction === 'descending') {
-      this.activeDisplaySets.reverse();
-    }
     if (!suppressEvent) {
+      this._broadcastEvent(EVENTS.DISPLAY_SET_ORDER_CHANGED, { order: 'thumbnailTray' });
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     }
   }
 
   /**
    * @returns the sort last applied with sortDisplaySets, or null while the
-   *    display sets are still in their default order.
+   *    thumbnail tray uses the default order.
    */
   public getDisplaySetSort(): DisplaySetSort | null {
     return this.displaySetSort;
   }
 
   /**
-   * @returns the order the study browser shows the series in: the sort last
-   *    applied with sortDisplaySets, falling back to defaultSortCriteria for
-   *    ties, or defaultSortCriteria itself while no sort has been applied.
+   * @returns the comparator of the named order. `default` is the
+   *    `sortingCriteria` customization (or `seriesSortCriteria.default` without
+   *    one). `thumbnailTray` orders the studies newest first, then applies the
+   *    picked sort with the default order as the tie-break.
    */
-  public getSortCriteria(defaultSortCriteria?: DisplaySetComparator) {
-    return sortCriteriaFor(this.displaySetSort, defaultSortCriteria);
+  public getSortCriteria(order: DisplaySetOrder = 'default'): DisplaySetComparator {
+    const defaultSortCriteria: DisplaySetComparator =
+      this.servicesManager?.services?.customizationService?.getCustomization('sortingCriteria') ??
+      seriesSortCriteria.default;
+    if (order === 'default') {
+      return defaultSortCriteria;
+    }
+    const seriesCriteria = sortCriteriaFor(this.displaySetSort, defaultSortCriteria);
+    const compareStudy = compareTrayStudyFor(this.activeDisplaySets);
+    return (a, b) => compareStudy(a, b) || seriesCriteria(a, b);
+  }
+
+  /**
+   * @returns a new array of the active display sets in the named order. The
+   *    caller can sort or change the array; the store does not change.
+   */
+  public getDisplaySets({ order = 'default' }: { order?: DisplaySetOrder } = {}): DisplaySet[] {
+    return [...this.activeDisplaySets].sort(this.getSortCriteria(order));
   }
 }

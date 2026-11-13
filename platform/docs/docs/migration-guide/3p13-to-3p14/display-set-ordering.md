@@ -13,6 +13,27 @@ Getting that order right needed two changes with behaviour you may be relying on
 See [display set date and time](../../development/notes-requirements.md) for how
 the date/time of a display set is chosen and what it is used for.
 
+## The active display sets keep the default order
+
+`DisplaySetService` keeps `getActiveDisplaySets()` in the default order, the
+`sortingCriteria` customization. Before, the list was in load order, and the
+study browser sort picker sorted the list in place.
+
+- `sortDisplaySets(sortFn, direction)` now sets only the order of the thumbnail
+  tray. It does not change `getActiveDisplaySets()`, and it sends
+  `DISPLAY_SET_ORDER_CHANGED`.
+- `getDisplaySets({ order })` gives a new array in the `default` order or the
+  `thumbnailTray` order. `getSortCriteria(order)` gives the comparator of that
+  order. The hook `useDisplaySetOrder(order)` gives a getter of the array.
+- In the `thumbnailTray` order, the direction reverses the picked sort only.
+  Ties, for example the display sets of one split series, keep the default order.
+- `getMostRecentDisplaySet()` still gives the display set that was added last.
+
+**What changes for you:** code that reads `getActiveDisplaySets()` by position
+gets the default order, not the load order. The hanging protocols get the
+default order, whatever the sort that the user picks. Do not sort the array that
+`getActiveDisplaySets()` gives: copy it, or use `getDisplaySets({ order })`.
+
 ## A display set's `SeriesDate`/`SeriesTime` are the display set's own date/time
 
 `compareSeriesDateTime` still compares the `SeriesDate`/`SeriesTime` of the two

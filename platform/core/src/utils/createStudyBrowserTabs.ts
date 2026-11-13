@@ -37,21 +37,18 @@ export function createStudyBrowserTabs(
   recentTimeframeMS = 31536000000
 ): TabsProps {
   const { servicesManager } = useSystem();
-  const { displaySetService, customizationService } = servicesManager.services;
+  const { displaySetService } = servicesManager.services;
 
   const primaryStudies = [];
   const allStudies = [];
+  // The thumbnail tray order: the sort picked in the study browser, or the default order.
+  const sortCriteria = displaySetService.getSortCriteria('thumbnailTray');
 
   studyDisplayList.forEach(study => {
     const displaySetsForStudy = displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    // A sort picked in the study browser replaces the default series order;
-    // without this the thumbnails would ignore the picker entirely.
-    const sortCriteria = displaySetService.getSortCriteria(
-      customizationService.getCustomization('sortingCriteria')
-    );
     const sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
       const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
       const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);

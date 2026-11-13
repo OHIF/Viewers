@@ -8,6 +8,9 @@ const mockDisplaySets = [
 ];
 
 let mockDisplaySetSort = null;
+// The default series order, deliberately not the series number order.
+const mockDefaultOrder = (a, b) =>
+  a.displaySetInstanceUID === 'ds-2' ? -1 : b.displaySetInstanceUID === 'ds-2' ? 1 : 0;
 
 jest.mock('../contextProviders/SystemProvider', () => ({
   useSystem: () => ({
@@ -15,13 +18,7 @@ jest.mock('../contextProviders/SystemProvider', () => ({
       services: {
         displaySetService: {
           getDisplaySetByUID: uid => mockDisplaySets.find(ds => ds.displaySetInstanceUID === uid),
-          getSortCriteria: defaultSortCriteria =>
-            mockSortCriteriaFor(mockDisplaySetSort, defaultSortCriteria),
-        },
-        customizationService: {
-          // The default series order, deliberately not the series number order.
-          getCustomization: () => (a, b) =>
-            a.displaySetInstanceUID === 'ds-2' ? -1 : b.displaySetInstanceUID === 'ds-2' ? 1 : 0,
+          getSortCriteria: () => mockSortCriteriaFor(mockDisplaySetSort, mockDefaultOrder),
         },
       },
     },
@@ -56,12 +53,12 @@ describe('createStudyBrowserTabs', () => {
     expect(seriesNumbersShown()).toEqual([3, 2, 1]);
   });
 
-  it('breaks ties under the picked sort with the default order, in the picked direction', () => {
-    const sameDate = () => 0;
-    mockDisplaySetSort = { sortFn: sameDate, direction: 'descending' };
-    expect(seriesNumbersShown().at(-1)).toBe(2);
-    expect(seriesNumbersShown([...mockDisplaySets].reverse()).at(-1)).toBe(2);
-    mockDisplaySetSort = { sortFn: sameDate, direction: 'ascending' };
-    expect(seriesNumbersShown([...mockDisplaySets].reverse())[0]).toBe(2);
+  it('keeps the default order for ties in both directions, as for the display sets of one split series', () => {
+    const sameSeries = () => 0;
+    for (const direction of ['ascending', 'descending']) {
+      mockDisplaySetSort = { sortFn: sameSeries, direction };
+      expect(seriesNumbersShown()[0]).toBe(2);
+      expect(seriesNumbersShown([...mockDisplaySets].reverse())[0]).toBe(2);
+    }
   });
 });

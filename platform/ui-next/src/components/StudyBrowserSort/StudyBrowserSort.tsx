@@ -44,29 +44,6 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
     displaySetService.sortDisplaySets(selectedSort.sortFunction, sortDirection);
   }, [displaySetService, selectedSort, sortDirection, sortChosen]);
 
-  useEffect(() => {
-    if (!sortChosen) {
-      return;
-    }
-    const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
-      displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-      () => {
-        displaySetService.sortDisplaySets(selectedSort.sortFunction, sortDirection, true);
-      }
-    );
-    const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
-      displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
-      () => {
-        displaySetService.sortDisplaySets(selectedSort.sortFunction, sortDirection, true);
-      }
-    );
-
-    return () => {
-      SubscriptionDisplaySetsChanged.unsubscribe();
-      SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
-    };
-  }, [displaySetService, selectedSort, sortDirection, sortChosen]);
-
   return (
     <div className="flex w-[50%] items-center gap-1">
       <DropdownMenu>
