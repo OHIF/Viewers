@@ -18,6 +18,7 @@ import {
   getExportLabelToSegmentIndex,
   type LabelToSegmentIndex,
 } from './utils/labelmapLayerSegmentIndices';
+import { loadReferencedImages } from './utils/loadReferencedImages';
 
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -348,8 +349,12 @@ const commandsModule = ({
      * @param params.segmentationId - ID of the segmentation to be downloaded.
      *
      */
-    downloadSegmentation: ({ segmentationId }) => {
+    downloadSegmentation: async ({ segmentationId }) => {
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
+      await loadReferencedImages(
+        cornerstoneToolsSegmentation.state.getSegmentation(segmentationId)?.representationData
+          .Labelmap
+      );
       const generatedSegmentation = actions.generateSegmentation({
         segmentationId,
       });
@@ -429,6 +434,12 @@ const commandsModule = ({
             predecessorImageId: series,
           },
         };
+        if (modality === 'SEG') {
+          await loadReferencedImages(
+            cornerstoneToolsSegmentation.state.getSegmentation(segmentationId)?.representationData
+              .Labelmap
+          );
+        }
         const generatedDataAsync =
           (modality === 'SEG' && actions.generateSegmentation(args)) ||
           (modality === 'RTSTRUCT' && actions.generateContour(args));
