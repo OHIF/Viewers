@@ -293,7 +293,10 @@ export function SmartScrollbar({
           aria-valuemax={total - 1}
           aria-orientation="vertical"
           aria-label={ariaLabel}
-          tabIndex={0}
+          // Only take focus when keys do something. A focused scrollbar that
+          // ignores keys keeps its focus ring after arrow-key navigation moves
+          // to another viewport.
+          tabIndex={enableKeyboardNavigation ? 0 : undefined}
           className={className}
           style={{
             width: TRACK_WIDTH + hitZoneSideExtension * 2,
