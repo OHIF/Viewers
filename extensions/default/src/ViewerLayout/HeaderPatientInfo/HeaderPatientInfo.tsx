@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSystem } from '@ohif/core';
 import usePatientInfo from '../../hooks/usePatientInfo';
 import { Icons } from '@ohif/ui-next';
@@ -18,6 +19,7 @@ const formatWithEllipsis = (str, maxLength) => {
 };
 
 function PatientInfo({ showPatientInfo }) {
+  const { t } = useTranslation('Header');
   const initialExpandedState =
     showPatientInfo === PatientInfoVisibility.VISIBLE ||
     showPatientInfo === PatientInfoVisibility.VISIBLE_READONLY;
@@ -63,7 +65,7 @@ function PatientInfo({ showPatientInfo }) {
           </>
         ) : (
           <div className="text-primary self-center text-[13px]">
-            {isMixedPatients ? 'Multiple Patients' : 'Patient'}
+            {isMixedPatients ? t('Multiple Patients') : t('Patient')}
           </div>
         )}
       </div>

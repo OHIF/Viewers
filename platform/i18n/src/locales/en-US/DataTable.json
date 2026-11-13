@@ -1,4 +1,10 @@
 {
   "No results.": "No results.",
-  "Not enough room to display this column": "Not enough room to display this column"
+  "Not enough room to display this column": "Not enough room to display this column",
+  "Next page": "Next page",
+  "per page": "per page",
+  "Previous page": "Previous page",
+  "Range of total": "{{start}}-{{end}} of {{total}}",
+  "Rows per page": "Rows per page",
+  "View": "View"
 }

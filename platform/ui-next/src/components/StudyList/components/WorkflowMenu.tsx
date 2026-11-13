@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../Button';
 import { Icons } from '../../Icons';
 import {
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function WorkflowMenu({ studyRow, align = 'end' }: Props) {
+  const { t } = useTranslation('StudyList');
   const [open, setOpen] = React.useState(false);
   const { getWorkflowsForStudy } = useWorkflows();
   const workflows = getWorkflowsForStudy(studyRow);
@@ -35,14 +37,14 @@ export function WorkflowMenu({ studyRow, align = 'end' }: Props) {
                 variant="ghost"
                 aria-expanded={open}
                 aria-haspopup="menu"
-                aria-label="Action Menu"
+                aria-label={t('Action menu')}
                 className="bg-primary/20 text-primary hover:bg-primary/30 mt-1 h-6 w-6 transition-opacity"
               >
                 <Icons.More className="h-6 w-6" />
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Action Menu</TooltipContent>
+          <TooltipContent side="bottom">{t('Action menu')}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DropdownMenuContent
@@ -50,7 +52,7 @@ export function WorkflowMenu({ studyRow, align = 'end' }: Props) {
         onClick={e => e.stopPropagation()}
       >
         <div className="text-muted-foreground border-input my-1.5 mx-1 border-b py-1 pl-1 pr-4 text-sm">
-          Launch Workflow:
+          {t('Launch workflow')}:
         </div>
         {workflows.map(workflow => (
           <DropdownMenuItem

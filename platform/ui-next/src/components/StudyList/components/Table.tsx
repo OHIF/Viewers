@@ -146,9 +146,9 @@ function TableContent({
                     variant="ghost"
                     size="sm"
                     onClick={() => table.setColumnFilters([])}
-                    aria-label="Reset filters"
+                    aria-label={t('ClearFilters')}
                   >
-                    Reset
+                    {t('ClearFilters')}
                   </Button>
                 </div>
               );
@@ -187,7 +187,7 @@ function TableContent({
                   <InputMultiSelect.Field>
                     <InputMultiSelect.Summary />
                     <InputMultiSelect.Input
-                      ariaLabel="Filter Modalities"
+                      ariaLabel={t('Filter modalities')}
                       placeholder=""
                     />
                   </InputMultiSelect.Field>

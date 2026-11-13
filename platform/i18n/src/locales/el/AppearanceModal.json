@@ -1,0 +1,12 @@
+{
+  "Appearance": "Εμφάνιση",
+  "Theme": "Θέμα",
+  "Default Theme": "Τονικό: Μπλε OHIF",
+  "Custom": "Προσαρμοσμένο",
+  "Custom Theme": "Προσαρμοσμένο θέμα",
+  "Hide": "Απόκρυψη",
+  "Apply": "Εφαρμογή",
+  "Clear": "Εκκαθάριση",
+  "No valid theme tokens found": "Δεν βρέθηκαν έγκυρα διακριτικά θέματος. Αναμένονται γραμμές όπως --primary: 220 90% 60%",
+  "Paste your custom theme color tokens here": "Επικολλήστε εδώ τα προσαρμοσμένα χρωματικά διακριτικά θέματος"
+}

@@ -18,7 +18,7 @@ type ViewOptionsProps = {
   buttonText?: string;
 };
 
-export function ViewOptions<TData>({ buttonText = 'View' }: ViewOptionsProps) {
+export function ViewOptions<TData>({ buttonText }: ViewOptionsProps) {
   const { t } = useTranslation('DataTable');
   const { table } = useDataTable<TData>();
   const unfitColumnIds = useUnfitColumnIds();
@@ -30,6 +30,7 @@ export function ViewOptions<TData>({ buttonText = 'View' }: ViewOptionsProps) {
   // state object is replaced on every visibility change, so the compiler
   // re-derives everything below exactly when it should.
   const columnVisibility = table.state.columnVisibility;
+  const viewLabel = buttonText ?? t('View');
 
   return (
     <DropdownMenu>
@@ -39,7 +40,7 @@ export function ViewOptions<TData>({ buttonText = 'View' }: ViewOptionsProps) {
           size="sm"
           className="gap-1 text-sm"
         >
-          {buttonText}
+          {viewLabel}
           <Icons.ChevronDown className="h-2 w-2" />
         </Button>
       </DropdownMenuTrigger>
