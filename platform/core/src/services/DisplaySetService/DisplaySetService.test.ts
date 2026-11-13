@@ -1003,7 +1003,7 @@ describe('DisplaySetService — sortDisplaySets', () => {
     }
   });
 
-  it('keeps a study together in the thumbnail tray when a derived object carries another StudyTime', () => {
+  it('keeps a study together in the thumbnail tray when a derived object carries another StudyTime or none', () => {
     const byDescription = (a, b) => a.SeriesDescription.localeCompare(b.SeriesDescription);
     const service = new DisplaySetService({
       servicesManager: {
@@ -1015,10 +1015,21 @@ describe('DisplaySetService — sortDisplaySets', () => {
       SeriesDescription,
       instance: { StudyDate: '20080918', StudyTime },
     });
-    service.activeDisplaySets = [inStudy('b', '120000'), inStudy('a', '090000')];
+    const olderStudy = {
+      StudyInstanceUID: 'older-study',
+      SeriesDescription: 'z',
+      instance: { StudyDate: '20000101' },
+    };
+    const noDate = { StudyInstanceUID: 'tray-study', SeriesDescription: 'c' };
+    service.activeDisplaySets = [
+      olderStudy,
+      inStudy('b', '120000'),
+      noDate,
+      inStudy('a', '090000'),
+    ];
 
     expect(
       service.getDisplaySets({ order: 'thumbnailTray' }).map(ds => ds.SeriesDescription)
-    ).toEqual(['a', 'b']);
+    ).toEqual(['a', 'b', 'c', 'z']);
   });
 });

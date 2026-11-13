@@ -67,7 +67,8 @@ function compareTrayStudyFor(displaySets: DisplaySet[]): DisplaySetComparator {
   for (const displaySet of displaySets) {
     const key = studyDateTimeKey(displaySet);
     const known = studyKeys.get(displaySet.StudyInstanceUID);
-    if (known === undefined || compare(key, known) < 0) {
+    // A display set with no date does not make the study the oldest one.
+    if (known === undefined || (key && (!known || key < known))) {
       studyKeys.set(displaySet.StudyInstanceUID, key);
     }
   }
