@@ -27,7 +27,11 @@ jest.mock('@ohif/i18n', () => ({ __esModule: true, default: { t: (key: string) =
 
 jest.mock('@cornerstonejs/adapters', () => ({
   adaptersSR: {
-    Cornerstone3D: { TEXT_ANNOTATION_POSITION: {}, COMMENT_CODE: {}, CodeScheme: {} },
+    Cornerstone3D: {
+      TEXT_ANNOTATION_POSITION: {},
+      COMMENT_CODE: { schemeDesignator: 'DCM', value: '121106' },
+      CodeScheme: {},
+    },
   },
 }));
 
@@ -40,6 +44,7 @@ jest.mock('./utils/isRehydratable', () => ({ __esModule: true, default: jest.fn(
 
 import getSopClassHandlerModule, {
   _checkIfCanAddMeasurementsToDisplaySet,
+  _processMeasurement,
 } from './getSopClassHandlerModule';
 import { SOPClassHandlerId } from './id';
 
@@ -188,5 +193,90 @@ describe('getSopClassHandlerModule', () => {
     expect(handler.getDisplaySetsFromSeries([doseReport])).toMatchObject([
       { SOPClassHandlerId, isImagingMeasurementReport: false },
     ]);
+  });
+});
+
+describe('_processMeasurement', () => {
+  const lesion = { CodeValue: '52988006', CodingSchemeDesignator: 'SCT', CodeMeaning: 'Lesion' };
+  const lung = { CodeValue: '39607008', CodingSchemeDesignator: 'SCT', CodeMeaning: 'Lung' };
+
+  const trackingItems = [
+    { ValueType: 'UIDREF', ConceptNameCodeSequence: { CodeValue: '112040' }, UID: '1.2.3' },
+    {
+      ValueType: 'TEXT',
+      ConceptNameCodeSequence: { CodeValue: '112039' },
+      TextValue: 'Point',
+    },
+  ];
+  const findingItem = {
+    ValueType: 'CODE',
+    ConceptNameCodeSequence: { CodeValue: '121071', CodeMeaning: 'Finding' },
+    ConceptCodeSequence: lesion,
+  };
+  const findingSiteItem = {
+    ValueType: 'CODE',
+    ConceptNameCodeSequence: {
+      CodeValue: '363698007',
+      CodingSchemeDesignator: 'SCT',
+      CodeMeaning: 'Finding Site',
+    },
+    ConceptCodeSequence: lung,
+  };
+
+  it('keeps the coded finding and finding sites of a TID 1410 measurement', () => {
+    const measurement = _processMeasurement([
+      ...trackingItems,
+      {
+        ValueType: 'SCOORD',
+        GraphicType: 'POINT',
+        GraphicData: [10, 20],
+        ConceptNameCodeSequence: { CodeValue: '111030', CodingSchemeDesignator: 'DCM' },
+      },
+      findingItem,
+      findingSiteItem,
+    ]);
+
+    expect(measurement.srFinding).toBe(lesion);
+    expect(measurement.srFindingSites).toEqual([lung]);
+  });
+
+  it('labels the finding site with its concept name rather than the raw code', () => {
+    const measurement = _processMeasurement([
+      ...trackingItems,
+      {
+        ValueType: 'SCOORD',
+        GraphicType: 'POINT',
+        GraphicData: [10, 20],
+        ConceptNameCodeSequence: { CodeValue: '111030', CodingSchemeDesignator: 'DCM' },
+      },
+      findingSiteItem,
+    ]);
+
+    expect(measurement.labels).toContainEqual({ label: 'Finding Site', value: 'Lung' });
+    expect(measurement.srFinding).toBeUndefined();
+  });
+
+  it('keeps the coded finding of a measurement without geometry', () => {
+    const measurement = _processMeasurement([...trackingItems, findingItem]);
+
+    expect(measurement.srFinding).toBe(lesion);
+    expect(measurement.srFindingSites).toEqual([]);
+  });
+
+  it('keeps an SRT finding site and the comment of a measurement without geometry', () => {
+    const srtSite = {
+      ValueType: 'CODE',
+      ConceptNameCodeSequence: { CodeValue: 'G-C0E3', CodingSchemeDesignator: 'SRT' },
+      ConceptCodeSequence: lung,
+    };
+    const comment = {
+      ValueType: 'TEXT',
+      ConceptNameCodeSequence: { CodeValue: '121106', CodingSchemeDesignator: 'DCM' },
+      TextValue: 'Target A',
+    };
+    const measurement = _processMeasurement([...trackingItems, findingItem, srtSite, comment]);
+
+    expect(measurement.srFindingSites).toEqual([lung]);
+    expect(measurement.srComment).toBe('Target A');
   });
 });

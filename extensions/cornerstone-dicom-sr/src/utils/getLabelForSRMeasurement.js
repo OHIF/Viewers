@@ -1,14 +1,18 @@
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 
 /**
- * Single display label for SR preview annotations, matching hydrate + measurement panel:
- * free-text finding site before free-text finding before coded finding (see getLabelFromDCMJSImportedToolData).
+ * Single display label for SR preview annotations, matching the label of the hydrated annotation:
+ * the comment first (as in the SR adapter), then the free-text finding site, then the finding
+ * (see getLabelFromDCMJSImportedToolData).
  */
 export default function getLabelForSRMeasurement(measurement) {
   if (!measurement) {
     return undefined;
   }
-  const { srFinding, srFindingSites, labels } = measurement;
+  const { srComment, srFinding, srFindingSites, labels } = measurement;
+  if (srComment) {
+    return srComment;
+  }
   if (srFinding || (srFindingSites && srFindingSites.length)) {
     const fromConcepts = getLabelFromDCMJSImportedToolData({
       annotation: { data: {} },
