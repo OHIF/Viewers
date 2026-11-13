@@ -135,22 +135,12 @@ export function seriesInStudy(dicomWebClient, studyInstanceUID) {
   return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
 }
 
-export default function searchStudies(server, filter) {
-  const queryParams = getQIDOQueryParams(filter, server.qidoSupportsIncludeField);
-  const options = {
-    queryParams,
-  };
-
-  return dicomWeb.searchForStudies(options).then(resultDataToStudies);
-}
-
 /**
- * Produces a QIDO URL given server details and a set of specified search filter
- * items
+ * Maps study list search filter items to study-level QIDO query parameters.
  *
- * @param filter
- * @param serverSupportsQIDOIncludeField
- * @returns {string} The URL with encoded filter query data
+ * @param {object} params - Search filter items, for example `patientName` and `startDate`
+ * @param {object} [options] - Data source options: `supportsWildcard`, `supportsFuzzyMatching`
+ * @returns {object} The query parameters, without undefined or empty values
  */
 function mapParams(params, options = {}) {
   if (!params) {
@@ -158,7 +148,7 @@ function mapParams(params, options = {}) {
   }
   const commaSeparatedFields = [
     '00081030', // Study Description
-    '00080060', // Modality
+    '00080061', // Modalities In Study
     '00080090', // Referring Physician's Name
     '00100030', // Patient's Birth Date
     // Add more fields here if you want them in the result
@@ -183,7 +173,7 @@ function mapParams(params, options = {}) {
     limit: params.limit || 101,
     offset: params.offset || 0,
     fuzzymatching: options.supportsFuzzyMatching === true,
-    includefield: commaSeparatedFields, // serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
+    includefield: commaSeparatedFields,
   };
 
   // build the StudyDate range parameter
