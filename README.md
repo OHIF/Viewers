@@ -332,6 +332,10 @@ Any explicit `APP_CONFIG` overrides the default, e.g.
 `APP_CONFIG=config/default.js pnpm run dev` or
 `APP_CONFIG=config/netlify.js pnpm run build`.
 
+## One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/OHIF%20Viewer/)
+
 ## Project
 
 The OHIF Medical Image Viewing Platform is maintained as a
