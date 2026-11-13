@@ -3,6 +3,7 @@ import {
   checkForViewportScreenshot,
   drawFreehandContour,
   expect,
+  RECREATE_VIEWPORTS_WAIT,
   screenShotPaths,
   test,
   visitStudy,
@@ -10,7 +11,7 @@ import {
   waitForRenderCycleForAction,
   waitForViewportsRendered,
 } from './utils';
-import { expectLabelmapPainted } from './utils/assertions';
+import { expectLabelmapPainted, expectViewportActive } from './utils/assertions';
 
 const ABDOMEN_STUDY_UID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
 const ABDOMEN_SEGMENT_COUNT = 13;
@@ -46,11 +47,10 @@ const PROSTATE_OVERLAY_LABELS = ['T2 WEIGHTED AXIAL SEGMENTATIONS', 'SEGMENTATIO
 const ADC_STROKE = { start: { x: 0.4, y: 0.45 }, end: { x: 0.6, y: 0.45 } };
 const NEW_ADC_SEGMENT_HEX = '#00FF00';
 const NEW_ADC_SEGMENT_CSS_RGB = 'rgb(0, 255, 0)';
+// Each prostate pane carries cine controls with text near its top; screenshots start below them.
+const BELOW_CINE_CONTROLS = { x: 0, y: 0.27, width: 1, height: 0.73 };
 
 const MAX_DIFF_PIXEL_RATIO = 0.002;
-
-// Layout changes and maximize/restore re-create the viewports, which can take a while under load.
-const RECREATE_VIEWPORTS_WAIT = { needsRenderTimeout: 20000, renderedTimeout: 60000 };
 
 test.describe('abdominal CT with a hydrated SEG', () => {
   test.beforeEach(
@@ -71,6 +71,7 @@ test.describe('abdominal CT with a hydrated SEG', () => {
 
       const { panel } = rightPanelPageObject.labelMapSegmentationPanel;
       await expect(panel.rows).toHaveCount(ABDOMEN_SEGMENT_COUNT);
+      // visitStudyAndHydrate returns right after accepting the prompt; wait for the labelmap to render.
       await waitForViewportsRendered(page);
 
       // The hydrated slice doesn't show the liver; clicking its row centers the stack on it.
@@ -93,6 +94,8 @@ test.describe('abdominal CT with a hydrated SEG', () => {
     const viewport = await viewportPageObject.getById('default');
     const contourPath = viewport.svg('path');
 
+    await contourSegmentationPanel.select();
+    await expect(contourSegmentationPanel.panel.rows).toHaveCount(0);
     await contourSegmentationPanel.addSegmentation();
     await expect(contourSegmentationPanel.panel.rows).toHaveCount(1);
     await drawFreehandContour({
@@ -126,7 +129,7 @@ test.describe('abdominal CT with a hydrated SEG', () => {
     await expect(viewportPageObject.panes).toHaveCount(4);
 
     // The segmented pane stays top left and active, on the same slice.
-    await expect(viewportPageObject.getNthLocator(0)).toHaveAttribute('data-is-active', 'true');
+    await expectViewportActive(viewportPageObject.getNthLocator(0));
     await expect(viewport.overlayText.bottomRight.instanceNumber).toHaveText(LIVER_SLICE_TEXT);
     await expectLabelmapPainted({ page, viewport, labelMapSegmentationPanel });
     await expect(contourPath).toHaveCount(1);
@@ -180,7 +183,7 @@ test.describe('abdominal CT with a hydrated SEG', () => {
       RECREATE_VIEWPORTS_WAIT
     );
     await expect(viewportPageObject.panes).toHaveCount(2);
-    await expect(viewportPageObject.getNthLocator(0)).toHaveAttribute('data-is-active', 'true');
+    await expectViewportActive(viewportPageObject.getNthLocator(0));
 
     await waitForRenderCycleForAction(page, () => liver.actions.changeColor(NEW_LIVER_HEX));
     await expect(liver.rowDataColorHex).toHaveCSS('background-color', NEW_LIVER_CSS_RGB);
@@ -227,7 +230,7 @@ test.describe('prostate MR grid of four series', () => {
     await waitForViewportsRendered(page, { timeout: 60000 });
   });
 
-  test("keeps each pane's labelmap and color after another pane is maximized and restored", async ({
+  test("keeps each pane's labelmap and color after one pane is maximized and restored", async ({
     page,
     DOMOverlayPageObject,
     leftPanelPageObject,
@@ -237,26 +240,30 @@ test.describe('prostate MR grid of four series', () => {
   }) => {
     const { labelMapSegmentationPanel } = rightPanelPageObject;
     const { panel } = labelMapSegmentationPanel;
+    await expect(viewportPageObject.panes).toHaveCount(PROSTATE_PANES.length);
     const panes = await viewportPageObject.getAll();
     const t2 = panes[T2_PANE];
     const adc = panes[ADC_PANE];
 
-    const expectEachPaneUnchanged = async () => {
+    const expectPaneSeriesAndOverlays = async (pane: (typeof panes)[number], series: string) => {
+      await expect(pane.overlayText.topLeft.seriesDescription).toHaveText(series);
+      // The data overlay menu is only offered on the active pane.
+      await pane.pane.click();
+      await expectViewportActive(pane.pane);
+      const { dataOverlay } = pane.overlayMenu;
+      await dataOverlay.toggle();
+      await expect(dataOverlay.overlaySegmentationRows).toHaveText(PROSTATE_OVERLAY_LABELS);
+      await dataOverlay.toggle();
+      await expect(dataOverlay.menu).not.toBeVisible();
+    };
+    const expectEachPaneSeriesAndOverlays = async () => {
       await expect(viewportPageObject.panes).toHaveCount(PROSTATE_PANES.length);
       for (const [index, pane] of panes.entries()) {
-        await expect(pane.overlayText.topLeft.seriesDescription).toHaveText(PROSTATE_PANES[index]);
-        // The data overlay menu is only offered on the active pane.
-        await pane.pane.click();
-        await expect(pane.pane).toHaveAttribute('data-is-active', 'true');
-        const { dataOverlay } = pane.overlayMenu;
-        await dataOverlay.toggle();
-        await expect(dataOverlay.overlaySegmentationRows).toHaveText(PROSTATE_OVERLAY_LABELS);
-        await dataOverlay.toggle();
-        await expect(dataOverlay.menu).not.toBeVisible();
+        await expectPaneSeriesAndOverlays(pane, PROSTATE_PANES[index]);
       }
     };
 
-    await expect(t2.pane).toHaveAttribute('data-is-active', 'true');
+    await expectViewportActive(t2.pane);
     await leftPanelPageObject.loadSeriesByDescription(T2_SEG_DESCRIPTION);
     await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
     // Accepting while the SEG is still loading can leave a viewport in another orientation.
@@ -269,7 +276,7 @@ test.describe('prostate MR grid of four series', () => {
 
     // Paint a stroke into a new segmentation on the ADC pane and recolor it.
     await adc.pane.click();
-    await expect(adc.pane).toHaveAttribute('data-is-active', 'true');
+    await expectViewportActive(adc.pane);
     await panel.moreMenu.createNewSegmentation();
     await expect(panel.rows).toHaveCount(1);
     await labelMapSegmentationPanel.tools.brush.click();
@@ -284,19 +291,32 @@ test.describe('prostate MR grid of four series', () => {
 
     // A double-click with the brush armed would paint; Window/Level leaves the image unchanged.
     await mainToolbarPageObject.windowLevel.click();
-    await expectEachPaneUnchanged();
-    // Each pane carries cine controls with text, so compare canvas digests, not screenshots.
-    const t2Digest = await t2.getCanvasDigest();
-    const adcDigest = await adc.getCanvasDigest();
+    await expectEachPaneSeriesAndOverlays();
+    const expectLabelmapsAsPainted = async () => {
+      await checkForViewportScreenshot({
+        page,
+        viewport: t2,
+        screenshotPath: screenShotPaths.segLayoutRenderPersistence.t2PaneWithLabelmap,
+        normalizedClip: BELOW_CINE_CONTROLS,
+        maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
+      });
+      await checkForViewportScreenshot({
+        page,
+        viewport: adc,
+        screenshotPath: screenShotPaths.segLayoutRenderPersistence.adcPaneWithStroke,
+        normalizedClip: BELOW_CINE_CONTROLS,
+        maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
+      });
+    };
+    await expectLabelmapsAsPainted();
 
     await waitForRenderCycleForAction(page, () => t2.pane.dblclick(), RECREATE_VIEWPORTS_WAIT);
     await expect(viewportPageObject.panes).toHaveCount(1);
-    await expect(t2.overlayText.topLeft.seriesDescription).toHaveText(PROSTATE_PANES[T2_PANE]);
+    await expectPaneSeriesAndOverlays(t2, PROSTATE_PANES[T2_PANE]);
 
     await waitForRenderCycleForAction(page, () => t2.pane.dblclick(), RECREATE_VIEWPORTS_WAIT);
-    await expectEachPaneUnchanged();
-    await expect.poll(() => t2.getCanvasDigest()).toBe(t2Digest);
-    await expect.poll(() => adc.getCanvasDigest()).toBe(adcDigest);
+    await expectEachPaneSeriesAndOverlays();
+    await expectLabelmapsAsPainted();
     await expect(panel.rows).toHaveCount(1);
     await expect(adcSegment.rowDataColorHex).toHaveCSS('background-color', NEW_ADC_SEGMENT_CSS_RGB);
   });

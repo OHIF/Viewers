@@ -168,6 +168,8 @@ const screenShotPaths = {
     oneUpWithContour: 'segLayoutRenderPersistence-oneUpWithContour.png',
     twoByTwoFromOneUp: 'segLayoutRenderPersistence-twoByTwoFromOneUp.png',
     leftPaneAfterColorChange: 'segLayoutRenderPersistence-leftPaneAfterColorChange.png',
+    t2PaneWithLabelmap: 'segLayoutRenderPersistence-t2PaneWithLabelmap.png',
+    adcPaneWithStroke: 'segLayoutRenderPersistence-adcPaneWithStroke.png',
   },
   segMPRDisplay: {
     mprAfterHydration: 'segMPRDisplay-mprAfterHydration.png',
