@@ -65,6 +65,9 @@
     {
       "packageName": "@ohif/extension-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@niivue/nv-ohif"
     }
   ],
   "modes": [
@@ -99,6 +102,9 @@
     {
       "packageName": "@ohif/mode-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/mode-niivue"
     }
   ],
   "public": [
