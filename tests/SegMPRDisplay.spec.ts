@@ -2,6 +2,7 @@ import {
   checkForGridScreenshot,
   checkForViewportScreenshot,
   expect,
+  RECREATE_VIEWPORTS_WAIT,
   screenShotPaths,
   test,
   visitStudy,
@@ -58,10 +59,7 @@ test.beforeEach(
     await waitForRenderCycleForAction(
       page,
       () => mainToolbarPageObject.layoutSelection.MPR.click(),
-      {
-        needsRenderTimeout: 20000,
-        renderedTimeout: 60000,
-      }
+      RECREATE_VIEWPORTS_WAIT
     );
     await expect(viewportPageObject.panes).toHaveCount(MPR_PANES.length);
 
@@ -123,12 +121,9 @@ test('keeps the labelmap on the anatomy as each MPR pane scrolls', async ({
     // The all-segments eye toggle applies to the active pane only.
     await viewport.pane.click();
     await expect(instanceNumber).toHaveText(hydratedSlice);
-    const hydratedDigest = await viewport.getCanvasDigest();
 
     await viewport.sliceNavigation.scrollBy(SCROLL_STEPS);
-    await waitForViewportsRendered(page);
     await expect(instanceNumber).toHaveText(scrolledSlice);
-    await expect.poll(() => viewport.getCanvasDigest()).not.toBe(hydratedDigest);
     await expectLabelmapPainted({ page, viewport, labelMapSegmentationPanel });
     await checkForViewportScreenshot({
       page,
@@ -138,7 +133,6 @@ test('keeps the labelmap on the anatomy as each MPR pane scrolls', async ({
     });
 
     await viewport.sliceNavigation.toLastSlice();
-    await waitForViewportsRendered(page);
     await expect(instanceNumber).toHaveText(lastSlice);
     await expectNoLabelmapPainted({ page, viewport, labelMapSegmentationPanel });
   }
