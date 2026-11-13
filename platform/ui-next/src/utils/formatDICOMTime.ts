@@ -20,7 +20,7 @@ export interface FormatDICOMTimeOptions {
 /**
  * Formats a DICOM time.
  *
- * @param time - Raw time string (e.g. `HH`, `HHmm`, `HHmmss`, `HHmmss.SSS`).
+ * @param time - Raw DICOM TM string (e.g. `HH`, `HHmm`, `HHmmss`, or `HHmmss.FFFFFF` with 1–6 fractional digits).
  * @param options - See {@link FormatDICOMTimeOptions}.
  * @returns The formatted time, or the resolved invalid fallback.
  *
@@ -36,7 +36,14 @@ export function formatDICOMTime(time: string, options: FormatDICOMTimeOptions = 
 
   const format = strFormat ?? i18n.t('Common:localTimeFormat', fallbackFormat);
   const locale = i18n.language || 'en';
-  const parsed = moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS'], true);
+
+  // DICOM TM allows at most 6 fractional digits; reject longer fractions
+  // before Moment's greedy SSSSSS parser silently accepts them.
+  if (/\.\d{7,}/.test(time)) {
+    return invalidFallback ?? '';
+  }
+
+  const parsed = moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS', 'HHmmss.SSSSSS'], true);
 
   // Unlike formatDICOMDate, there is no lenient reparse: a no-format
   // moment(time) treats the string as a date (e.g. "1430" -> year 1430), so an
