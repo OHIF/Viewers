@@ -2,3 +2,30 @@
   background: transparent !important;
   box-shadow: none !important;
 }
+
+.color-picker-hex-field {
+  margin: 0 16px 12px;
+  font-family: Menlo, monospace;
+}
+
+.color-picker-hex-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 21px;
+  border: none;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #dadada;
+  color: #333;
+  font-size: 11px;
+  text-align: center;
+}
+
+.color-picker-hex-label {
+  display: block;
+  margin-top: 12px;
+  color: #969696;
+  font-size: 11px;
+  line-height: 11px;
+  text-align: center;
+  text-transform: uppercase;
+}
