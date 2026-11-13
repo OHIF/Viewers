@@ -32,8 +32,8 @@
 //    computes it once for each series.
 //
 // Series that this module changes: only series that mix a regular lattice with
-// other images. A fully regular series, and a series with no lattice, keep the
-// default display sets.
+// other images. A fully regular series, a regular series with localizer images
+// only, and a series with no lattice keep the default display sets.
 //
 // Load it with `?customization=split/regularVolume`.
 {
@@ -45,7 +45,7 @@
           "regularVolume": {
             "description": "Volume series with some irregular images: the regular slices become one volume display set.",
             "context": {
-              "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
+              "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > series.instances.count(isLocalizer) && planeGeometry.complete",
               "isRegularSlice": "sliceIndex != null"
             },
             "matches": {
@@ -63,7 +63,7 @@
           "irregularImages": {
             "description": "Off until the rule order names it: the images that regularVolume leaves become one stack.",
             "context": {
-              "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
+              "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > series.instances.count(isLocalizer) && planeGeometry.complete",
               "isRegularSlice": "sliceIndex != null"
             },
             "matches": {

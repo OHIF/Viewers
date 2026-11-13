@@ -176,7 +176,7 @@ display sets of one series for each module. `SP-EXM-2` is an optional file of
 ```jsonc
 "regularVolume": {
   "context": {
-    "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > 0 && planeGeometry.complete",
+    "mixesIrregular": "planeGeometry.regularCount >= 3 && planeGeometry.irregularCount > series.instances.count(isLocalizer) && planeGeometry.complete",
     "isRegularSlice": "sliceIndex != null"
   },
   "matches": {
@@ -282,7 +282,7 @@ and the series keeps the default `volume3d` display set (`SP-FIX-6`).
 | `SP-CTX-3` | `displaySetRules.test.ts`: "lets a rule context replace an argument for that rule only, also inside the global entries" |
 | `SP-CTX-4` | `displaySetRules.test.ts`: "runs min, max, sum and count over the series in a series entry" |
 | `SP-CTX-5` | `displaySetRules.test.ts`: "rejects a loop of entries, an unknown group field, and a group replaced by a value" |
-| `SP-CTX-7` | `seriesContext.test.ts`: "splits the lattice from the other images, and labels each display set from the whole series" |
+| `SP-CTX-7` | `seriesContext.test.ts` of `@cornerstonejs/metadata`: "splits the lattice from the other images, and labels each display set from its own instances", and "series functions in the series and in one display set" |
 | `SP-SFN-2`, `SP-SFN-3` | `seriesContext.test.ts`: the `planeGeometry` tests, one of them with the instances in reverse order |
 | `SP-SFN-4` | `seriesContext.test.ts`: the `timeClusters` test |
 | `SP-EXM-1` | `urlSplitModules.test.ts`: the `regularVolume` tests |

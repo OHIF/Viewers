@@ -32,7 +32,10 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       return dynamic4DDisplaySet;
     },
     getComputedDisplaySets: () => {
-      return displaySetService.getDisplaySetsBy(displaySet => displaySet.isDerived);
+      // The computed display set is in the store, not in the active list.
+      return [...displaySetService.getDisplaySetCache().values()].filter(
+        displaySet => displaySet.isDerived
+      );
     },
     exportTimeReportCSV: ({ segmentations, summaryStats }) => {
       const dynamic4DDisplaySet = actions.getDynamic4DDisplaySet();
@@ -206,8 +209,9 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       const computedDisplaySet = displaySet;
 
       const { displaySetInstanceUID } = computedDisplaySet;
+      // Store only, as on master: the computed volume is not a new series.
       if (!displaySetService.getDisplaySetByUID(displaySetInstanceUID)) {
-        displaySetService.addDisplaySets(computedDisplaySet);
+        displaySetService._addDisplaySetsToCache([computedDisplaySet]);
       }
 
       // Get all viewports and their corresponding indices
@@ -257,7 +261,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
 
       const { displaySetInstanceUID } = dynamicDisplaySet;
       if (!displaySetService.getDisplaySetByUID(displaySetInstanceUID)) {
-        displaySetService.addDisplaySets(dynamicDisplaySet);
+        displaySetService._addDisplaySetsToCache([dynamicDisplaySet]);
       }
 
       // Get all viewports and their corresponding indices

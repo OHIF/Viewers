@@ -99,7 +99,7 @@ describe('makeDisplaySetFromInstanceGroup', () => {
     });
   });
 
-  // DS-IMPL-OHIF-4: the image part runs for no handler, or the `image` handler.
+  // SP-PIPE-17: the image part runs for no handler, or the `image` handler.
   it.each([
     [undefined, true],
     ['image', true],

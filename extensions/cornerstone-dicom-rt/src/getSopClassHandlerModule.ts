@@ -248,9 +248,7 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
         return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
       },
       handlerNames: ['rtStructureSet'],
-      extendDisplaySet: (displaySet, options) => {
-        _extendDisplaySet(displaySet, options);
-      },
+      extendDisplaySet: (displaySet, options) => _extendDisplaySet(displaySet, options),
     },
   ];
 }

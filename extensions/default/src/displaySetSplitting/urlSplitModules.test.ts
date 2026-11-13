@@ -149,7 +149,7 @@ describe('split URL modules', () => {
     counter = 0;
   });
 
-  // DS-USER-PARITY-1, DS-USER-PARITY-2 (DS-IMPL-OHIF-8).
+  // SP-SRV-3: the same rules without OHIF code.
   it.each(MODULE_NAMES)(
     '%s gives a server and OHIF the same split rules, with no OHIF code on the server',
     async name => {

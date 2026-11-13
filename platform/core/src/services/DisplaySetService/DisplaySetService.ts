@@ -26,8 +26,17 @@ import type {
  */
 const compiledSplitRulesCache = new WeakMap<
   object,
-  { order: unknown; context: unknown; compiled: CompiledSplitRules; source: object }
+  {
+    registry: unknown;
+    order: unknown;
+    context: unknown;
+    compiled: CompiledSplitRules;
+    source: object;
+  }
 >();
+
+/** The cache key of a `displaySetRules` value that is not an object. */
+const INVALID_REGISTRY_KEY = {};
 
 /** The handler name of the unsupported display set. */
 const UNSUPPORTED_HANDLER_NAME = 'unsupported';
@@ -49,6 +58,7 @@ type SopClassHandler = {
    * Adds the handler fields to a display set that a split rule made, in place
    * and synchronously. `addedInstances` is undefined at creation, and lists
    * the new instances (already in `displaySet.instances`) at an update.
+   * `false` at creation means: the handler cannot show it, so drop it.
    */
   extendDisplaySet?: (
     displaySet: DisplaySet,
@@ -57,7 +67,7 @@ type SopClassHandler = {
       servicesManager?: AppTypes.ServicesManager;
       extensionManager: ExtensionManager;
     }
-  ) => void;
+  ) => void | boolean;
 };
 
 /** The title of the notification that reports a split rule error. */
@@ -133,6 +143,11 @@ export type UseMetadataDisplaySetCustomization = {
    * claims goes to the SOP class handlers.
    */
   displaySetRuleOrder?: string[];
+  /**
+   * Set by `CustomizationService`: the URL modules that changed this
+   * customization and did not apply. Not empty means: create no display sets.
+   */
+  moduleErrors?: string[];
   /**
    * Named series functions that a context group references with
    * `{ function: '<name>' }`, in addition to the built-in `planeGeometry` and
@@ -364,17 +379,22 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
-   * Step 3 of a split-rule display set (DS-IMPL-OHIF-4): the `extendDisplaySet`
+   * Step 3 of a split-rule display set (SP-PIPE-17): the `extendDisplaySet`
    * of the handler that serves the display set's `handler` name. A display set
    * with no `handler` is an image display set: it gets the step of the `image`
    * handler when the mode declares one, and no step otherwise.
+   *
+   * @returns false when the handler rejects the display set.
    */
-  private _extendWithHandler(displaySet: DisplaySet, addedInstances?: InstanceMetadata[]): void {
+  private _extendWithHandler(
+    displaySet: DisplaySet,
+    addedInstances?: InstanceMetadata[]
+  ): void | boolean {
     const name = (displaySet as { handler?: string }).handler;
     const handler = name
       ? this._getHandlerForName(name)
       : this.handlersByName.get(IMAGE_HANDLER_NAME);
-    handler?.extendDisplaySet?.(displaySet, {
+    return handler?.extendDisplaySet?.(displaySet, {
       addedInstances,
       servicesManager: this.servicesManager,
       extensionManager: this.extensionManager,
@@ -716,13 +736,22 @@ export default class DisplaySetService extends PubSubService {
       'useMetadataDisplaySet'
     ) as UseMetadataDisplaySetCustomization | undefined;
     const { displaySetRules: registry, displaySetRuleOrder: order, ...rest } = config ?? {};
-    if (!config?.enabled || !registry || typeof registry !== 'object') {
+    if (!config?.enabled) {
       return { ...rest, splitRules: undefined };
     }
+    // A registry that is not an object is a compile error, not the old split (SP-SAFE-7).
+    const key = registry && typeof registry === 'object' ? registry : INVALID_REGISTRY_KEY;
     const context = this._applyMetadataContext();
-    let cached = compiledSplitRulesCache.get(registry);
-    if (!cached || cached.order !== order || cached.context !== context) {
+    let cached = compiledSplitRulesCache.get(key);
+    if (
+      !cached ||
+      cached.registry !== registry ||
+      cached.order !== order ||
+      cached.context !== context
+    ) {
+      const sameSource = cached?.registry === registry && cached?.order === order;
       cached = {
+        registry,
         order,
         context,
         compiled: compileSplitRules(registry, order, {
@@ -731,15 +760,16 @@ export default class DisplaySetService extends PubSubService {
           sortFunctions: config.sortFunctions,
         }),
         // A new context compiles again, but it is the same rule source.
-        source: cached?.order === order ? cached.source : { registry, order },
+        source: sameSource ? cached.source : { registry, order },
       };
-      compiledSplitRulesCache.set(registry, cached);
+      compiledSplitRulesCache.set(key, cached);
     }
+    const { moduleErrors = [], ...settings } = rest;
     return {
-      ...rest,
+      ...settings,
       splitRules: cached.compiled.rules,
       splitRulesSource: cached.source,
-      compileErrors: cached.compiled.errors,
+      compileErrors: [...cached.compiled.errors, ...moduleErrors.map(message => ({ message }))],
     };
   }
 
@@ -1043,7 +1073,10 @@ export default class DisplaySetService extends PubSubService {
           return;
         }
         onStep(group.matchedRule.id, 'extendDisplaySet');
-        this._extendWithHandler(home);
+        if (this._extendWithHandler(home) === false) {
+          // The handler cannot show it, as its legacy path returns no display set.
+          return;
+        }
         // applying hp-defined viewport settings to the displaysets
         Object.keys(settings).forEach(key => {
           home[key] = settings[key];

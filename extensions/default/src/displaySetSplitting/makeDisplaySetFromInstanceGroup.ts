@@ -135,7 +135,7 @@ function copyRuleDisplaySet(displaySet, ruleDisplaySet: object, isImage: boolean
  * display set. This is the default `createDisplaySetFromGroup` of the
  * `useMetadataDisplaySet` customization.
  *
- * The build has three steps (DS-IMPL-OHIF-4); this function runs the first two:
+ * The build has three steps (SP-PIPE-17); this function runs the first two:
  *
  * 1. CS3D `createDisplaySetFromGroup` builds the display set of the group,
  *    the same one that a server builds.

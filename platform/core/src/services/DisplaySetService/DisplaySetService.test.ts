@@ -581,6 +581,29 @@ describe('DisplaySetService', () => {
           expect(notices()).toHaveLength(2);
         });
 
+        it('treats a displaySetRules value that is not an object as an error, not as the rules off', () => {
+          setCustomization({
+            enabled: true,
+            ...testSplitRules,
+            displaySetRules: null,
+            createDisplaySetFromGroup,
+          });
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
+          expect(legacyHandlersCalled()).toBe(0);
+          expect(notices()).toEqual([expect.objectContaining({ type: 'error' })]);
+        });
+
+        it('creates no display sets when a split module did not apply', () => {
+          setCustomization({
+            enabled: true,
+            ...testSplitRules,
+            moduleErrors: ['customization "split/x" did not apply: no rule "missing"'],
+            createDisplaySetFromGroup,
+          });
+          expect(service.makeDisplaySets(makeMixedBValueSeries())).toBeUndefined();
+          expect(notices()[0].message).toContain('split/x');
+        });
+
         it('does not block the legacy path when the customization is disabled', () => {
           setCustomization({ enabled: false, ...brokenRules, createDisplaySetFromGroup });
           expect(service.makeDisplaySets(makeMixedBValueSeries())).toHaveLength(1);
@@ -770,7 +793,7 @@ describe('DisplaySetService', () => {
       });
     });
 
-    describe('handler names (DS-IMPL-OHIF-3 to -5)', () => {
+    describe('handler names (SP-PIPE-17)', () => {
       const handlerEntry = (handlerNames: string[]) => ({
         sopClassUids: [],
         getDisplaySetsFromSeries: jest.fn(() => []),
@@ -812,6 +835,14 @@ describe('DisplaySetService', () => {
           expect(handler.extendDisplaySet.mock.calls[0][1].addedInstances).toBeUndefined();
         }
       );
+
+      it('drops a new display set that its handler rejects, as the legacy path does', () => {
+        first.extendDisplaySet.mockReturnValue(false);
+        setCustomization(withHandler('segmentation'));
+        service.makeDisplaySets([makeInstance()]);
+        expect(first.extendDisplaySet).toHaveBeenCalledTimes(1);
+        expect(service.getActiveDisplaySets()).toEqual([]);
+      });
 
       it('gives the new instances to the handler at an update', () => {
         setCustomization(withHandler('segmentation'));

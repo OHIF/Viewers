@@ -262,9 +262,7 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
       sopClassUids,
       getDisplaySetsFromSeries,
       handlerNames: ['parametricMap'],
-      extendDisplaySet: (displaySet, options) => {
-        _extendDisplaySet(displaySet, options);
-      },
+      extendDisplaySet: (displaySet, options) => _extendDisplaySet(displaySet, options),
     },
   ];
 }

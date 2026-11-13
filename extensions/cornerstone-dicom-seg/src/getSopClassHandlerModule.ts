@@ -616,9 +616,7 @@ function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) 
       sopClassUids,
       getDisplaySetsFromSeries,
       handlerNames: ['segmentation'],
-      extendDisplaySet: (displaySet, options) => {
-        _extendDisplaySet(displaySet, options);
-      },
+      extendDisplaySet: (displaySet, options) => _extendDisplaySet(displaySet, options),
     },
   ];
 }

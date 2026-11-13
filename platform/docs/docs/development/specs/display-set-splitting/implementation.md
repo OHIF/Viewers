@@ -252,7 +252,10 @@ study, not even SEG or SR display sets, and shall show an error through the UI n
 service. *Satisfies `SP-SAFE-7`.*
 
 > `compileSplitRules` returns `{ rules, errors }`, and it does not drop a rule. A registry that is
-> not a keyed object, or an order that is not an array, is also an error. While `errors` is not
+> not a keyed object, or an order that is not an array, is also an error, while the customization
+> is on. A URL module that changes `useMetadataDisplaySet` and does not apply, for example a
+> `$spliceById` with an unknown id, is also an error: `CustomizationService` logs it, skips the
+> module, and records it in `useMetadataDisplaySet.moduleErrors`. While `errors` is not
 > empty, `makeDisplaySetForInstances` returns no display sets, and does not give the instances to
 > the SOP class handlers. The service shows one error notification that stays on screen until the
 > user closes it. The block clears when the registry or the order changes, and on mode exit.
@@ -379,6 +382,8 @@ unsupported display set, and one console warning for each name. *Satisfies `SP-S
 > `createDisplaySetFromGroup`, the OHIF generic step (its image part only for no handler or the
 > `image` handler), and the handler's `extendDisplaySet(displaySet, { addedInstances,
 > servicesManager, extensionManager })`. With the rules off, the SOP class handlers run as before.
+> An `extendDisplaySet` that returns `false` for a new display set drops it, as the legacy path of
+> that handler returns no display set, for example a SEG without `ReferencedSeriesSequence`.
 
 ### 2.3 The expression language — `SP-EXPR`
 

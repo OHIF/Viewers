@@ -214,7 +214,7 @@ The tests fall in two groups: "the API must do this" (`displaySetRules.test.ts` 
 | `SP-SUM-5` | `displaySetRules.test.ts`: "computes an entry one time for each series for all rules that do not replace it" |
 | `SP-SUM-10` | `displaySetRules.test.ts`: "lets a rule context replace an argument for that rule only, also inside the global entries" |
 | `SP-SUM-9` | `displaySetRules.test.ts`: "rejects a loop of entries, an unknown group field, and a group replaced by a value" |
-| `SP-SUM-7` | `seriesContext.test.ts`: "splits the lattice from the other images, and labels each display set from the whole series" |
+| `SP-SUM-7` | `seriesContext.test.ts` of `@cornerstonejs/metadata`: "splits the lattice from the other images, and labels each display set from its own instances", and "series functions in the series and in one display set" (the series value `seriesSpacing`) |
 | `SP-SUM-2` | `urlSplitModules.test.ts`: "regularVolume makes a volume of the regular slices, and leaves the extra slice", and "regularVolume keeps a fully regular series as the default volume" |
 | `SP-SUM-3` | `optionalRules.test.ts` of `@cornerstonejs/metadata`: "volumePositionOrder: the slices of a volume in position order, not InstanceNumber order". The optional file `volumePositionOrder` replaces the removed OHIF module `split/volumeProjectionOrder`. |
 | `SP-SUM-4` | `urlSplitModules.test.ts`: "usTimeClusters makes one display set for each sweep, in time order" |
