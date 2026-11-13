@@ -10,6 +10,16 @@ import {
   MergeMap,
 } from './types';
 
+/**
+ * Global map to track which data source each series came from.
+ * Key: SeriesInstanceUID, Value: sourceName
+ */
+const seriesSourceMap = new Map<string, string>();
+
+export const getSeriesSource = (seriesUID: string): string | undefined => {
+  return seriesSourceMap.get(seriesUID);
+};
+
 export const mergeMap: MergeMap = {
   'query.studies.search': {
     mergeKey: 'studyInstanceUid',
@@ -23,6 +33,52 @@ export const mergeMap: MergeMap = {
         DicomMetadataStore.updateSeriesMetadata(series);
       });
       return series;
+    },
+  },
+  /**
+   * Tag instances from retrieve.series.metadata with RetrieveAETitle.
+   * This ensures getImageIdsForDisplaySet knows which data source to use
+   * when loading images, even if query.series.search was not called first.
+   */
+  'retrieve.series.metadata': {
+    tagFunc: (seriesResults, sourceName) => {
+      /**
+       * seriesResults is an array of { metadata, start } objects
+       * where metadata contains the DICOM attributes including SeriesInstanceUID
+       */
+      if (Array.isArray(seriesResults)) {
+        seriesResults.forEach(result => {
+          /** Tag the result object */
+          result.RetrieveAETitle = sourceName;
+
+          /** Also tag the metadata if it exists */
+          if (result.metadata) {
+            result.metadata.RetrieveAETitle = sourceName;
+          }
+
+          /**
+           * Store in global map for reliable lookup later.
+           * Use "last wins" strategy - if a series exists in multiple sources,
+           * the non-default source (e.g., GCP) takes precedence since the default
+           * source (IDC) may return metadata for series it can't actually serve.
+           */
+          const seriesUID = result.metadata?.SeriesInstanceUID || result.SeriesInstanceUID;
+          if (seriesUID) {
+            seriesSourceMap.set(seriesUID, sourceName);
+          }
+
+          /** Also try to update series metadata in DicomMetadataStore if it exists */
+          const studyUID = result.metadata?.StudyInstanceUID || result.StudyInstanceUID;
+          if (seriesUID && studyUID) {
+            const seriesMeta = DicomMetadataStore.getSeries(studyUID, seriesUID);
+            if (seriesMeta && !seriesMeta.RetrieveAETitle) {
+              seriesMeta.RetrieveAETitle = sourceName;
+              DicomMetadataStore.updateSeriesMetadata(seriesMeta);
+            }
+          }
+        });
+      }
+      return seriesResults;
     },
   },
 };
@@ -69,8 +125,20 @@ export const callForAllDataSourcesAsync = async ({
     }
   }
 
-  const data = await Promise.allSettled(promises);
-  const mergedData = data.map((data, i) => tagFunc(data.value, sourceNames[i]));
+  const settledResults = await Promise.allSettled(promises);
+
+  const mergedData = [];
+  for (let i = 0; i < settledResults.length; i++) {
+    const result = settledResults[i];
+    const sourceName = sourceNames[i];
+
+    if (result.status === 'fulfilled') {
+      const taggedData = tagFunc(result.value, sourceName);
+      mergedData.push(taggedData);
+    } else {
+      console.warn(`[MergeDataSource] ${path} from '${sourceName}' failed:`, result.reason);
+    }
+  }
 
   let results = [];
   if (mergeKey) {
@@ -155,14 +223,56 @@ export const callByRetrieveAETitle = ({
   defaultDataSourceName,
   extensionManager,
 }: CallByRetrieveAETitleOptions) => {
-  const [displaySet] = args;
-  const seriesMetadata = DicomMetadataStore.getSeries(
-    displaySet.StudyInstanceUID,
-    displaySet.SeriesInstanceUID
-  );
-  const [dataSource] = extensionManager.getDataSources(
-    seriesMetadata.RetrieveAETitle || defaultDataSourceName
-  );
+  const [firstArg] = args;
+
+  /**
+   * Determine the data source from the argument.
+   * Lookup order:
+   * 1. instance.RetrieveAETitle (if present)
+   * 2. seriesSourceMap (global map populated during retrieve.series.metadata)
+   * 3. DicomMetadataStore series metadata
+   * 4. defaultDataSourceName (fallback)
+   */
+  let retrieveAETitle: string | undefined;
+  let seriesUID: string | undefined;
+
+  if (firstArg?.instance) {
+    /** getImageIdsForInstance case: { instance, frame } */
+    const { instance } = firstArg;
+    seriesUID = instance.SeriesInstanceUID;
+    retrieveAETitle = instance.RetrieveAETitle;
+
+    if (!retrieveAETitle && seriesUID) {
+      retrieveAETitle = seriesSourceMap.get(seriesUID);
+    }
+
+    if (!retrieveAETitle) {
+      const seriesMetadata = DicomMetadataStore.getSeries(
+        instance.StudyInstanceUID,
+        seriesUID
+      );
+      retrieveAETitle = seriesMetadata?.RetrieveAETitle;
+    }
+  } else if (firstArg?.StudyInstanceUID) {
+    /** getImageIdsForDisplaySet case: displaySet object */
+    seriesUID = firstArg.SeriesInstanceUID;
+
+    if (seriesUID) {
+      retrieveAETitle = seriesSourceMap.get(seriesUID);
+    }
+
+    if (!retrieveAETitle) {
+      const seriesMetadata = DicomMetadataStore.getSeries(
+        firstArg.StudyInstanceUID,
+        seriesUID
+      );
+      retrieveAETitle = seriesMetadata?.RetrieveAETitle;
+    }
+  }
+
+  const selectedSource = retrieveAETitle || defaultDataSourceName;
+
+  const [dataSource] = extensionManager.getDataSources(selectedSource);
   return dataSource[path](...args);
 };
 
@@ -271,6 +381,42 @@ function createMergeDataSourceApi(
             defaultDataSourceName,
           }),
       },
+      /**
+       * Route prefetchInstanceFrames to the correct data source based on the instance's series.
+       * This is critical for SEG loading where the entire Part 10 instance is prefetched.
+       */
+      prefetchInstanceFrames: (args: { instance: unknown; imageId: string }) => {
+        const instance = args?.instance as
+          | { SeriesInstanceUID?: string; RetrieveAETitle?: string; StudyInstanceUID?: string }
+          | undefined;
+
+        let retrieveAETitle: string | undefined;
+        const seriesUID = instance?.SeriesInstanceUID;
+
+        /** Check instance's RetrieveAETitle first */
+        if (instance?.RetrieveAETitle) {
+          retrieveAETitle = instance.RetrieveAETitle;
+        }
+
+        /** Fall back to seriesSourceMap */
+        if (!retrieveAETitle && seriesUID) {
+          retrieveAETitle = seriesSourceMap.get(seriesUID);
+        }
+
+        /** Fall back to DicomMetadataStore */
+        if (!retrieveAETitle && seriesUID && instance?.StudyInstanceUID) {
+          const seriesMetadata = DicomMetadataStore.getSeries(
+            instance.StudyInstanceUID,
+            seriesUID
+          );
+          retrieveAETitle = seriesMetadata?.RetrieveAETitle;
+        }
+
+        const selectedSource = retrieveAETitle || defaultDataSourceName;
+
+        const [dataSource] = extensionManager.getDataSources(selectedSource);
+        return dataSource?.retrieve?.prefetchInstanceFrames?.(args);
+      },
     },
     store: {
       dicom: (...args: unknown[]) =>
@@ -298,7 +444,7 @@ function createMergeDataSourceApi(
       }),
     getImageIdsForInstance: (...args: unknown[]) =>
       callByRetrieveAETitle({
-        path: 'getImageIdsForDisplaySet',
+        path: 'getImageIdsForInstance',
         args,
         defaultDataSourceName,
         extensionManager,
