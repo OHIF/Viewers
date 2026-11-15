@@ -146,13 +146,17 @@ function createConcatenationFrameRetriever(
     const frames: ArrayBuffer[] = [];
     await Promise.all(
       Array.from(requests, async ([part, request]) => {
+        // RetrieveFrames requests must contain sorted, unique frame numbers.
+        const frameNumbers = Array.from(request.keys()).sort((a, b) => a - b);
         const retrieved = await retrieveInstanceFrames({
           ...options,
           sopInstanceUID: part.SOPInstanceUID,
-          frameNumbers: request.frames,
+          frameNumbers,
         });
-        request.indices.forEach((index, i) => {
-          frames[index] = retrieved[i];
+        frameNumbers.forEach((frame, i) => {
+          request.get(frame).forEach(index => {
+            frames[index] = retrieved[i];
+          });
         });
       })
     );
@@ -160,14 +164,14 @@ function createConcatenationFrameRetriever(
   };
 }
 
-/** Translate logical frame numbers to local requests, retaining their positions. */
+/** Group output positions by part and local frame number to avoid duplicate requests. */
 function groupFrameRequests(parts: Instance[], options: FrameRequest) {
   const frameNumbers = toArray(
     typeof options.frameNumbers === 'string'
       ? options.frameNumbers.split(',')
       : options.frameNumbers
   ).map(Number);
-  const requests = new Map<Instance, { frames: number[]; indices: number[] }>();
+  const requests = new Map<Instance, Map<number, number[]>>();
   frameNumbers.forEach((frame, index) => {
     const part = parts.find(part => {
       const offset = Number(part.ConcatenationFrameOffsetNumber);
@@ -179,11 +183,14 @@ function groupFrameRequests(parts: Instance[], options: FrameRequest) {
       );
     }
     if (!requests.has(part)) {
-      requests.set(part, { frames: [], indices: [] });
+      requests.set(part, new Map());
     }
     const request = requests.get(part);
-    request.frames.push(frame - Number(part.ConcatenationFrameOffsetNumber));
-    request.indices.push(index);
+    const localFrame = frame - Number(part.ConcatenationFrameOffsetNumber);
+    if (!request.has(localFrame)) {
+      request.set(localFrame, []);
+    }
+    request.get(localFrame).push(index);
   });
   return requests;
 }

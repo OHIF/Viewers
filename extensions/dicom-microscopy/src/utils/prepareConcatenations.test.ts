@@ -75,32 +75,47 @@ describe('prepareConcatenations', () => {
     ]);
   });
 
-  it('batches requests by part while preserving response order, client binding and options', async () => {
-    const parts = createParts();
-    const retrieve = jest.fn(function (options) {
-      expect(this).toBe(client);
-      const part = parts.find(part => part.SOPInstanceUID === options.sopInstanceUID);
-      return Promise.resolve(
-        options.frameNumbers.map(
-          frame => Uint8Array.of(part.ConcatenationFrameOffsetNumber + frame).buffer
-        )
-      );
-    });
-    const client = { retrieveInstanceFrames: retrieve };
-    const { retrieveInstanceFrames } = prepareConcatenations(parts, client);
-    const options = {
-      ...request('6,1,4,3,6'),
-      mediaTypes: [{ mediaType: 'application/octet-stream' }],
-    };
+  it.each([
+    ['a comma-separated string', '6,3,5,1,6,4,3,5'],
+    ['an array', [6, '3', 5, '1', '6', 4, 3, '5']],
+  ])(
+    'batches sorted, unique frames from %s while preserving response order, client binding and options',
+    async (_description, frameNumbers: (number | string)[] | string) => {
+      const parts = createParts();
+      const retrieve = jest.fn(function (options) {
+        expect(this).toBe(client);
+        const part = parts.find(part => part.SOPInstanceUID === options.sopInstanceUID);
+        return Promise.resolve(
+          options.frameNumbers.map(
+            frame => Uint8Array.of(part.ConcatenationFrameOffsetNumber + frame).buffer
+          )
+        );
+      });
+      const client = { retrieveInstanceFrames: retrieve };
+      const { retrieveInstanceFrames } = prepareConcatenations(parts, client);
+      const options = {
+        ...request(frameNumbers),
+        mediaTypes: [{ mediaType: 'application/octet-stream' }],
+      };
 
-    const frames = await retrieveInstanceFrames(options);
+      const frames = await retrieveInstanceFrames(options);
 
-    expect(frames.map(frame => new Uint8Array(frame)[0])).toEqual([6, 1, 4, 3, 6]);
-    expect(retrieve).toHaveBeenCalledTimes(3);
-    expect(
-      retrieve.mock.calls.every(([partOptions]) => partOptions.mediaTypes === options.mediaTypes)
-    ).toBe(true);
-  });
+      expect(frames.map(frame => new Uint8Array(frame)[0])).toEqual([6, 3, 5, 1, 6, 4, 3, 5]);
+      expect(frames[4]).toBe(frames[0]);
+      expect(frames[6]).toBe(frames[1]);
+      expect(frames[7]).toBe(frames[2]);
+      expect(
+        retrieve.mock.calls.map(([options]) => [options.sopInstanceUID, options.frameNumbers])
+      ).toEqual([
+        ['1.2.3.13', [1]],
+        ['1.2.3.11', [1, 3]],
+        ['1.2.3.12', [1, 2]],
+      ]);
+      expect(
+        retrieve.mock.calls.every(([partOptions]) => partOptions.mediaTypes === options.mediaTypes)
+      ).toBe(true);
+    }
+  );
 
   it('leaves ordinary and TILED_SPARSE images and their client unchanged', () => {
     const parts = createParts().map(part => ({
