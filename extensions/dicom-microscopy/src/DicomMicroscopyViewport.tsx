@@ -4,7 +4,7 @@ import { cleanDenaturalizedDataset } from '@ohif/extension-default';
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
-import combineConcatenations from './utils/combineConcatenations';
+import prepareConcatenations from './utils/prepareConcatenations';
 import dcmjs from 'dcmjs';
 import { useSystem } from '@ohif/core';
 
@@ -98,7 +98,10 @@ const DicomMicroscopyViewport = React.memo(
           //   });
           // }
 
-          combineConcatenations(metadata, client).forEach(m => {
+          const { images, retrieveInstanceFrames } = prepareConcatenations(metadata, client);
+          client.retrieveInstanceFrames = retrieveInstanceFrames;
+
+          images.forEach(m => {
             // NOTE: depending on different data source, image.ImageType sometimes
             //    is a string, not a string array.
             m.ImageType = typeof m.ImageType === 'string' ? m.ImageType.split('\\') : m.ImageType;

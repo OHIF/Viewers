@@ -1,4 +1,4 @@
-import combineConcatenations from './combineConcatenations';
+import prepareConcatenations from './prepareConcatenations';
 
 // Synthetic two-row, three-column slide. Parts deliberately end within rows.
 const createParts = () =>
@@ -30,13 +30,14 @@ const request = (frameNumbers: (number | string)[] | string, sopInstanceUID = '1
   frameNumbers,
 });
 
-describe('combineConcatenations', () => {
-  it('coalesces unordered parts without changing their original metadata', () => {
+describe('prepareConcatenations', () => {
+  it('coalesces unordered parts without changing their original metadata or client', () => {
     const parts = createParts().reverse();
     const original = JSON.parse(JSON.stringify(parts));
-    const client = { retrieveInstanceFrames: jest.fn() };
+    const retrieve = jest.fn();
+    const client = { retrieveInstanceFrames: retrieve };
 
-    const images = combineConcatenations(parts, client);
+    const { images, retrieveInstanceFrames } = prepareConcatenations(parts, client);
 
     expect(images).toHaveLength(1);
     expect(images[0]).toMatchObject({
@@ -50,15 +51,17 @@ describe('combineConcatenations', () => {
     expect(images[0]).not.toHaveProperty('ConcatenationFrameOffsetNumber');
     expect(images[0]).not.toHaveProperty('InConcatenationNumber');
     expect(parts).toEqual(original);
+    expect(client.retrieveInstanceFrames).toBe(retrieve);
+    expect(retrieveInstanceFrames).not.toBe(retrieve);
   });
 
   it('routes boundary frames to their owning instances using one-based local numbers', async () => {
     const retrieve = jest.fn().mockResolvedValue([new ArrayBuffer(1)]);
     const client = { retrieveInstanceFrames: retrieve };
-    combineConcatenations(createParts(), client);
+    const { retrieveInstanceFrames } = prepareConcatenations(createParts(), client);
 
     for (const frame of [1, 3, 4, 5, 6]) {
-      await client.retrieveInstanceFrames(request([String(frame)]));
+      await retrieveInstanceFrames(request([String(frame)]));
     }
 
     expect(
@@ -84,13 +87,13 @@ describe('combineConcatenations', () => {
       );
     });
     const client = { retrieveInstanceFrames: retrieve };
-    combineConcatenations(parts, client);
+    const { retrieveInstanceFrames } = prepareConcatenations(parts, client);
     const options = {
       ...request('6,1,4,3,6'),
       mediaTypes: [{ mediaType: 'application/octet-stream' }],
     };
 
-    const frames = await client.retrieveInstanceFrames(options);
+    const frames = await retrieveInstanceFrames(options);
 
     expect(frames.map(frame => new Uint8Array(frame)[0])).toEqual([6, 1, 4, 3, 6]);
     expect(retrieve).toHaveBeenCalledTimes(3);
@@ -109,17 +112,20 @@ describe('combineConcatenations', () => {
     const retrieve = jest.fn();
     const client = { retrieveInstanceFrames: retrieve };
 
-    expect(combineConcatenations(images, client)).toBe(images);
+    const prepared = prepareConcatenations(images, client);
+
+    expect(prepared.images).toBe(images);
+    expect(prepared.retrieveInstanceFrames).toBe(retrieve);
     expect(client.retrieveInstanceFrames).toBe(retrieve);
   });
 
   it('passes requests for stored instances through unchanged', async () => {
     const retrieve = jest.fn().mockResolvedValue([]);
     const client = { retrieveInstanceFrames: retrieve };
-    combineConcatenations(createParts(), client);
+    const { retrieveInstanceFrames } = prepareConcatenations(createParts(), client);
     const options = request([1], '1.2.3.12');
 
-    await client.retrieveInstanceFrames(options);
+    await retrieveInstanceFrames(options);
 
     expect(retrieve).toHaveBeenCalledWith(options);
     expect(retrieve.mock.calls[0][0]).toBe(options);
@@ -139,8 +145,11 @@ describe('combineConcatenations', () => {
       TotalPixelMatrixColumns: 384,
     }));
 
-    const images = combineConcatenations([...lowerResolution, ...createParts()], client);
-    await client.retrieveInstanceFrames(request([4], '1.2.3.20'));
+    const { images, retrieveInstanceFrames } = prepareConcatenations(
+      [...lowerResolution, ...createParts()],
+      client
+    );
+    await retrieveInstanceFrames(request([4], '1.2.3.20'));
 
     expect(images).toHaveLength(2);
     expect(retrieve).toHaveBeenCalledWith(request([1], '1.2.3.12.1'));
@@ -160,7 +169,9 @@ describe('combineConcatenations', () => {
       ),
     }));
 
-    const [image] = combineConcatenations(parts, { retrieveInstanceFrames: jest.fn() });
+    const {
+      images: [image],
+    } = prepareConcatenations(parts, { retrieveInstanceFrames: jest.fn() });
 
     expect(image.PerFrameFunctionalGroupsSequence).toEqual(
       parts.flatMap(part => part.PerFrameFunctionalGroupsSequence)
@@ -179,7 +190,7 @@ describe('combineConcatenations', () => {
     const client = { retrieveInstanceFrames: retrieve };
 
     expect(() =>
-      combineConcatenations(
+      prepareConcatenations(
         indices.map(index => parts[index]),
         client
       )
@@ -190,9 +201,9 @@ describe('combineConcatenations', () => {
   it('rejects a frame outside the concatenation without making a server request', async () => {
     const retrieve = jest.fn();
     const client = { retrieveInstanceFrames: retrieve };
-    combineConcatenations(createParts(), client);
+    const { retrieveInstanceFrames } = prepareConcatenations(createParts(), client);
 
-    await expect(client.retrieveInstanceFrames(request([7]))).rejects.toThrow(
+    await expect(retrieveInstanceFrames(request([7]))).rejects.toThrow(
       'Frame 7 is outside microscopy concatenation'
     );
     expect(retrieve).not.toHaveBeenCalled();
