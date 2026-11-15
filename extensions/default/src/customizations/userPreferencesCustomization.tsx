@@ -3,10 +3,37 @@ import { useSystem, hotkeys as hotkeysModule } from '@ohif/core';
 import { UserPreferencesModal, FooterAction } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 import i18n from '@ohif/i18n';
+import {
+  GPU_SETTINGS_PRESET_CUSTOMIZATION_ID,
+  USER_SELECTABLE_GPU_SETTINGS_PRESETS,
+  isUserSelectableGpuSettingsPreset,
+  writeUserGpuSettingsPreset,
+} from '@ohif/extension-cornerstone';
 
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@ohif/ui-next';
 
 const { availableLanguages, defaultLanguage, currentLanguage: currentLanguageFn } = i18n;
+
+/** Select value for "use deployer / CS3D default" (maps to customization `null`). */
+const GPU_PRESET_DEFAULT_VALUE = 'default';
+
+const GPU_PRESET_OPTIONS = [
+  { value: GPU_PRESET_DEFAULT_VALUE, labelKey: 'GpuPresetDefault' },
+  ...USER_SELECTABLE_GPU_SETTINGS_PRESETS.map(value => ({
+    value,
+    labelKey: `GpuPreset.${value}`,
+  })),
+];
+
+function resolveGpuPresetSelectValue(customizationService: {
+  getValue: (id: string) => unknown;
+}): string {
+  const current = customizationService?.getValue?.(GPU_SETTINGS_PRESET_CUSTOMIZATION_ID) ?? null;
+  if (typeof current === 'string' && current.length > 0) {
+    return current;
+  }
+  return GPU_PRESET_DEFAULT_VALUE;
+}
 
 interface HotkeyDefinition {
   keys: string;
@@ -95,6 +122,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const { hotkeysManager, servicesManager } = useSystem();
   const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
   const toolGroupService = (servicesManager as any)?.services?.toolGroupService;
+  const customizationService = (servicesManager as any)?.services?.customizationService;
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
@@ -127,11 +155,13 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     'mpr',
     'Crosshairs'
   );
+  const initialGpuPreset = resolveGpuPresetSelectValue(customizationService);
 
   const [state, setState] = useState({
     hotkeyDefinitions: initialHotkeyDefinitions,
     languageValue: currentLanguage.value,
     crosshairModifier: initialCrosshairModifier,
+    gpuSettingsPreset: initialGpuPreset,
   });
 
   const onLanguageChangeHandler = (value: string) => {
@@ -157,6 +187,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
       languageValue: defaultLanguage.value,
       hotkeyDefinitions: resolvedHotkeyDefaults,
       crosshairModifier: getModifierFromBindings(defaultCrosshairBindings, 1),
+      gpuSettingsPreset: GPU_PRESET_DEFAULT_VALUE,
     }));
 
     hotkeysManager.restoreDefaultBindings();
@@ -234,6 +265,38 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
           </Select>
         </div>
 
+        {/* GPU / Rendering Section */}
+        <div className="mb-3 flex flex-col gap-2">
+          <div className="flex items-center space-x-14">
+            <UserPreferencesModal.SubHeading>{t('GpuSettings')}</UserPreferencesModal.SubHeading>
+            <Select
+              value={state.gpuSettingsPreset}
+              onValueChange={value => setState(s => ({ ...s, gpuSettingsPreset: value }))}
+            >
+              <SelectTrigger
+                className="w-60"
+                aria-label={t('GpuSettings')}
+              >
+                <SelectValue placeholder={t('SelectGpuPreset')} />
+              </SelectTrigger>
+              <SelectContent>
+                {GPU_PRESET_OPTIONS.map(option => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {t(option.labelKey)}
+                  </SelectItem>
+                ))}
+                {!GPU_PRESET_OPTIONS.some(option => option.value === state.gpuSettingsPreset) && (
+                  <SelectItem value={state.gpuSettingsPreset}>{state.gpuSettingsPreset}</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-muted-foreground max-w-xl text-sm">{t('GpuSettingsHelp')}</p>
+        </div>
+
         <UserPreferencesModal.SubHeading>{t('Hotkeys')}</UserPreferencesModal.SubHeading>
         <UserPreferencesModal.HotkeysGrid>
           {Object.entries(state.hotkeyDefinitions).map(([id, definition]) => (
@@ -304,12 +367,25 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
           </FooterAction.Secondary>
           <FooterAction.Primary
             onClick={() => {
-              if (state.languageValue !== currentLanguage.value) {
+              const languageChanged = state.languageValue !== currentLanguage.value;
+              const nextGpuPreset =
+                state.gpuSettingsPreset === GPU_PRESET_DEFAULT_VALUE
+                  ? null
+                  : isUserSelectableGpuSettingsPreset(state.gpuSettingsPreset)
+                    ? state.gpuSettingsPreset
+                    : // Keep a deployer-only preset (for example high-texture-4096) if still selected.
+                      typeof state.gpuSettingsPreset === 'string' &&
+                        state.gpuSettingsPreset.length > 0
+                      ? state.gpuSettingsPreset
+                      : null;
+              const currentGpuPreset =
+                customizationService?.getValue?.(GPU_SETTINGS_PRESET_CUSTOMIZATION_ID) ?? null;
+              const gpuPresetChanged = nextGpuPreset !== currentGpuPreset;
+
+              if (languageChanged) {
                 i18n.changeLanguage(state.languageValue);
-                // Force page reload after language change to ensure all translations are applied
-                window.location.reload();
-                return; // Exit early since we're reloading
               }
+
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
 
               if (toolGroupService && state.crosshairModifier != null) {
@@ -321,6 +397,22 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
                   replaceExisting: true,
                 });
                 toolGroupService.persistToolBindings('mpr', 'Crosshairs', bindings);
+              }
+
+              if (gpuPresetChanged) {
+                writeUserGpuSettingsPreset(
+                  isUserSelectableGpuSettingsPreset(nextGpuPreset) ? nextGpuPreset : null
+                );
+                customizationService?.setCustomizations?.(
+                  { [GPU_SETTINGS_PRESET_CUSTOMIZATION_ID]: nextGpuPreset },
+                  customizationService.Scope.Global
+                );
+              }
+
+              // Reload so volumes and translations pick up GPU / language changes.
+              if (languageChanged || gpuPresetChanged) {
+                window.location.reload();
+                return;
               }
 
               hotkeysModule.stopRecord();
