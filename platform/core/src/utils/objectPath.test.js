@@ -106,57 +106,19 @@ describe('objectPath', () => {
       delete Series.prototype.polluted;
     });
 
-    test('should return false and leave Array.prototype untouched when __proto__ follows an array', () => {
-      const searchObject = { list: [] };
-      const output = objectPath.set(searchObject, 'list.__proto__.polluted', 'MOCK_VALUE');
-      expect(output).toBe(false);
-      expect([].polluted).toBeUndefined();
-    });
-
-    test('should return false and leave the class prototype untouched when __proto__ follows an instance', () => {
-      const output = objectPath.set(new Series(), '__proto__.polluted', 'MOCK_VALUE');
-      expect(output).toBe(false);
-      expect(new Series().polluted).toBeUndefined();
-    });
-
-    test('should return false and keep the prototype of the object when the path is __proto__', () => {
-      const searchObject = {};
-      const output = objectPath.set(searchObject, '__proto__', { polluted: 'MOCK_VALUE' });
-      expect(output).toBe(false);
-      expect(Object.getPrototypeOf(searchObject)).toBe(Object.prototype);
-    });
-
-    test('should return false and keep the constructor of the object when the path is constructor', () => {
-      const searchObject = {};
-      const output = objectPath.set(searchObject, 'constructor', 'MOCK_VALUE');
-      expect(output).toBe(false);
-      expect(searchObject.constructor).toBe(Object);
-    });
-
-    test('should return false and leave the object unchanged when __proto__ follows a missing property', () => {
-      const searchObject = {};
-      const output = objectPath.set(searchObject, 'missing.__proto__.polluted', 'MOCK_VALUE');
-      expect(output).toBe(false);
-      expect(searchObject).toEqual({});
-    });
-
-    test('should return false and leave the object unchanged when the path ends in constructor', () => {
-      const searchObject = {};
-      const output = objectPath.set(searchObject, 'missing.constructor', 'MOCK_VALUE');
-      expect(output).toBe(false);
-      expect(searchObject).toEqual({});
-    });
-
-    test('should return false and leave Object.prototype untouched when the path starts with __proto__', () => {
-      const output = objectPath.set({}, '__proto__.polluted', 'MOCK_VALUE');
-      expect(output).toBe(false);
-      expect({}.polluted).toBeUndefined();
-    });
-
-    test('should return false and leave Object.prototype untouched when the path goes through constructor.prototype', () => {
-      const output = objectPath.set({}, 'constructor.prototype.polluted', 'MOCK_VALUE');
-      expect(output).toBe(false);
-      expect({}.polluted).toBeUndefined();
+    // Each row: the target, the path, and a check that the target and the prototypes did not change.
+    test.each([
+      [{ list: [] }, 'list.__proto__.polluted', () => expect([].polluted).toBeUndefined()],
+      [new Series(), '__proto__.polluted', () => expect(new Series().polluted).toBeUndefined()],
+      [{}, '__proto__', o => expect(Object.getPrototypeOf(o)).toBe(Object.prototype)],
+      [{}, 'constructor', o => expect(o.constructor).toBe(Object)],
+      [{}, 'missing.__proto__.polluted', o => expect(o).toEqual({})],
+      [{}, 'missing.constructor', o => expect(o).toEqual({})],
+      [{}, '__proto__.polluted', () => expect({}.polluted).toBeUndefined()],
+      [{}, 'constructor.prototype.polluted', () => expect({}.polluted).toBeUndefined()],
+    ])('should return false and change nothing for %o with path %s', (target, path, check) => {
+      expect(objectPath.set(target, path, { polluted: 'MOCK_VALUE' })).toBe(false);
+      check(target);
     });
   });
 });
