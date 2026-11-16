@@ -34,6 +34,7 @@ jest.mock('@cornerstonejs/tools', () => ({
   },
   utilities: {
     segmentation: {
+      getOrCreateSegmentationVolume: jest.fn(),
       LabelmapMemo: { createLabelmapMemo: jest.fn() },
       // Every voxel that the region view offers passes the threshold.
       thresholdVolumeByRange: jest.fn((volume, _info, { segmentIndex }) =>
@@ -93,17 +94,16 @@ function setup() {
   (csTools.utilities.segmentation.LabelmapMemo.createLabelmapMemo as jest.Mock).mockReturnValue(
     memo
   );
-  (csTools.segmentation.state.getSegmentation as jest.Mock).mockReturnValue({
-    representationData: { Labelmap: { volumeId: 'seg-volume' } },
-  });
-  (cs.cache.getVolume as jest.Mock).mockReturnValue(labelmap);
+  (csTools.utilities.segmentation.getOrCreateSegmentationVolume as jest.Mock).mockReturnValue(
+    labelmap
+  );
   (cs.cache.getVolumeContainingImageId as jest.Mock).mockReturnValue({ volume: { id: 'v' } });
   mockGetAnnotationsSelected.mockImplementation(toolName =>
     toolName === 'RectangleROIStartEndThreshold' ? ['annotation-1'] : []
   );
 
   const displaySet = { displaySetInstanceUID: 'ds', imageIds: ['image-1'] };
-  const uiNotificationService = { show: jest.fn(), error: jest.fn() };
+  const uiNotificationService = { show: jest.fn() };
   const servicesManager = {
     services: {
       viewportGridService: { getState: () => ({ activeViewportId: 'v1' }) },
@@ -174,8 +174,11 @@ describe('thresholdSegmentationByRectangleROITool', () => {
 
     run();
 
-    expect(uiNotificationService.error).toHaveBeenCalledWith(
-      'ROI threshold does not support Length annotations'
+    expect(uiNotificationService.show).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'ROI threshold does not support Length annotations',
+        type: 'error',
+      })
     );
     expect(data).toEqual([1, 1, 0, 2, 1]);
     expect(mockHistoryPush).not.toHaveBeenCalled();

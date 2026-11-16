@@ -11,7 +11,7 @@ const CircleROIStartEndThreshold = {
    * @return {Measurement} Measurement instance
    */
   toMeasurement: (csToolsEventDetail, displaySetService, cornerstoneViewportService) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -28,8 +28,8 @@ const CircleROIStartEndThreshold = {
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
-      cornerstoneViewportService,
-      viewportId
+      displaySetService,
+      annotation
     );
 
     let displaySet;
@@ -40,7 +40,7 @@ const CircleROIStartEndThreshold = {
         SeriesInstanceUID
       );
     } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
     const { cachedStats } = data;

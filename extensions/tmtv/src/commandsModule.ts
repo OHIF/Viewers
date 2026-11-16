@@ -35,6 +35,10 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     segmentationService,
   } = servicesManager.services;
 
+  // UINotificationService has no error() method.
+  const notifyError = (message: string) =>
+    uiNotificationService.show({ title: 'Commands Module', message, type: 'error' });
+
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
@@ -137,7 +141,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       }
 
       if (!ptDisplaySet) {
-        uiNotificationService.error('No matching PT display set found');
+        notifyError('No matching PT display set found');
         return;
       }
 
@@ -174,9 +178,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
      * is not cleared, and its voxels do not count as owned by another segment.
      */
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config, segmentIndex }) => {
-      const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
-
-      const { representationData } = segmentation;
       const { displaySetMatchDetails: matchDetails } = hangingProtocolService.getMatchDetails();
       const ctDisplaySetMatch = matchDetails.get('ctDisplaySet');
       const ptDisplaySetMatch = matchDetails.get('ptDisplaySet');
@@ -188,11 +189,13 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         ptDisplaySetMatch.displaySetInstanceUID
       );
 
-      const { volumeId: segVolumeId } = representationData[
-        SegmentationRepresentations.Labelmap
-      ] as csTools.Types.LabelmapToolOperationDataVolume;
-
-      const labelmapVolume = cs.cache.getVolume(segVolumeId);
+      // A stack segmentation has no volumeId; this helper builds the volume on its images.
+      const labelmapVolume =
+        csTools.utilities.segmentation.getOrCreateSegmentationVolume(segmentationId);
+      if (!labelmapVolume) {
+        notifyError('The segmentation has no labelmap volume');
+        return;
+      }
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(ROI_THRESHOLD_MANUAL_TOOL_IDS);
 
@@ -210,7 +213,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const ptVolumeInfo = cs.cache.getVolumeContainingImageId(ptImageIds[0]);
 
       if (!ptVolumeInfo) {
-        uiNotificationService.error('No PT volume found');
+        notifyError('No PT volume found');
         return;
       }
 
@@ -218,7 +221,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const ctVolumeInfo = cs.cache.getVolumeContainingImageId(ctImageIds[0]);
 
       if (!ctVolumeInfo) {
-        uiNotificationService.error('No CT volume found');
+        notifyError('No CT volume found');
         return;
       }
 
@@ -232,12 +235,12 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           labelmapVolume
         );
       } catch (error) {
-        uiNotificationService.error(error.message);
+        notifyError(error.message);
         return;
       }
 
       const targetSegmentIndex = normalizeSegmentIndex(segmentIndex);
-      const { voxelManager } = labelmapVolume;
+      const voxelManager = labelmapVolume.voxelManager as cs.Types.IVoxelManager<number>;
       const isFree = (index: number) => {
         const value = voxelManager.getAtIndex(index);
         return value === 0 || value === targetSegmentIndex;

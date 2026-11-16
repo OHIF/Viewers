@@ -93,7 +93,7 @@ export function getROIThresholdRegions(annotations, volume: VolumeGeometry): ROI
  */
 export function forEachVoxelInRegions(
   regions: ROIThresholdRegion[],
-  volume: VolumeGeometry & { voxelManager: Types.IVoxelManager<number> },
+  volume: VolumeGeometry & { voxelManager?: Pick<Types.IVoxelManager<unknown>, 'toIndex'> },
   callback: (index: number, pointIJK: Types.Point3, pointLPS: Types.Point3) => void
 ): void {
   for (const region of regions) {
