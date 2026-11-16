@@ -288,7 +288,7 @@ test('standalone mode scaffold: TS entry, no CSS or Tailwind, no React toolchain
   const rspackConfig = fs.readFileSync(path.join(dir, '.rspack/rspack.prod.js'), 'utf8');
   assert.ok(rspackConfig.includes("'../src/index.ts'"));
   assert.ok(!rspackConfig.includes('CssExtractRspackPlugin'));
-  assert.ok(rspackConfig.includes("export: 'default'"));
+  assert.ok(rspackConfig.includes("library: { name: pkg.name, type: 'umd' },"));
 
   // Self-contained modeFactory: no i18next anywhere in src/.
   for (const file of listFiles(path.join(dir, 'src'))) {

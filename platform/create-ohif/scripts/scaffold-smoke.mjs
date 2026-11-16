@@ -129,9 +129,10 @@ try {
 
   step('UMD global contract (smoke-ext)', () => {
     const w = evaluateUmd(path.join(extDir, 'dist/index.umd.js'));
-    const ext = w['smoke-ext'];
-    // export: 'default' → the global IS the extension object, no .default.
-    assert.equal(typeof ext, 'object', 'window["smoke-ext"] assigned');
+    // The global holds the whole module; the extension object is its default.
+    assert.equal(typeof w['smoke-ext'], 'object', 'window["smoke-ext"] assigned');
+    const ext = w['smoke-ext'].default;
+    assert.equal(typeof ext, 'object', 'window["smoke-ext"].default is the extension');
     assert.equal(ext.id, 'smoke-ext', 'id === package name');
     assert.equal(typeof ext.getViewportModule, 'function');
     assert.equal(typeof ext.getPanelModule, 'function');
@@ -146,8 +147,9 @@ try {
 
   step('UMD global contract (smoke-mode)', () => {
     const w = evaluateUmd(path.join(modeDir, 'dist/index.umd.js'));
-    const mode = w['smoke-mode'];
-    assert.equal(typeof mode, 'object', 'window["smoke-mode"] assigned');
+    assert.equal(typeof w['smoke-mode'], 'object', 'window["smoke-mode"] assigned');
+    const mode = w['smoke-mode'].default;
+    assert.equal(typeof mode, 'object', 'window["smoke-mode"].default is the mode');
     assert.equal(mode.id, 'smoke-mode', 'id === package name');
     assert.equal(typeof mode.modeFactory, 'function');
     assert.ok(!w.React, 'react must be externalized, not bundled or leaked');

@@ -55,9 +55,9 @@ pnpm run build
 
 This runs `rspack build --config .rspack/rspack.prod.js` and emits
 `dist/index.umd.js` (extensions also emit `dist/index.css`). The build config
-sets `output.library = { name: pkg.name, type: 'umd', export: 'default' }`, so
-the UMD global is `window['@acme/extension-foo']` and it resolves to the
-extension object itself (no `.default` indirection).
+sets `output.library = { name: pkg.name, type: 'umd' }`, so the UMD global is
+`window['@acme/extension-foo']`. It holds the whole module: the extension
+object as `default`, plus every named export.
 
 Host-provided packages must stay **externals** — React (`react`, `react-dom`,
 `react/jsx-runtime`), React Router (`react-router`, `react-router-dom`),

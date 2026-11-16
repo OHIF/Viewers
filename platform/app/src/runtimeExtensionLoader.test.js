@@ -260,6 +260,22 @@ describe('loadRuntimeDescriptor', () => {
       expect(typeof record.timestamp).toBe('string');
     });
 
+    test('UMD global holding the whole module: returns its default and leaves the named exports on window', async () => {
+      // The create-ohif template builds without output.library.export, so the
+      // global is the module (default plus named exports), as sharePlugin puts
+      // a compiled-in plugin's.
+      const helper = () => {};
+      const wholeModule = { default: extModule, helper };
+      window.browserImportFunction.mockImplementation(async () => {
+        window[PKG] = wholeModule;
+        return {};
+      });
+      const mod = await loader.loadRuntimeDescriptor(umdDescriptor());
+      expect(mod).toBe(extModule);
+      expect(lastRecord().status).toBe('loaded');
+      expect(window[PKG].helper).toBe(helper);
+    });
+
     test('ESM happy path: globalName absent returns the namespace default and audits loaded/esm', async () => {
       mockEsmImport();
       const mod = await loader.loadRuntimeDescriptor(esmDescriptor());

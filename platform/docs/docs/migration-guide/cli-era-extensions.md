@@ -280,14 +280,16 @@ library once, correctly:
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: 'index.umd.js',
-    library: { name: pkg.name, type: 'umd', export: 'default' },
+    library: { name: pkg.name, type: 'umd' },
     globalObject: "typeof self !== 'undefined' ? self : this",
     clean: true,
   },
 ```
 
-`export: 'default'` makes the UMD global (`window[pkg.name]`) the extension
-object itself, with no `.default` indirection for the host to unwrap.
+The UMD global (`window[pkg.name]`) holds the whole module: the extension
+object as `default`, which the host registers, plus every named export, which
+another plugin can import. An extension compiled into the viewer is shared on
+`window` the same way.
 
 ### externals — the breaking change
 

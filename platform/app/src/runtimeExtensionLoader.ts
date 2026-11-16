@@ -362,8 +362,10 @@ export async function loadRuntimeDescriptor(
     }
     // STRICT format discriminator (loader behavior matrix, platform/app/.rspack/CONTRACT.md):
     // UMD (globalName set): the wrapper sees no exports/define and assigns
-    // self[library.name]; with output.library = { name, export: 'default' }
-    // the global IS the default export — return window[globalName], nothing else.
+    // self[library.name] — return window[globalName], nothing else. The
+    // create-ohif template puts the whole module there, and the unwrap below
+    // takes its default; a bundle built with output.library.export: 'default'
+    // puts the default export there itself.
     // ESM (globalName absent): return the import() namespace's default export,
     // never a window global. No fallback chain in either direction.
     let mod: any;

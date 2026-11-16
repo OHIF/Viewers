@@ -37,7 +37,6 @@ module.exports = (env, argv) => {
       library: {
         name: 'ohif-mode-preclinical-4d',
         type: 'umd',
-        export: 'default',
       },
       path: ROOT_DIR,
       filename: pkg.main,

@@ -21,9 +21,10 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: 'index.umd.js',
-    // UMD global = window[pkg.name]; export: 'default' makes that global the
-    // mode object itself (no `.default` indirection).
-    library: { name: pkg.name, type: 'umd', export: 'default' },
+    // UMD global = window[pkg.name], holding the whole module: the mode
+    // object as `default`, plus every named export, as a compiled-in plugin's
+    // global does. The host registers `default`.
+    library: { name: pkg.name, type: 'umd' },
     globalObject: "typeof self !== 'undefined' ? self : this",
     clean: true,
   },

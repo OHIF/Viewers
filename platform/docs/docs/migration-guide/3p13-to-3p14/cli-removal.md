@@ -78,7 +78,7 @@ short version:
    old build never reliably emitted the UMD bundle it documented — with:
 
    ```js
-   output: { library: { name: pkg.name, type: 'umd', export: 'default' } },
+   output: { library: { name: pkg.name, type: 'umd' } },
    ```
 
 4. **Adopt `publishConfig`.** See

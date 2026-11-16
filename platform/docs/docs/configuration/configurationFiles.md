@@ -408,7 +408,8 @@ built. There is **no fallback chain** and the loader never defaults
 
 - `globalName` **present** = UMD: after the script evaluates, the loader
   returns `window[globalName]` — nothing else. If that global is undefined,
-  the load fails with `import-error`.
+  the load fails with `import-error`. If it holds a whole module whose `default`
+  has an `id` (what `pnpm create ohif` builds), the loader takes that `default`.
 - `globalName` **absent** = ESM: the loader dynamically imports the module and
   returns the namespace's `default` export — never a window global. A missing
   default export fails with `import-error`.

@@ -16,7 +16,7 @@ module.exports = (env, argv) => {
   return merge(commonConfig, {
     optimization: { minimize: true, sideEffects: false },
     output: {
-      library: { name: 'ohif-mode-segmentation', type: 'umd', export: 'default' },
+      library: { name: 'ohif-mode-segmentation', type: 'umd' },
       path: ROOT_DIR,
       filename: pkg.main,
     },

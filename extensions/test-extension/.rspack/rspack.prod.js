@@ -36,7 +36,6 @@ module.exports = (env, argv) => {
       library: {
         name: 'ohif-extension-test',
         type: 'umd',
-        export: 'default',
       },
       path: ROOT_DIR,
       filename: pkg.main,

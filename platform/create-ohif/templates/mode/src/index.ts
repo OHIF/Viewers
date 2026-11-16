@@ -120,7 +120,7 @@ function modeFactory({ modeConfiguration }) {
 /**
  * The mode object. The host registers it by `id` and calls `modeFactory`
  * when the route is entered. Keep this the default export: the UMD bundle
- * exposes it as window['{{name}}'].
+ * exposes it as window['{{name}}'].default.
  */
 export default {
   id,

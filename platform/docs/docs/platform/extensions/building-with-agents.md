@@ -130,11 +130,13 @@ context rather than by an element `name`.
 A v1 plugin is a UMD bundle. The build sets `output.library` to:
 
 ```js
-{ name: pkg.name, type: 'umd', export: 'default' }
+{ name: pkg.name, type: 'umd' }
 ```
 
-so the bundle assigns the extension's default export to
-`window['@scope/name']` (the global keyed by the full package name).
+so the bundle assigns its whole module to `window['@scope/name']` (the global
+keyed by the full package name): the extension as `default`, plus every named
+export. The host registers `default`; another plugin can import the named
+exports.
 
 The following are **externals**: the build leaves them for the host to provide,
 and a plugin must never bundle or import its own copy. The host provides most of
