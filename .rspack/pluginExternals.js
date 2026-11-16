@@ -26,8 +26,7 @@ module.exports = [
 // v1 host-globals sharing contract: the packages platform/app/src/runtimeShared.ts
 // assigns to window, keyed by full package name. Exported here so the parity
 // test (platform/app/src/runtimeShared.test.js) compares both sides from one
-// require(), and so scripts/verify-tarballs.mjs derives the published @ohif
-// SDK set from the same list (a machine-checked invariant).
+// require().
 // @ohif/i18n is shared because runtime extensions dereference it during
 // module evaluation. @ohif/ui is intentionally absent — it is legacy and a
 // forbidden import for runtime plugins.
@@ -63,3 +62,19 @@ const hostSharedPackages = [
   'react-i18next',
 ];
 module.exports.hostSharedPackages = hostSharedPackages;
+
+// The published SDK: the @ohif packages published to npm as libraries, which a
+// plugin author installs and compiles against. scripts/verify-tarballs.mjs
+// takes its publish set from this list, and create-ohif keeps a copy that
+// platform/create-ohif/tests/migrate.test.mjs compares with it.
+// Every package here must also be in hostSharedPackages
+// (runtimeShared.test.js checks that). The reverse is not required: a fork can
+// add a package of its own to hostSharedPackages without publishing it.
+const publishedSdkPackages = [
+  '@ohif/core',
+  '@ohif/ui-next',
+  '@ohif/i18n',
+  '@ohif/extension-default',
+  '@ohif/extension-cornerstone',
+];
+module.exports.publishedSdkPackages = publishedSdkPackages;

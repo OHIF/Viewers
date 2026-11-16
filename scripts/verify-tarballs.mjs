@@ -26,17 +26,14 @@ import { fileURLToPath } from 'node:url';
 const require = createRequire(import.meta.url);
 
 // The published SDK: the contract surface third-party plugin authors compile
-// and run against. Derived from the @ohif/* members of
-// .rspack/pluginExternals.js hostSharedPackages -- the same list that drives
-// the externals contract and the runtimeShared window globals -- so the
-// externals list, the window-global list, and the npm publish set cannot
-// drift (a machine-checked invariant). @ohif/ui is filtered defensively:
-// it is a forbidden runtime-plugin import and must never be published as
-// part of the SDK even if it ever leaks into hostSharedPackages.
-const { hostSharedPackages } = require('../.rspack/pluginExternals.js');
-const SDK_PUBLISHED = hostSharedPackages.filter(
-  name => name.startsWith('@ohif/') && name !== '@ohif/ui'
-);
+// and run against. Taken from publishedSdkPackages in
+// .rspack/pluginExternals.js, next to the hostSharedPackages list that drives
+// the externals contract and the runtimeShared window globals.
+// platform/app/src/runtimeShared.test.js checks that every published package
+// is also shared, so the publish set cannot drift from the window globals. The
+// list is named, not derived from hostSharedPackages, so a fork can share a
+// package of its own without it being treated as published.
+const { publishedSdkPackages: SDK_PUBLISHED } = require('../.rspack/pluginExternals.js');
 
 // Published tooling outside the SDK contract surface (mirrored in
 // publish-package.mjs). create-ohif ships raw .mjs +

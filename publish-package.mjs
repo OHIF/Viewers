@@ -35,7 +35,7 @@ async function run() {
 
   // Tiered publish surface: only the published SDK packages -- the
   // @ohif/* contract surface third-party plugin authors compile and run
-  // against (the @ohif/* members of the host shared-singleton set) -- plus
+  // against (publishedSdkPackages in .rspack/pluginExternals.js) -- plus
   // tooling are published to npm. App-only extensions/modes/platform packages
   // are private:true and are consumed via the git checkout / workspace
   // template instead. Note the asymmetry with publish-version.mjs, which

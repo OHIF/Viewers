@@ -753,11 +753,10 @@ test('migrate drops an @ohif/app peer and flags peers on unpublished OHIF packag
 });
 
 test("migrate's published @ohif list matches the SDK in pluginExternals.js", () => {
-  // scripts/verify-tarballs.mjs takes the published set from the same place.
+  // scripts/verify-tarballs.mjs takes the published set from the same list.
   const require = createRequire(import.meta.url);
-  const { hostSharedPackages } = require('../../../.rspack/pluginExternals.js');
-  const sdk = hostSharedPackages.filter(name => name.startsWith('@ohif/') && name !== '@ohif/ui');
-  assert.ok(sdk.length > 0, 'pluginExternals.js still lists the shared @ohif packages');
+  const { publishedSdkPackages: sdk } = require('../../../.rspack/pluginExternals.js');
+  assert.ok(sdk.length > 0, 'pluginExternals.js still lists the published @ohif packages');
   // The bin runs on load, so read its source.
   const [, listSource = ''] =
     fs.readFileSync(bin, 'utf8').match(/const PUBLISHED_OHIF_PACKAGES = \[([^\]]*)\];/) ?? [];

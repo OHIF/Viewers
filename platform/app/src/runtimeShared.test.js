@@ -84,6 +84,17 @@ describe('runtimeShared <-> pluginExternals parity', () => {
     }
   });
 
+  // The published SDK has its own list (publishedSdkPackages), so a fork can
+  // share a package of its own without publishing it. Every published package
+  // must still be shared: a plugin author installs it as a peer, and the plugin
+  // build leaves it for the host to provide.
+  test('every published SDK package is shared', () => {
+    expect(externals.publishedSdkPackages.length).toBeGreaterThan(0);
+    for (const name of externals.publishedSdkPackages) {
+      expect(externals.hostSharedPackages).toContain(name);
+    }
+  });
+
   test('every exact-string external has a host global', () => {
     for (const s of externals.filter(e => typeof e === 'string')) {
       expect(externals.hostSharedPackages).toContain(s);

@@ -569,8 +569,8 @@ const SANCTIONED_OHIF_SUBPATHS = [
 const APP_ALIASES = ['@', '@components', '@hooks', '@routes', '@state'];
 // The @ohif packages published to npm as libraries (the SDK), so the only ones
 // a plugin's peer can be installed from. tests/migrate.test.mjs checks this
-// list against the @ohif members of .rspack/pluginExternals.js hostSharedPackages,
-// which scripts/verify-tarballs.mjs uses as the published set.
+// list against publishedSdkPackages in .rspack/pluginExternals.js, which
+// scripts/verify-tarballs.mjs uses as the published set.
 const PUBLISHED_OHIF_PACKAGES = [
   '@ohif/core',
   '@ohif/ui-next',
