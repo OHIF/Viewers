@@ -892,9 +892,12 @@ function commandsModule({
           onSave: newRgbaColor => {
             const { r, g, b, a = 1 } = newRgbaColor;
             const cssColor = `rgba(${r}, ${g}, ${b}, ${a})`;
+            // updateMeasurement replaces the annotation styles and sets the contour shape from them
             actions.updateMeasurement({
               uid,
               style: {
+                ...annotation.config.style.getAnnotationToolStyles(uid),
+                isOpenUShapeContour: annotation.state.getAnnotation(uid)?.data?.isOpenUShapeContour,
                 color: cssColor,
                 colorHighlighted: cssColor,
                 colorSelected: cssColor,
