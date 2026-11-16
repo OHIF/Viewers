@@ -168,6 +168,10 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
      * restores them. Voxels of other segments are never written, and they do not
      * count toward the "% of max SUV" value. The region is the exact rectangle or
      * circle prism of each annotation, not its IJK bounding box.
+     *
+     * Known limitation: the command reads and writes the primary labelmap volume with
+     * the raw segment index. A segment on another labelmap layer (an overlapping SEG)
+     * is not cleared, and its voxels do not count as owned by another segment.
      */
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config, segmentIndex }) => {
       const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
