@@ -612,13 +612,16 @@ function detectSourceEntry(targetDir, pkg) {
 }
 
 // Flag-only source scan: @ohif/ui imports (ui-next APIs differ), deep imports
-// of OHIF internals, and relative imports escaping the package root.
+// of OHIF internals, and relative imports escaping the package root. Tests
+// under src/ name modules through Jest's and Vitest's mock helpers as well as
+// through imports, so those calls are scanned too.
 function scanSourceImports(targetDir, flags) {
   const srcDir = path.join(targetDir, 'src');
   if (!fs.existsSync(srcDir)) {
     return;
   }
-  const importRe = /(?:\bfrom\s*|\brequire\s*\(\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]/g;
+  const importRe =
+    /(?:\bfrom\s*|\brequire\s*\(\s*|\bimport\s*\(\s*|\bimport\s+|\b(?:jest\.(?:mock|doMock|requireActual|requireMock)|vi\.(?:mock|doMock|importActual|importMock))\s*\(\s*)['"]([^'"]+)['"]/g;
   const files = listFiles(srcDir).filter(file => /\.(js|jsx|ts|tsx|mjs|cjs)$/.test(file));
   for (const file of files) {
     // Forward slashes regardless of platform: the report is user-facing and its

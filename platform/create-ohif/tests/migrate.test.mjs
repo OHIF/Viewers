@@ -640,6 +640,38 @@ test('migrate adapts the mode template entry to the CLI-era src/index.tsx', () =
   assert.ok(!config.includes("'../src/index.ts'\n"), 'template entry replaced');
 });
 
+test('migrate flags paths outside the package named through Jest and Vitest mock helpers', () => {
+  const target = scaffoldCliEra('extension', 'mock-helpers-extension');
+  fs.mkdirSync(path.join(target, 'src', '__tests__'), { recursive: true });
+  const calls = [
+    "jest.mock('../../../jest-mock');",
+    "jest.doMock('../../../jest-do-mock');",
+    "const a = jest.requireActual('../../../jest-require-actual');",
+    "const b = jest.requireMock('../../../jest-require-mock');",
+    "vi.mock('../../../vi-mock');",
+    "vi.doMock('../../../vi-do-mock');",
+    "const c = await vi.importActual('../../../vi-import-actual');",
+    "const d = await vi.importMock('../../../vi-import-mock');",
+  ];
+  fs.writeFileSync(
+    path.join(target, 'src', '__tests__', 'helpers.test.ts'),
+    [...calls, "jest.mock('./inside');", ''].join('\n')
+  );
+
+  const report = migrate(target, '--dry-run');
+  calls.forEach((call, index) => {
+    const spec = call.match(/'([^']+)'/)[1];
+    assert.ok(
+      report.includes(
+        `src/__tests__/helpers.test.ts:${index + 1} imports "${spec}", which resolves outside the package root`
+      ),
+      `${call}\n---\n${report}`
+    );
+  });
+  // A path that stays inside the package isn't flagged.
+  assert.ok(!report.includes('"./inside"'), report);
+});
+
 test('migrate flags @ohif/ui imports, internal imports, and custom build config without rewriting them', () => {
   const target = scaffoldCliEra('extension', 'my-cli-extension');
   const custom = path.join(target, 'src', 'custom.tsx');

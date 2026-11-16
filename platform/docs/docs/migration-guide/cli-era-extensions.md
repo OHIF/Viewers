@@ -262,6 +262,21 @@ instead, and leaves the plugin the way
 [`create-ohif --in-tree`](../development/create-ohif.md#scaffold-into-a-checkout-in-tree)
 scaffolds one.
 
+Outside a checkout, migrate treats each package as a repository of its own. If
+one repository holds several plugins as a single pnpm workspace, such as a mode
+and its extension, migrate still writes a `pnpm-workspace.yaml` and an `.npmrc`
+into each package. pnpm uses the nearest `pnpm-workspace.yaml` above the
+directory a command runs in, so each package would install as a workspace of
+its own. After migrating every package, move the settings to the repository
+root and delete the nested files:
+
+- In the root `pnpm-workspace.yaml`, next to its `packages:` list, set
+  `autoInstallPeers: false` and merge in the `allowBuilds` entries from the
+  nested files.
+- In the root `.npmrc`, set `auto-install-peers=false`.
+- Delete each package's `pnpm-workspace.yaml` and `.npmrc`, and any
+  `pnpm-lock.yaml` an install inside a package created.
+
 ---
 
 ## Build config: `.webpack/` → `.rspack/`

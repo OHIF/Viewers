@@ -367,7 +367,13 @@ Edit these files in your fork. The examples add
    These tools assume every `@ohif/` package is versioned with the viewer, so
    keep yours in the fork's tree, on the viewer's version.
 
-5. Run the tests, then rebuild the viewer:
+5. **`platform/docs/docs/configuration/configurationFiles.md`**, if your fork
+   publishes its own docs: under "Shared host packages", add the names to the
+   list of shared packages, and add each package whose name does not start with
+   `@ohif/` to the version table, with the version from step 4. Plugin authors
+   read that page to learn what the viewer shares.
+
+6. Run the tests, then rebuild the viewer:
 
    ```bash
    # in platform/app
