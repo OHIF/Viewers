@@ -34,6 +34,7 @@ const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
 // Shared with the rsbuild build (rsbuild.config.ts).
 const InjectServiceWorkerManifestPlugin = require('./InjectServiceWorkerManifestPlugin.js');
+const optionalSplitRulesCopyPattern = require('./optionalSplitRulesCopyPattern.js');
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
@@ -113,6 +114,7 @@ module.exports = (env, argv) => {
             from: '../../../node_modules/onnxruntime-web/dist',
             to: `${DIST_DIR}/ort`,
           },
+          optionalSplitRulesCopyPattern(DIST_DIR),
           {
             from: `${PUBLIC_DIR}/config/google.js`,
             to: `${DIST_DIR}/google.js`,

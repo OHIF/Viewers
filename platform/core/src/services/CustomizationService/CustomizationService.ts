@@ -1,5 +1,6 @@
 import update, { extend } from 'immutability-helper';
 import JSON5 from 'json5';
+import { spliceById } from '@cornerstonejs/metadata';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { Customization, CustomizationEntries } from './types';
 import type { CommandsManager } from '../../classes';
@@ -548,7 +549,12 @@ export default class CustomizationService extends PubSubService {
       let changed = false;
       const result: any[] = [];
       for (const item of value) {
-        if (item && typeof item === 'object' && !item.$$typeof && typeof item.$reference === 'string') {
+        if (
+          item &&
+          typeof item === 'object' &&
+          !item.$$typeof &&
+          typeof item.$reference === 'string'
+        ) {
           changed = true;
           const resolved = this._resolveReferenceName(item.$reference, seen);
           if (Array.isArray(resolved)) {
@@ -949,7 +955,37 @@ export default class CustomizationService extends PubSubService {
     for (const entry of loaded) {
       const payload = getUrlCustomizationModulePayload(entry.module);
       if (payload?.global) {
-        this.setCustomizations(payload.global, CustomizationScope.Global);
+        this._setGlobalBlock(payload.global, `"${entry.request.raw}" (${entry.url})`);
+      }
+    }
+  }
+
+  /**
+   * Applies one Global block of a customization source. A block that throws,
+   * for example a `$spliceById` with an unknown id, is logged and skipped, so
+   * one bad module does not stop the app. When the block changes
+   * `useMetadataDisplaySet`, the error is also put in its `moduleErrors`, so
+   * that display set creation stops with an error that names the module
+   * (SP-SAFE-7).
+   */
+  private _setGlobalBlock(block: CustomizationPhaseInput, source: string): void {
+    try {
+      this.setCustomizations(block, CustomizationScope.Global);
+    } catch (err) {
+      const message = `customization ${source} did not apply: ${(err as Error).message}`;
+      console.error(`[customizationUrl] ${message}`);
+      if (block && typeof block === 'object' && 'useMetadataDisplaySet' in block) {
+        this.setCustomizations(
+          {
+            useMetadataDisplaySet: {
+              $apply: (value: { moduleErrors?: string[] } = {}) => ({
+                ...value,
+                moduleErrors: [...(value.moduleErrors ?? []), message],
+              }),
+            },
+          },
+          CustomizationScope.Global
+        );
       }
     }
   }
@@ -980,7 +1016,7 @@ export default class CustomizationService extends PubSubService {
     for (const block of this._collectPhaseBlocks(phase)) {
       const value = block[phase] as CustomizationPhaseInput | undefined;
       if (value) {
-        this.setCustomizations(value, CustomizationScope.Global);
+        this._setGlobalBlock(value, `the ${phase} block`);
       }
     }
   }
@@ -1110,6 +1146,13 @@ export default class CustomizationService extends PubSubService {
     return { ...value };
   }
 }
+
+/**
+ * `$spliceById`: `$splice` with a rule id as the position, for example
+ * `{ $spliceById: [['volume3d', 0, 'myRule']] }`. See `spliceById` of
+ * `@cornerstonejs/metadata`, which a server host registers the same way.
+ */
+extend('$spliceById', (spec, original) => spliceById(original as unknown[], spec));
 
 /** Add custom $filter command */
 extend('$filter', (query, original) => {

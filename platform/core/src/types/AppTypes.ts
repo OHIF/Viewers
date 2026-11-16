@@ -161,6 +161,17 @@ declare global {
       useCPURendering?: boolean;
       strictZSpacingForVolumeViewport?: boolean;
       /**
+       * Which lossy downsampling Cornerstone3D may use. An absent kind keeps
+       * the Cornerstone3D default: `final` off, `interactive` and
+       * `interleavedLoading` on. The `cornerstone.gpuSettingsPreset`
+       * customization turns `final` on.
+       */
+      lossyDownsampling?: {
+        final?: boolean;
+        interactive?: boolean;
+        interleavedLoading?: boolean;
+      };
+      /**
        * Routes legacy cornerstone viewport types (STACK / ORTHOGRAPHIC / VOLUME_3D / etc.)
        * through the new GenericViewport-backed render paths while preserving the legacy
        * public API via compatibility adapters. Maps to cornerstone

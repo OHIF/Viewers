@@ -1,6 +1,6 @@
 import {
   attemptAction,
-  checkForScreenshot,
+  checkForGridScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
@@ -24,9 +24,9 @@ test.describe('3D primary Test', async () => {
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
     await waitForViewportsRendered(page);
-    await checkForScreenshot({
+    await checkForGridScreenshot({
       page,
-      locator: viewportPageObject.grid,
+      viewportPageObject,
       // Volume-3D ray-cast output is GPU/driver-noisy run-to-run; match the
       // tolerance already used by the sibling 3DOnly test.
       maxDiffPixelRatio: 0.03,
