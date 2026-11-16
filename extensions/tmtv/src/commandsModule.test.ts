@@ -1,9 +1,6 @@
 /**
- * Command-level cover for #5476.
- *
- * The helper tests alone would still pass if this command cleared the wrong volume or
- * kept sending `overwrite: true`, so assert the wiring: which segment gets cleared,
- * what reaches cornerstone, and that a throw does not leave the segment erased.
+ * Command-level cover for #5476: what a run writes, where, and that one undo memo
+ * records it. The region geometry has its own tests in roiThresholdRegions.test.ts.
  */
 
 jest.mock('@ohif/core', () => ({
@@ -25,13 +22,34 @@ jest.mock('@cornerstonejs/core', () => ({
     getVolumeContainingImageId: jest.fn(),
   },
   getEnabledElement: jest.fn(),
+  utilities: { HistoryMemo: { DefaultHistoryMemo: { push: jest.fn() } } },
 }));
 
 jest.mock('@cornerstonejs/tools', () => ({
   Enums: { SegmentationRepresentations: { Labelmap: 'Labelmap' } },
   segmentation: { state: { getSegmentation: jest.fn() } },
-  annotation: { selection: { getAnnotationsSelectedByToolName: jest.fn() } },
-  utilities: { segmentation: { rectangleROIThresholdVolumeByRange: jest.fn() } },
+  annotation: {
+    selection: { getAnnotationsSelectedByToolName: jest.fn() },
+    state: { getAnnotation: jest.fn() },
+  },
+  utilities: {
+    segmentation: {
+      LabelmapMemo: { createLabelmapMemo: jest.fn() },
+      // Every voxel that the region view offers passes the threshold.
+      thresholdVolumeByRange: jest.fn((volume, _info, { segmentIndex }) =>
+        volume.voxelManager.forEach(({ index }) =>
+          volume.voxelManager.setAtIndex(index, segmentIndex)
+        )
+      ),
+    },
+  },
+}));
+
+// The regions hold labelmap indices 1, 2 and 3.
+jest.mock('./utils/roiThresholdRegions', () => ({
+  getROIThresholdRegions: jest.fn(() => [{}]),
+  forEachVoxelInRegions: (_regions, _volume, callback) =>
+    [1, 2, 3].forEach(index => callback(index, [index, 0, 0], [index, 0, 0])),
 }));
 
 jest.mock('./utils/getThresholdValue', () => ({
@@ -48,48 +66,48 @@ jest.mock('./utils/dicomRTAnnotationExport/RTStructureSet', () => ({
 import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 import commandsModule from './commandsModule';
+import { getROIThresholdRegions } from './utils/roiThresholdRegions';
 
-// jest.mock is hoisted above const declarations, so reach the mocks through the
-// mocked module rather than closing over variables that are not initialised yet.
-const mockRectangleROIThreshold = csTools.utilities.segmentation
-  .rectangleROIThresholdVolumeByRange as unknown as jest.Mock;
 const mockGetAnnotationsSelected = csTools.annotation.selection
   .getAnnotationsSelectedByToolName as unknown as jest.Mock;
+const mockHistoryPush = cs.utilities.HistoryMemo.DefaultHistoryMemo.push as jest.Mock;
 
-const SEG_VOLUME_ID = 'seg-volume';
-
-/** Labelmap holding segment 1 at indices 0-1 and segment 2 at index 3. */
-const makeLabelmap = () => {
-  const data = [1, 1, 0, 2];
-  return {
-    data,
+/**
+ * Segment 1 at indices 0, 1 and 4, segment 2 at index 3. The labelmap has no
+ * `setAtIndex`: every write must go through the memo, or undo misses it.
+ */
+function setup() {
+  const data = [1, 1, 0, 2, 1];
+  const labelmap = {
+    modified: jest.fn(),
     voxelManager: {
       getScalarDataLength: () => data.length,
       getAtIndex: (i: number) => data[i],
-      setAtIndex: (i: number, v: number) => {
-        data[i] = v;
-      },
     },
   };
-};
+  const memo = {
+    voxelManager: { setAtIndex: (i: number, v: number) => (data[i] = v) },
+    commitMemo: () => true,
+  };
 
-function setup() {
-  const labelmap = makeLabelmap();
-
+  (csTools.utilities.segmentation.LabelmapMemo.createLabelmapMemo as jest.Mock).mockReturnValue(
+    memo
+  );
   (csTools.segmentation.state.getSegmentation as jest.Mock).mockReturnValue({
-    representationData: { Labelmap: { volumeId: SEG_VOLUME_ID } },
+    representationData: { Labelmap: { volumeId: 'seg-volume' } },
   });
   (cs.cache.getVolume as jest.Mock).mockReturnValue(labelmap);
   (cs.cache.getVolumeContainingImageId as jest.Mock).mockReturnValue({ volume: { id: 'v' } });
   mockGetAnnotationsSelected.mockImplementation(toolName =>
-    toolName === 'RectangleROIThreshold' ? ['annotation-1'] : []
+    toolName === 'RectangleROIStartEndThreshold' ? ['annotation-1'] : []
   );
 
   const displaySet = { displaySetInstanceUID: 'ds', imageIds: ['image-1'] };
+  const uiNotificationService = { show: jest.fn(), error: jest.fn() };
   const servicesManager = {
     services: {
       viewportGridService: { getState: () => ({ activeViewportId: 'v1' }) },
-      uiNotificationService: { show: jest.fn(), error: jest.fn() },
+      uiNotificationService,
       displaySetService: { getDisplaySetByUID: () => displaySet },
       hangingProtocolService: {
         getMatchDetails: () => ({
@@ -115,100 +133,60 @@ function setup() {
     extensionManager,
   } as never) as never as { actions: Record<string, (args) => unknown> };
 
-  return { actions, labelmap };
+  const run = () =>
+    actions.thresholdSegmentationByRectangleROITool({
+      segmentationId: 'seg',
+      config: {},
+      segmentIndex: 1,
+    });
+
+  return { run, data, uiNotificationService };
 }
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockRectangleROIThreshold.mockReturnValue({ modified: jest.fn() });
 });
 
 describe('thresholdSegmentationByRectangleROITool', () => {
-  it('clears only the target segment, leaving other segments in the labelmap', () => {
-    const { actions, labelmap } = setup();
+  it('replaces the target segment with the result, and keeps other segments', () => {
+    const { run, data } = setup();
 
-    actions.thresholdSegmentationByRectangleROITool({
-      segmentationId: 'seg',
-      config: {},
-      segmentIndex: 1,
-    });
+    run();
 
-    // segment 1 cleared, segment 2 at index 3 untouched
-    expect(labelmap.data).toEqual([0, 0, 0, 2]);
+    // Segment 1 outside the region (0, 4) is cleared, the region voxels 1 and 2 hold
+    // the result, and segment 2 at index 3 stays, although it is in the region.
+    expect(data).toEqual([0, 1, 1, 2, 0]);
   });
 
-  it('never asks cornerstone to overwrite the whole labelmap', () => {
-    const { actions } = setup();
+  it('records the clear and the result as one undo step', () => {
+    const { run } = setup();
 
-    actions.thresholdSegmentationByRectangleROITool({
-      segmentationId: 'seg',
-      config: {},
-      segmentIndex: 2,
-    });
+    run();
 
-    expect(mockRectangleROIThreshold).toHaveBeenCalledTimes(1);
-    const options = mockRectangleROIThreshold.mock.calls[0][3];
-    expect(options).toMatchObject({
-      overwrite: false,
-      segmentIndex: 2,
-      segmentationId: 'seg',
-    });
+    expect(mockHistoryPush).toHaveBeenCalledTimes(1);
   });
 
-  it('defaults to segment 1 when no segmentIndex is supplied', () => {
-    const { actions, labelmap } = setup();
-
-    actions.thresholdSegmentationByRectangleROITool({ segmentationId: 'seg', config: {} });
-
-    expect(mockRectangleROIThreshold.mock.calls[0][3].segmentIndex).toBe(1);
-    expect(labelmap.data).toEqual([0, 0, 0, 2]);
-  });
-
-  it('clears segment 1 when given segment 0, matching where cornerstone writes', () => {
-    const { actions, labelmap } = setup();
-
-    actions.thresholdSegmentationByRectangleROITool({
-      segmentationId: 'seg',
-      config: {},
-      segmentIndex: 0,
+  it('reports an unsupported annotation and changes nothing', () => {
+    const { run, data, uiNotificationService } = setup();
+    (getROIThresholdRegions as jest.Mock).mockImplementationOnce(() => {
+      throw new Error('ROI threshold does not support Length annotations');
     });
 
-    // cornerstone resolves `0 || 1` to 1, so segment 1 is the one that must be cleared
-    expect(mockRectangleROIThreshold.mock.calls[0][3].segmentIndex).toBe(1);
-    expect(labelmap.data).toEqual([0, 0, 0, 2]);
-  });
+    run();
 
-  it('restores the segment when the threshold computation throws', () => {
-    const { actions, labelmap } = setup();
-    mockRectangleROIThreshold.mockImplementation(() => {
-      throw new Error('only supports RectangleROIThreshold annotations');
-    });
-
-    expect(() =>
-      actions.thresholdSegmentationByRectangleROITool({
-        segmentationId: 'seg',
-        config: {},
-        segmentIndex: 1,
-      })
-    ).toThrow('only supports RectangleROIThreshold');
-
-    // the user's segment survives a failed run
-    expect(labelmap.data).toEqual([1, 1, 0, 2]);
+    expect(uiNotificationService.error).toHaveBeenCalledWith(
+      'ROI threshold does not support Length annotations'
+    );
+    expect(data).toEqual([1, 1, 0, 2, 1]);
+    expect(mockHistoryPush).not.toHaveBeenCalled();
   });
 
   it('reports and returns early when no ROI annotation is selected', () => {
-    mockGetAnnotationsSelected.mockReturnValue([]);
-    const { actions, labelmap } = setup();
+    const { run, data } = setup();
     mockGetAnnotationsSelected.mockReturnValue([]);
 
-    actions.thresholdSegmentationByRectangleROITool({
-      segmentationId: 'seg',
-      config: {},
-      segmentIndex: 1,
-    });
+    run();
 
-    expect(mockRectangleROIThreshold).not.toHaveBeenCalled();
-    // nothing cleared, because nothing was computed
-    expect(labelmap.data).toEqual([1, 1, 0, 2]);
+    expect(data).toEqual([1, 1, 0, 2, 1]);
   });
 });

@@ -4,10 +4,8 @@ import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import getThresholdValues from './utils/getThresholdValue';
-import clearSegmentFromLabelmap, {
-  normalizeSegmentIndex,
-  restoreSegmentToLabelmap,
-} from './utils/clearSegmentFromLabelmap';
+import clearSegmentFromLabelmap, { normalizeSegmentIndex } from './utils/clearSegmentFromLabelmap';
+import { forEachVoxelInRegions, getROIThresholdRegions } from './utils/roiThresholdRegions';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
@@ -160,6 +158,17 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       return segmentationId;
     },
+    /**
+     * Threshold the PT and CT values inside the selected ROI threshold annotations
+     * into one segment.
+     *
+     * The segment is the threshold result: a run first clears the target segment in
+     * the whole labelmap, so a re-run replaces the result and a higher threshold can
+     * shrink it. Manual edits of the target segment are lost, and one undo step
+     * restores them. Voxels of other segments are never written, and they do not
+     * count toward the "% of max SUV" value. The region is the exact rectangle or
+     * circle prism of each annotation, not its IJK bounding box.
+     */
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config, segmentIndex }) => {
       const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
 
@@ -192,12 +201,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
-      const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
-        annotationUIDs,
-        ptDisplaySet,
-        config
-      );
-
       const { imageIds: ptImageIds } = ptDisplaySet;
 
       const ptVolumeInfo = cs.cache.getVolumeContainingImageId(ptImageIds[0]);
@@ -218,31 +221,75 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const ptVolume = ptVolumeInfo.volume;
       const ctVolume = ctVolumeInfo.volume;
 
-      // `overwrite: true` zeroes the entire labelmap before writing, which wipes every
-      // other segment in the segmentation - including ones drawn with the brush or
-      // shape tools. Clear only the segment being recomputed, then write additively so
-      // re-running the tool stays idempotent without destroying the user's other work.
+      let regions;
+      try {
+        regions = getROIThresholdRegions(
+          annotationUIDs.map(uid => csTools.annotation.state.getAnnotation(uid)),
+          labelmapVolume
+        );
+      } catch (error) {
+        uiNotificationService.error(error.message);
+        return;
+      }
+
       const targetSegmentIndex = normalizeSegmentIndex(segmentIndex);
       const { voxelManager } = labelmapVolume;
-      const clearedIndices = clearSegmentFromLabelmap(voxelManager, targetSegmentIndex);
+      const isFree = (index: number) => {
+        const value = voxelManager.getAtIndex(index);
+        return value === 0 || value === targetSegmentIndex;
+      };
+
+      const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
+        regions,
+        labelmapVolume,
+        isFree,
+        ptVolume,
+        config
+      );
+
+      // One memo holds the clear and the threshold writes, so one undo restores both.
+      const memo = csTools.utilities.segmentation.LabelmapMemo.createLabelmapMemo(
+        segmentationId,
+        voxelManager
+      );
+
+      // shortcut: thresholdVolumeByRange walks an IJK box, so this view hands it only the
+      // free voxels of the exact regions. Remove it when the Cornerstone threshold takes
+      // a voxel region.
+      const regionVolume = {
+        imageData: labelmapVolume.imageData,
+        spacing: labelmapVolume.spacing,
+        voxelManager: {
+          getScalarDataLength: () => voxelManager.getScalarDataLength(),
+          forEach: callback =>
+            forEachVoxelInRegions(regions, labelmapVolume, (index, pointIJK, pointLPS) => {
+              if (isFree(index)) {
+                callback({ index, pointIJK, pointLPS });
+              }
+            }),
+          setAtIndex: (index, value) => memo.voxelManager.setAtIndex(index, value),
+        },
+      } as unknown as cs.Types.IImageVolume;
 
       try {
-        return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
-          annotationUIDs,
-          labelmapVolume,
+        clearSegmentFromLabelmap(voxelManager, targetSegmentIndex, memo.voxelManager);
+        csTools.utilities.segmentation.thresholdVolumeByRange(
+          regionVolume,
           [
             { volume: ptVolume, lower: ptLower, upper: ptUpper },
             { volume: ctVolume, lower: ctLower, upper: ctUpper },
           ],
-          { overwrite: false, segmentIndex: targetSegmentIndex, segmentationId }
+          { overwrite: false, segmentIndex: targetSegmentIndex, segmentationId, boundsIJK: null }
         );
-      } catch (error) {
-        // Cornerstone validates the annotation tool names *inside* this call, and
-        // ROI_THRESHOLD_MANUAL_TOOL_IDS includes CircleROIStartEndThreshold, which it
-        // rejects. Without a rollback that throw would leave the segment erased.
-        restoreSegmentToLabelmap(voxelManager, clearedIndices, targetSegmentIndex);
-        throw error;
+      } finally {
+        // Also after a throw, so that undo can restore a partial run.
+        if (memo.commitMemo()) {
+          cs.utilities.HistoryMemo.DefaultHistoryMemo.push(memo);
+        }
       }
+
+      labelmapVolume.modified();
+      return labelmapVolume;
     },
     calculateTMTV: async ({ segmentations }) => {
       const segmentationIds = segmentations.map(segmentation => segmentation.segmentationId);

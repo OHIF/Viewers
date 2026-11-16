@@ -26,38 +26,20 @@ export function normalizeSegmentIndex(segmentIndex: unknown): number {
  * erases every other segment in the segmentation. Clearing just the segment being
  * recomputed keeps a re-run idempotent without destroying a user's other work.
  *
- * @returns the indices that were cleared, so the caller can put them back if the
- *   recomputation that follows throws.
+ * @param writer - where the zeros go, for example the voxel manager of a labelmap
+ *   memo, so that undo restores the segment. A memo voxel manager reads back its
+ *   recorded values, not the labelmap, so the reads stay on `voxelManager`.
  */
 export default function clearSegmentFromLabelmap(
   voxelManager: ClearableVoxelManager,
-  segmentIndex: number
-): number[] {
+  segmentIndex: number,
+  writer: Pick<ClearableVoxelManager, 'setAtIndex'> = voxelManager
+): void {
   const length = voxelManager.getScalarDataLength();
-  const cleared: number[] = [];
 
   for (let i = 0; i < length; i++) {
     if (voxelManager.getAtIndex(i) === segmentIndex) {
-      voxelManager.setAtIndex(i, 0);
-      cleared.push(i);
+      writer.setAtIndex(i, 0);
     }
-  }
-
-  return cleared;
-}
-
-/**
- * Put a cleared segment back, for when the recomputation after a clear throws.
- *
- * Only the previously occupied indices are written, so this cannot disturb voxels the
- * failed operation may already have set elsewhere.
- */
-export function restoreSegmentToLabelmap(
-  voxelManager: ClearableVoxelManager,
-  indices: number[],
-  segmentIndex: number
-): void {
-  for (const index of indices) {
-    voxelManager.setAtIndex(index, segmentIndex);
   }
 }
