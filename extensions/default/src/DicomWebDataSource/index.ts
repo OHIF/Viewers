@@ -45,7 +45,6 @@ export type DicomWebConfig = {
   wadoRoot?: string; // - Base URL to use for WADO requests
   stowRoot?: string; // - Base URL to use for STOW requests (defaults to wadoRoot)
   wadoUri?: string; // - Base URL to use for WADO URI requests
-  qidoSupportsIncludeField?: boolean; // - Whether QIDO supports the "Include" option to request additional fields in response
   imageRendering?: string; // - wadors | ? (unsure of where/how this is used)
   thumbnailRendering?: string;
   /**
@@ -167,8 +166,12 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       if (value && value.BulkDataURI && !value.Value) {
         // handle the scenarios where bulkDataURI is relative path
         fixBulkDataURI(value, instance, dicomWebConfig);
-        // Provide a method to fetch bulkdata
-        value.retrieveBulkData = retrieveBulkData.bind(dicomWebClient, value);
+        // Provide a method to fetch bulkdata. The client is shared, so set the
+        // current auth headers at fetch time, as the other ops here do.
+        value.retrieveBulkData = options => {
+          dicomWebClient.headers = getAuthorizationHeader();
+          return retrieveBulkData.call(dicomWebClient, value, options);
+        };
       }
     }
     return naturalized;
