@@ -718,7 +718,12 @@ export default class ToolbarService extends PubSubService {
         return evaluateFunction;
       });
 
-      const evaluateProps = props.evaluate;
+      // Merge the options of the object entries; name only selects the evaluator.
+      const { name: _name, ...evaluateProps } = Object.assign(
+        {},
+        ...evaluate.filter(evaluator => evaluator && typeof evaluator === 'object')
+      );
+
       props.evaluate = args => {
         const results = evaluators.map(evaluator => evaluator(args)).filter(Boolean);
 
