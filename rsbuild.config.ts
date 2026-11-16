@@ -11,6 +11,7 @@ import resolveConfig from './.rspack/resolveConfig';
 // so it stays bundler-version agnostic: it takes every rspack API off
 // `compiler.rspack` inside apply() instead of importing @rspack/core.
 import InjectServiceWorkerManifestPlugin from './platform/app/.rspack/InjectServiceWorkerManifestPlugin';
+import optionalSplitRulesCopyPattern from './platform/app/.rspack/optionalSplitRulesCopyPattern';
 import fs from 'fs';
 import type { IncomingMessage, ServerResponse } from 'http';
 import serveStatic from 'serve-static';
@@ -150,6 +151,7 @@ export default defineConfig(({ env }) => {
         'process.env.PUBLIC_URL': JSON.stringify(PUBLIC_URL),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
+        'process.env.DCMJS_VERSION': JSON.stringify(require('./.rspack/dcmjsVersion')),
         'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
         'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
@@ -410,6 +412,7 @@ export default defineConfig(({ env }) => {
           to: `${DIST_DIR}/ort`,
           force: true,
         },
+        optionalSplitRulesCopyPattern(DIST_DIR),
         // Copy the public directory except config/ and html-templates/.
         // Enumerated explicitly because CopyRspackPlugin's globOptions.ignore
         // is not reliably honored across the rspack versions bundled by

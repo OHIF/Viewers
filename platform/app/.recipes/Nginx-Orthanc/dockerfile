@@ -12,7 +12,7 @@
 # after the repo had moved to pnpm) and silently served a stale image.
 
 # Stage 1: Build the application
-FROM node:24.15.0-slim as builder
+FROM node:24.22.2-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
     && rm -rf /var/lib/apt/lists/*
@@ -62,7 +62,7 @@ RUN pnpm run build
 # nginxinc/nginx-unprivileged: this is a local development recipe whose
 # config/nginx.conf listens on 80 as root and is mounted at runtime, so it
 # skips the unprivileged hardening the published ohif/app image carries.
-FROM nginx:1.27-alpine
+FROM nginx:1.30-alpine
 
 # Create directories for logs and html content if they don't already exist
 RUN mkdir -p /var/log/nginx /var/www/html
