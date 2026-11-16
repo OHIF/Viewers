@@ -56,17 +56,23 @@ export function getROIThresholdRegions(annotations, volume: VolumeGeometry): ROI
       (startDepth + endDepth) / 2
     ) as Types.Point3;
 
+    // The handles can sit at different depths after a start or end change, so measure
+    // them in the plane.
+    const inPlaneLength = (a: Types.Point3, b: Types.Point3) => {
+      const d = vec3.sub(vec3.create(), b, a);
+      return vec3.length(
+        vec3.scaleAndAdd(d, d, viewPlaneNormal as vec3, -vec3.dot(d, viewPlaneNormal as vec3))
+      );
+    };
+
     const shapeOptions = { volume, planePoint, viewPlaneNormal, centerWorld: planePoint };
     const shape = isCircle
-      ? createCircleShape({
-          ...shapeOptions,
-          radius: vec3.distance(points[0] as vec3, points[1] as vec3),
-        })
+      ? createCircleShape({ ...shapeOptions, radius: inPlaneLength(points[0], points[1]) })
       : createRectangleShape({
           ...shapeOptions,
           majorAxis: vec3.sub(vec3.create(), points[1], points[0]) as Types.Point3,
-          majorHalfLength: vec3.distance(points[0] as vec3, points[1] as vec3) / 2,
-          minorHalfLength: vec3.distance(points[0] as vec3, points[2] as vec3) / 2,
+          majorHalfLength: inPlaneLength(points[0], points[1]) / 2,
+          minorHalfLength: inPlaneLength(points[0], points[2]) / 2,
         });
 
     return {
@@ -98,18 +104,21 @@ export function forEachVoxelInRegions(
 }
 
 /**
- * Depth along the normal of a start or end coordinate, relative to `anchor`. The
- * StartEnd tools store the coordinate on the world axis closest to the normal, as a
- * number or as the matching component of a point.
+ * Depth along the normal of a start or end coordinate, relative to `anchor`. A point
+ * (the viewport focal point of the Set Start/End Slice commands) gives its signed
+ * distance to the plane. A number is the coordinate on the world axis closest to the
+ * normal, as the StartEnd tools store it when they create the annotation.
  */
 function getDepth(
   coordinate: number | Types.Point3,
   anchor: Types.Point3,
   normal: Types.Point3
 ): number {
+  if (typeof coordinate !== 'number') {
+    return vec3.dot(vec3.sub(vec3.create(), coordinate, anchor), normal as vec3);
+  }
   const axis = [0, 1, 2].reduce((best, i) =>
     Math.abs(normal[i]) > Math.abs(normal[best]) ? i : best
   );
-  const value = typeof coordinate === 'number' ? coordinate : coordinate[axis];
-  return (value - anchor[axis]) / normal[axis];
+  return (coordinate - anchor[axis]) / normal[axis];
 }

@@ -85,6 +85,27 @@ describe('getROIThresholdRegions', () => {
     expect(voxels.length).toBe(3 * 29);
   });
 
+  it('measures the circle in the plane, and takes a point endpoint as a plane distance', () => {
+    const voxels = collect({
+      metadata: { toolName: 'CircleROIStartEndThreshold', viewPlaneNormal: AXIAL },
+      data: {
+        // Focal points of the Set Start/End Slice commands, offset in the plane.
+        startCoordinate: [3, 17, 8],
+        endCoordinate: [15, 1, 4],
+        // The rim handle kept an older depth after an endpoint change.
+        handles: {
+          points: [
+            [10, 10, 8],
+            [13, 10, 12],
+          ],
+        },
+      },
+    });
+
+    expect(slicesOf(voxels)).toEqual([2, 3, 4]);
+    expect(voxels.length).toBe(3 * 29);
+  });
+
   it('rejects an annotation of another tool', () => {
     expect(() =>
       getROIThresholdRegions(
