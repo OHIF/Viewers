@@ -39,8 +39,18 @@ describe('getStackLutProperties', () => {
     expect(getStackLutProperties(properties)).toEqual({ invert: true });
   });
 
+  it('skips volume ids that have no properties', () => {
+    const properties = new Map([
+      ['cornerstoneStreamingImageVolume:old', undefined],
+      ['cornerstoneStreamingImageVolume:ds-1', { invert: true }],
+    ]);
+
+    expect(getStackLutProperties(properties)).toEqual({ invert: true });
+  });
+
   it('returns nothing for an empty Map or no properties', () => {
     expect(getStackLutProperties(new Map())).toBeUndefined();
+    expect(getStackLutProperties(new Map([['volume', undefined]]))).toBeUndefined();
     expect(getStackLutProperties(undefined)).toBeUndefined();
   });
 });

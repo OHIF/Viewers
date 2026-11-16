@@ -18,7 +18,8 @@ export default function getStackLutProperties<
   if (!(properties instanceof Map)) {
     return properties;
   }
-  const [volumeProperties] = properties.values();
+  /** Skip entries a volume id left without properties, e.g. a volume MPR replaced */
+  const volumeProperties = [...properties.values()].find(value => value != null);
   if (!volumeProperties) {
     return undefined;
   }
