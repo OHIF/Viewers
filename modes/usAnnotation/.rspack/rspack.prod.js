@@ -36,7 +36,7 @@ module.exports = (env, argv) => {
     },
     output: {
       library: {
-        name: 'ohif-mode-tmtv',
+        name: 'ohif-mode-ultrasound-pleura-bline',
         type: 'umd',
       },
       path: ROOT_DIR,
