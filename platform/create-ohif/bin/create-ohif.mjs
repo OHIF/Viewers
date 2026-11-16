@@ -526,6 +526,7 @@ const MIGRATE_DEV_DEPS = {
     'css-loader': '6.11.0',
     postcss: '8.5.28',
     'postcss-loader': '8.2.1',
+    'style-loader': '4.0.0',
     tailwindcss: '3.2.4',
   },
   mode: {

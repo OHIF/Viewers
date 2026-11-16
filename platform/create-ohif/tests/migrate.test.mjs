@@ -552,8 +552,28 @@ test('migrate applies the extension rewrites and is idempotent', () => {
     pkg.scripts.build,
     'cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js'
   );
-  for (const name of ['@rspack/cli', '@rspack/core', 'css-loader', 'postcss-loader', 'tailwindcss']) {
+  for (const name of [
+    '@rspack/cli',
+    '@rspack/core',
+    'css-loader',
+    'postcss-loader',
+    'style-loader',
+    'tailwindcss',
+  ]) {
     assert.ok(name in pkg.devDependencies, `devDep ${name}`);
+  }
+  // Every loader the template's build config names must be installed, at the
+  // template's own pin. The build resolves a loader only when a file matches
+  // its rule, so a missing one stays hidden until the plugin imports a .css file.
+  const templatePkg = JSON.parse(
+    fs.readFileSync(path.join(templatesRoot, 'extension/package.json'), 'utf8')
+  );
+  const templateConfig = fs.readFileSync(
+    path.join(templatesRoot, 'extension/_rspack/rspack.prod.js'),
+    'utf8'
+  );
+  for (const [, loader] of templateConfig.matchAll(/'([a-z-]+-loader)'/g)) {
+    assert.equal(pkg.devDependencies[loader], templatePkg.devDependencies[loader], `loader ${loader}`);
   }
   assert.ok(!('webpack' in pkg.devDependencies));
 
