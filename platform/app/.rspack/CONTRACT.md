@@ -59,7 +59,7 @@ repo does not depend on rslib at all today.
   **Current: FALSE.** rslib is pre-1.0 (0.23.2) and is not a dependency. This box
   alone blocks the flip.
 - [ ] **2. Shim experiment concluded.** The chosen shim-generation
-  mechanism meets its success criteria for ALL 11 shared modules (including
+  mechanism meets its success criteria for EVERY shared module (including
   whatever jsdom/WebGL findings the runtime enumeration experiment records); `sharedModules.json`
   regeneration is byte-reproducible on CI and the staleness check
   (`generatedFrom` vs installed versions) is wired into `pnpm plugin doctor`.
@@ -91,20 +91,52 @@ repo does not depend on rslib at all today.
   retained for at least one more minor release line; a pinned GitHub Discussion;
   and a `loadModule` `console.info` nudge when a UMD plugin loads after the flip.
   **Current: NOT STARTED.**
+- [ ] **7. Plugin-to-plugin imports and declared dependencies.**
+  `sharedModules.json` lists only the viewer's own packages. A plugin that
+  imports another runtime plugin, such as a mode importing named exports from
+  its extension, therefore bundles a copy of that plugin, and a library both
+  plugins use for shared state ends up as two copies that don't see each other.
+  v1 has the same gap: a plugin build leaves out only the host's packages, so a
+  mode and extension moved out of a fork must hand-edit the mode's externals,
+  and `create-ohif migrate` overwrites that edit. A second gap shows up in the
+  same move: inside a monorepo, hoisted `node_modules` hides imports a plugin
+  never declared, and they surface only when the plugin builds on its own.
+  Before the flip, v2 must let a plugin import another plugin as the same module
+  instance the loader registered, and must catch undeclared imports before a
+  plugin leaves its repository.
+
+  Candidate approach (a proposal, not a decision):
+  - `package.json` is the contract. `dependencies` are bundled; every
+    `peerDependencies` name stays a bare import.
+  - The import map gives the browser a URL for each bare name: a host package
+    maps to its file under `/shared/` (from `sharedModules.json`), and a runtime
+    plugin's package name maps to its descriptor's `importPath`, added when the
+    descriptor loads. ES modules run their imports first, so load order needs no
+    rule of its own.
+  - `create-ohif migrate` and `pnpm plugin doctor` flag an import from `src/`
+    that is neither declared nor host-provided, and a peer that neither the
+    host nor another plugin provides.
+
+  Confirm against the target browsers, at gate time, that import-map entries
+  can be added after the first module has loaded.
+  **Current: NOT DESIGNED.**
 
 ### Concrete criteria to revisit (distilled)
 
-Re-open this gate only when all three hold:
+Re-open this gate only when all four hold:
 
 1. **rslib >= 1.0** (box 1) — the hard blocker today.
 2. **A named-export enumeration mechanism is decided** (box 2) — the
    runtime vs static enumeration comparison must conclude with a chosen, CI-reproducible
-   mechanism for all 11 shared modules.
+   mechanism for every shared module.
 3. **Descriptor shape stable** — ALREADY TRUE. v1 shipped the strict
    `globalName` discriminator, so a future ESM plugin needs zero descriptor schema
    change (it simply omits `globalName`). This criterion is met now and is not a
    blocker; it is recorded here so a future reader does not re-litigate the
    descriptor shape.
+4. **Plugin-to-plugin imports designed** (box 7) — a plugin can import another
+   runtime plugin as one shared instance, and undeclared imports are caught
+   before a plugin leaves its repository.
 
 ---
 
