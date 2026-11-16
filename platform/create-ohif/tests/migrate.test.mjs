@@ -757,11 +757,15 @@ test('migrate drops an @ohif/app peer and flags peers on unpublished OHIF packag
 
   const report = migrate(target, '--dry-run');
   assert.ok(report.includes('peerDependencies: drop "@ohif/app" (never a peer'), report);
-  const flag = report.split('\n').find(line => line.includes('no longer published to npm')) ?? '';
+  const flag = report.split('\n').find(line => line.includes('not published to npm')) ?? '';
   assert.ok(
     flag.includes('@ohif/extension-cornerstone-dicom-sr, @ohif/extension-measurement-tracking are'),
     report
   );
+  // A fork's own @ohif package lands here too, so the flag claims no npm
+  // history and covers a library as well as an extension.
+  assert.ok(!flag.includes('3.13'), flag);
+  assert.ok(flag.includes('Sharing more libraries from a fork'), flag);
   // The CLI-era fixture's other @ohif peers are all published.
   assert.ok(!flag.includes('@ohif/extension-default'), flag);
 
@@ -1016,7 +1020,7 @@ test('migrate moves @ohif dependencies to peers outside a checkout', () => {
   );
   assert.ok(report.includes('devDependencies: move "@ohif/ui-next" "workspace:*"'), report);
   // As a peer, the unpublished extension gets the existing flag.
-  assert.ok(report.includes('@ohif/extension-ultrasound-pleura-bline is no longer published'), report);
+  assert.ok(report.includes('@ohif/extension-ultrasound-pleura-bline is not published'), report);
 
   const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
   assert.ok(!Object.keys(pkg.dependencies).some(name => name.startsWith('@ohif/')), 'no @ohif dependency left');

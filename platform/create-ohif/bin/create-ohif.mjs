@@ -938,14 +938,16 @@ async function runMigrate(targetDir, dryRun) {
     );
     delete peers['@ohif/app'];
   }
-  // Peers on OHIF packages that aren't published as libraries any more still
-  // resolve in a checkout, so they're kept (and rewritten below), but flagged.
+  // Peers on @ohif packages outside the published SDK still resolve in a
+  // checkout, so they're kept (and rewritten below), but flagged. The wording
+  // doesn't assume the package was ever on npm or is an extension: a fork's
+  // own @ohif library lands here too.
   const unpublished = Object.keys(peers).filter(
     name => name.startsWith('@ohif/') && !PUBLISHED_OHIF_PACKAGES.includes(name)
   );
   if (unpublished.length > 0) {
     flags.push(
-      `package.json peerDependencies: ${unpublished.join(', ')} ${unpublished.length === 1 ? 'is' : 'are'} no longer published to npm (only old 3.13.x releases are, which the peer range also matches) — fine compiled into an OHIF checkout; as a runtime bundle, an import from one needs that extension loaded first (list it in window.config.extensions) or an extensionManager.getModuleEntry(…) lookup instead`
+      `package.json peerDependencies: ${unpublished.join(', ')} ${unpublished.length === 1 ? 'is' : 'are'} not published to npm — fine compiled into an OHIF checkout; as a runtime bundle, an import from an extension needs that extension loaded first (list it in window.config.extensions) or an extensionManager.getModuleEntry(…) lookup instead, and an import from a library needs the viewer to share it (see "Sharing more libraries from a fork" in the runtime plugins docs)`
     );
   }
   for (const name of Object.keys(peers)) {
