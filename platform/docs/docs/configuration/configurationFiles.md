@@ -611,6 +611,12 @@ included). These globals carry no compatibility promise. Extensions marked
 import one from a runtime plugin, also list it by name in `extensions`. See
 [Runtime plugins](../deployment/runtime-plugins.md).
 
+Any other package that a plugin build leaves out has no global, and is
+`undefined` in a runtime plugin: `vtk.js`, the `@cornerstonejs/*` packages other
+than `core` and `tools`, and an `@ohif/*` package that is not compiled into the
+viewer. A fork that builds its own viewer can share more of them. See
+[Sharing more libraries from a fork](../deployment/runtime-plugins.md#sharing-more-libraries-from-a-fork).
+
 ## Environment Variables
 
 We use environment variables at build and dev time to change the Viewer's

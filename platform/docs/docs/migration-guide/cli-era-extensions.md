@@ -190,8 +190,11 @@ The contract:
   peers above become `"react": "^19.0.0"` and `"react-dom": "^19.0.0"`; React
   Router and `react-i18next` are already on the host's majors and stay.
 - **Other cornerstone packages are flagged.** `@cornerstonejs/adapters`, the
-  image loader and the rest aren't shared, so your build bundles them, and
-  cornerstone releases its packages together. When migrate moves your
+  image loader and the rest aren't shared, and your build leaves them out all
+  the same. Compiled into a viewer, they resolve like any other dependency. In a
+  runtime bundle they are `undefined`: see
+  [Sharing more libraries from a fork](../deployment/runtime-plugins.md#sharing-more-libraries-from-a-fork).
+  Cornerstone releases its packages together, so when migrate moves your
   `@cornerstonejs/core` to another major, it flags each of them still on your
   old one.
 - **`@ohif` packages are peers too.** An `@ohif/*` entry under `dependencies`

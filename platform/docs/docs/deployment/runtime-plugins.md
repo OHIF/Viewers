@@ -298,6 +298,109 @@ reference.
   `immutable` (versioned) split described above. The service-worker measures are
   defense-in-depth for any future re-enablement.
 
+## Sharing more libraries from a fork
+
+This section is for a fork that builds its own viewer, with its own changes to
+OHIF, and loads its extensions and modes as runtime plugins.
+
+A plugin's build leaves out every import that matches `@ohif/*`,
+`@cornerstonejs/*`, `vtk.js`, `dcmjs`, `gl-matrix`, React, React Router or
+i18next. The plugin reads those from `window` when its script runs. The viewer
+puts its [shared host packages](../configuration/configurationFiles.md#shared-host-packages)
+there, and every extension and mode compiled into it. Any other import that
+matches is `undefined` in a runtime plugin. Examples are
+`@cornerstonejs/adapters`, `@cornerstonejs/dicom-image-loader`, and a library
+package that exists only in your fork, such as `@ohif/acme-utils`.
+
+A viewer can only share a library that is compiled into it, so sharing more
+means changing the viewer's build. A stock OHIF image cannot do it.
+
+### Check whether it is already shared
+
+If the package is an extension or mode in your `pluginConfig.json`, it is
+already shared under its package name, and you can skip the steps below. If it
+is marked `"default": false`, also list it by name in `extensions`, as described
+under [Referencing a plugin from app-config](#referencing-a-plugin-from-app-config).
+
+### Share a library
+
+Edit these files in your fork. The examples add
+`@cornerstonejs/dicom-image-loader` and a fork-only `@ohif/acme-utils`.
+
+1. **`.rspack/pluginExternals.js`**: add the names to `hostSharedPackages`.
+
+   ```js
+   const hostSharedPackages = [
+     // ...the names OHIF shares
+     '@cornerstonejs/dicom-image-loader',
+     '@ohif/acme-utils',
+   ];
+   ```
+
+2. **`platform/app/src/runtimeShared.ts`**: import each library and add it to
+   `shared`. Keep the `import * as name from 'package';` form, which the test
+   reads.
+
+   ```ts
+   import * as cornerstoneDicomImageLoader from '@cornerstonejs/dicom-image-loader';
+   import * as ohifAcmeUtils from '@ohif/acme-utils';
+
+   const shared: Record<string, unknown> = {
+     // ...the entries OHIF shares
+     '@cornerstonejs/dicom-image-loader': cornerstoneDicomImageLoader,
+     '@ohif/acme-utils': ohifAcmeUtils,
+   };
+   ```
+
+3. **`platform/app/src/runtimeShared.test.js`**: add the names to `SETTLED_LIST`.
+
+4. **`platform/create-ohif/host-shared-majors.json`**, only for a package whose
+   name does not start with `@ohif/`: add the major version the viewer installs
+   (for a 0.x package, its minor). `create-ohif migrate` then treats the package
+   as shared, and sets a plugin's peer range from this file.
+
+   ```json
+   "@cornerstonejs/dicom-image-loader": "5"
+   ```
+
+   A package named `@ohif/...` gets no entry, and the test fails if you add one.
+   These tools assume every `@ohif/` package is versioned with the viewer, so
+   keep yours in the fork's tree, on the viewer's version.
+
+5. Run the tests, then rebuild the viewer:
+
+   ```bash
+   # in platform/app
+   npx jest src/runtimeShared.test.js
+   # in platform/create-ohif
+   pnpm test
+   ```
+
+   Two `create-ohif` tests use `@cornerstonejs/adapters` as their example of a
+   package that is not shared. If you share that one, update what they expect.
+
+A fork-only `@ohif/*` package is not treated as published. OHIF's published
+packages are a separate list, `publishedSdkPackages` in
+`.rspack/pluginExternals.js`, which you leave alone.
+
+### What you take on
+
+- **These globals are your fork's.** OHIF makes no promise about them, and a
+  plugin that needs one runs only in a viewer that shares it.
+- **The files can conflict when you merge from OHIF.** Run the test after each
+  merge.
+- **Each shared library is kept whole in the viewer's build.** It loads with the
+  other shared packages, just before the first runtime plugin.
+- **A plugin is built against the viewer's version of the library.** Set the
+  plugin's peer range to match it.
+
+### What it does not fix
+
+Sharing a package shares its main entry only. A deeper import, such as
+`@kitware/vtk.js/Rendering/Core/Actor` or a path under
+`@ohif/extension-default/src/`, is still `undefined` in a runtime plugin. Import
+from the package's main entry, or compile that plugin into the viewer.
+
 ## Smoke checklist
 
 Run from the repo root. Commands are PowerShell; use `curl.exe` (not the
@@ -351,6 +454,13 @@ PowerShell `curl` alias).
 - **`import-error: module evaluated but has no default export`.** The
   descriptor has no `globalName`, so the loader treated a UMD bundle as an ES
   module. Add `globalName` (the package name) to the descriptor.
+- **A `TypeError` such as `Cannot read properties of undefined` while a plugin's
+  script runs.** The plugin imports a package that the viewer does not put on
+  `window`. Check the import against the
+  [shared host packages](../configuration/configurationFiles.md#shared-host-packages).
+  If it is an extension that loads on demand, list it by name in `extensions`.
+  If you build your own viewer, see
+  [Sharing more libraries from a fork](#sharing-more-libraries-from-a-fork).
 - **Wrong MIME on `.mjs`.** nginx's stock `mime.types` does not map `.mjs`; the
   `/plugins/` location declares `text/javascript` for `js`/`mjs` explicitly.
   If an `.mjs` bundle is served with the wrong type, the request is not being

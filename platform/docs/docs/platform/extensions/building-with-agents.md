@@ -187,7 +187,9 @@ workspace.
 Anything else the externals match has **no host global**: `vtk.js` (a known v1
 gap), and `@cornerstonejs/*` packages other than `core` and `tools`. A
 runtime-loaded plugin that imports one resolves it to `undefined` at load and
-breaks, so do not depend on them in a runtime plugin.
+breaks, so do not depend on them in a runtime plugin. A fork that builds its own
+viewer can add to the shared set: see
+[Sharing more libraries from a fork](../../deployment/runtime-plugins.md#sharing-more-libraries-from-a-fork).
 
 These globals serve UMD runtime plugins, which read them from `window`. They do
 not change how an ES module plugin's imports resolve, and they do not provide
