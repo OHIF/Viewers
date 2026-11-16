@@ -40,6 +40,18 @@ function ProjectionMenu({ viewportId, className }: ProjectionMenuProps) {
 
   const [draft, setDraft] = useState<number>(slabThickness);
   const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // One switch-on request at a time: the ref guards the handlers, the state drives the render.
+  const enablingRef = useRef(false);
+  const [enabling, setEnabling] = useState(false);
+
+  const enable = (request: () => Promise<unknown>) => {
+    enablingRef.current = true;
+    setEnabling(true);
+    request().finally(() => {
+      enablingRef.current = false;
+      setEnabling(false);
+    });
+  };
 
   // Follow the engine whenever it changes underneath us (other tools, restore).
   useEffect(() => {
@@ -61,11 +73,19 @@ function ProjectionMenu({ viewportId, className }: ProjectionMenuProps) {
   const max = Math.max(Math.ceil(slabRange?.max ?? 100), min + SLAB_SLIDER_STEP);
   const singleMode = modes.length === 1;
   const toggleMode = modes[0];
+  // canEnable means the layer is a volume, or a stack on reconstructable data.
+  const slabAvailable = isProjecting || canEnable;
 
   const onDraftChange = (value: number) => {
     setDraft(value);
     if (commitTimer.current !== null) {
       clearTimeout(commitTimer.current);
+      commitTimer.current = null;
+    }
+    // A slider change while off turns projection on immediately, once.
+    if (!isProjecting && !enablingRef.current) {
+      enable(() => setSlabThickness(value));
+      return;
     }
     commitTimer.current = setTimeout(() => {
       commitTimer.current = null;
@@ -91,9 +111,11 @@ function ProjectionMenu({ viewportId, className }: ProjectionMenuProps) {
               <Switch
                 data-cy="projection-toggle"
                 aria-label={t(toggleMode.label)}
-                checked={isProjecting}
-                disabled={!canEnable && !isProjecting}
-                onCheckedChange={checked => setMode(checked ? toggleMode.id : 'none')}
+                checked={isProjecting || enabling}
+                disabled={enabling || !slabAvailable}
+                onCheckedChange={checked =>
+                  checked ? enable(() => setMode(toggleMode.id)) : setMode('none')
+                }
               />
             </div>
           ) : (
@@ -102,7 +124,7 @@ function ProjectionMenu({ viewportId, className }: ProjectionMenuProps) {
               aria-label={t('Projection')}
               className="bg-popover text-foreground border-input rounded border px-2 py-1 text-sm"
               value={modeId}
-              disabled={!canEnable && !isProjecting}
+              disabled={enabling || !slabAvailable}
               onChange={event => setMode(event.target.value as typeof modeId)}
             >
               <option value="none">{t('Projection off')}</option>
@@ -117,36 +139,40 @@ function ProjectionMenu({ viewportId, className }: ProjectionMenuProps) {
             </select>
           )}
         </div>
-        <div className="mb-1 flex items-center justify-between">
-          <span className="text-muted-foreground text-sm">{t('Slab thickness')}</span>
-          <span
-            className="text-foreground text-sm"
-            data-cy="projection-slab-value"
-          >
-            {`${Math.round(draft)} mm`}
-          </span>
-        </div>
-        <Numeric.Container
-          mode="singleRange"
-          value={draft}
-          onChange={(val: number | [number, number]) => {
-            if (typeof val === 'number') {
-              onDraftChange(val);
-            }
-          }}
-          min={min}
-          max={max}
-          step={SLAB_SLIDER_STEP}
-        >
-          <div data-cy="projection-slab-slider">
-            <Numeric.SingleRange showNumberInput={false} />
-          </div>
-          <div className="mt-1 flex justify-between">
-            <span className="text-muted-foreground text-xs">{`${min} mm`}</span>
-            <span className="text-muted-foreground text-xs">{`${max} mm`}</span>
-          </div>
-        </Numeric.Container>
-        {!canEnable && reasonText ? (
+        {slabAvailable ? (
+          <>
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-muted-foreground text-sm">{t('Slab thickness')}</span>
+              <span
+                className="text-foreground text-sm"
+                data-cy="projection-slab-value"
+              >
+                {`${Math.round(draft)} mm`}
+              </span>
+            </div>
+            <Numeric.Container
+              mode="singleRange"
+              value={draft}
+              onChange={(val: number | [number, number]) => {
+                if (typeof val === 'number') {
+                  onDraftChange(val);
+                }
+              }}
+              min={min}
+              max={max}
+              step={SLAB_SLIDER_STEP}
+            >
+              <div data-cy="projection-slab-slider">
+                <Numeric.SingleRange showNumberInput={false} />
+              </div>
+              <div className="mt-1 flex justify-between">
+                <span className="text-muted-foreground text-xs">{`${min} mm`}</span>
+                <span className="text-muted-foreground text-xs">{`${max} mm`}</span>
+              </div>
+            </Numeric.Container>
+          </>
+        ) : null}
+        {!slabAvailable && reasonText ? (
           <div
             className="text-muted-foreground mt-2 text-xs"
             data-cy="projection-unsupported-reason"

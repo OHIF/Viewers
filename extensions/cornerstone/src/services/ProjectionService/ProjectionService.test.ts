@@ -165,6 +165,19 @@ describe('ProjectionService', () => {
     expect(service.getProjection()).toEqual({ blendOp: 'max', slabThickness: 30 });
   });
 
+  it('setSlabThickness while off turns MIP on with that thickness', async () => {
+    await service.setSlabThickness({ slabThickness: 40 });
+    expect(service.getProjection()).toEqual({ blendOp: 'max', slabThickness: 40 });
+    expect(viewport.render).toHaveBeenCalledTimes(1);
+  });
+
+  it('an off request sent during a pending on request wins', async () => {
+    const on = service.setProjectionMode({ modeId: 'mip' });
+    const off = service.setProjectionMode({ modeId: 'none' });
+    await Promise.all([on, off]);
+    expect(service.getProjection()).toEqual({ blendOp: 'none', slabThickness: 0 });
+  });
+
   it('clamps the slab thickness to the volume diagonal', async () => {
     await service.setProjectionMode({ modeId: 'mip', slabThickness: 100000 });
     expect(service.getProjection()?.slabThickness).toBeCloseTo(Math.sqrt(3) * 32);

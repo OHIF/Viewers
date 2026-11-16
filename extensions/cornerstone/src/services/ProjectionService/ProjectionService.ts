@@ -109,6 +109,8 @@ export default class ProjectionService extends PubSubService {
   private readonly servicesManager: AppTypes.ServicesManager;
   private readonly commandsManager: AppTypes.CommandsManager;
   private readonly stored = new Map<string, Map<string, StoredProjection>>();
+  /** Tail of the request chain per viewport; see setProjectionMode. */
+  private readonly queues = new Map<string, Promise<unknown>>();
   private subscriptions: Array<() => void> | undefined;
 
   constructor(
@@ -122,7 +124,40 @@ export default class ProjectionService extends PubSubService {
 
   // ---- public API (the two entry points plus read-back) ----
 
-  public async setProjectionMode(args: SetProjectionModeArgs): Promise<ProjectionServiceResult> {
+  /**
+   * Sets the projection mode of a layer. Requests for one viewport run one at a
+   * time, in call order, so an off request during a stack promotion or a volume
+   * load is applied after the pending on request and is never lost.
+   */
+  public setProjectionMode(args: SetProjectionModeArgs): Promise<ProjectionServiceResult> {
+    return this.enqueue(args.viewportId, () => this.applyProjectionMode(args));
+  }
+
+  /**
+   * Sets the slab thickness of a layer. When no projection is active, the
+   * request turns projection on (the stored mode, else MIP) with this thickness.
+   */
+  public setSlabThickness(args: SetSlabThicknessArgs): Promise<ProjectionServiceResult> {
+    return this.enqueue(args.viewportId, () => this.applySlabThickness(args));
+  }
+
+  private enqueue(
+    viewportId: string | undefined,
+    request: () => Promise<ProjectionServiceResult>
+  ): Promise<ProjectionServiceResult> {
+    const key = this.resolveViewportId(viewportId) ?? '';
+    const result = (this.queues.get(key) ?? Promise.resolve()).then(request, request);
+    const tail = result.catch(() => undefined);
+    this.queues.set(key, tail);
+    tail.then(() => {
+      if (this.queues.get(key) === tail) {
+        this.queues.delete(key);
+      }
+    });
+    return result;
+  }
+
+  private async applyProjectionMode(args: SetProjectionModeArgs): Promise<ProjectionServiceResult> {
     this.ensureSubscriptions();
     const mode = getProjectionMode(args.modeId);
     const viewportId = this.resolveViewportId(args.viewportId);
@@ -204,12 +239,7 @@ export default class ProjectionService extends PubSubService {
     return { applied: true, projection: projection ?? write };
   }
 
-  /**
-   * Reads the current mode from the engine and restates it with the new
-   * thickness. When no projection is active the thickness is only stored as
-   * the preferred value for the next enable.
-   */
-  public async setSlabThickness(args: SetSlabThicknessArgs): Promise<ProjectionServiceResult> {
+  private async applySlabThickness(args: SetSlabThicknessArgs): Promise<ProjectionServiceResult> {
     this.ensureSubscriptions();
     const viewportId = this.resolveViewportId(args.viewportId);
     const viewport = viewportId ? this.getViewport(viewportId) : undefined;
@@ -220,28 +250,16 @@ export default class ProjectionService extends PubSubService {
     if (!displaySetInstanceUID) {
       return this.refuse('no-layer');
     }
-    const adapter = getViewportAdapter(viewport);
-    const current = adapter.getProjection(displaySetInstanceUID);
+    const current = getViewportAdapter(viewport).getProjection(displaySetInstanceUID);
     const currentModeId = current ? this.modeIdForBlendOp(current.blendOp) : undefined;
+    const projecting = !!currentModeId && currentModeId !== 'none';
 
-    if (!current || !currentModeId || current.blendOp === 'none') {
-      const stored = this.getStored(viewportId, displaySetInstanceUID);
-      this.remember(viewportId, displaySetInstanceUID, {
-        modeId: stored?.modeId ?? 'mip',
-        slabThickness: this.clampSlab(
-          args.slabThickness,
-          adapter.getSlabRange(displaySetInstanceUID)
-        ),
-      });
-      // Nothing projects, so do not wake the engine; only a stored preference changed.
-      const projection = this.broadcast(viewportId, displaySetInstanceUID);
-      return { applied: true, projection: projection ?? { blendOp: 'none', slabThickness: 0 } };
-    }
-
-    return this.setProjectionMode({
+    return this.applyProjectionMode({
       viewportId,
       displaySetInstanceUID,
-      modeId: currentModeId,
+      modeId: projecting
+        ? currentModeId
+        : (this.getStored(viewportId, displaySetInstanceUID)?.modeId ?? 'mip'),
       slabThickness: args.slabThickness,
     });
   }
@@ -303,6 +321,7 @@ export default class ProjectionService extends PubSubService {
     this.subscriptions?.forEach(unsubscribe => unsubscribe());
     this.subscriptions = undefined;
     this.stored.clear();
+    this.queues.clear();
   }
 
   // ---- internals ----

@@ -443,7 +443,7 @@ class CornerstoneViewportService
       return;
     }
 
-    const cleanProperties = properties => {
+    const cleanProperties = (properties, isFusion = false) => {
       if (properties?.isComputedVOI) {
         delete properties?.voiRange;
         delete properties?.VOILUTFunction;
@@ -453,11 +453,9 @@ class CornerstoneViewportService
           delete properties.colormap.opacity;
         }
       }
-      // Slab thickness is a per-layer projection property owned by the
-      // ProjectionService. The legacy engine reports it viewport-wide and a
-      // setProperties({ slabThickness }) restore would write it to EVERY layer
-      // of a fusion viewport, so it never travels through the LUT presentation.
-      if (properties && 'slabThickness' in properties) {
+      // In a fusion the engine reports the slab viewport-wide, and a restore would
+      // write it to every layer; the ProjectionService restores per layer instead.
+      if (isFusion && properties && 'slabThickness' in properties) {
         delete properties.slabThickness;
       }
       return properties;
@@ -470,7 +468,7 @@ class CornerstoneViewportService
     if (properties instanceof Map) {
       const volumeIds = (csViewport as Types.IBaseVolumeViewport).getAllVolumeIds();
       volumeIds?.forEach(volumeId => {
-        const csProps = cleanProperties(csViewport.getProperties(volumeId));
+        const csProps = cleanProperties(csViewport.getProperties(volumeId), volumeIds.length > 1);
         properties.set(volumeId, csProps);
       });
     }

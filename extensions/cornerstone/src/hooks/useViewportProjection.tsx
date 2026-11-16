@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSystem } from '@ohif/core';
 import { Enums as csEnums, eventTarget } from '@cornerstonejs/core';
-import type { ProjectionSnapshot } from '../services/ProjectionService';
+import type { ProjectionServiceResult, ProjectionSnapshot } from '../services/ProjectionService';
 import {
   getUiExposedProjectableModes,
   type ProjectionModeDefinition,
@@ -100,24 +100,34 @@ export function useViewportProjection(
     };
   }, [read, projectionService, cornerstoneViewportService, viewportId, displaySetInstanceUID]);
 
+  const { uiNotificationService } = servicesManager.services;
+  const run = useCallback(
+    async (command: string, args: Record<string, unknown>): Promise<unknown> => {
+      const result = (await commandsManager.run(command, {
+        viewportId,
+        displaySetInstanceUID,
+        ...args,
+      })) as ProjectionServiceResult | undefined;
+      if (result && !result.applied) {
+        uiNotificationService?.show({
+          title: 'Projection',
+          message: result.message,
+          type: 'warning',
+        });
+      }
+      return result;
+    },
+    [commandsManager, uiNotificationService, viewportId, displaySetInstanceUID]
+  );
+
   const setMode = useCallback(
-    (modeId: ProjectionModeId): Promise<unknown> =>
-      Promise.resolve(
-        commandsManager.run('setProjectionMode', { viewportId, modeId, displaySetInstanceUID })
-      ),
-    [commandsManager, viewportId, displaySetInstanceUID]
+    (modeId: ProjectionModeId) => run('setProjectionMode', { modeId }),
+    [run]
   );
 
   const setSlabThickness = useCallback(
-    (slabThickness: number): Promise<unknown> =>
-      Promise.resolve(
-        commandsManager.run('setSlabThickness', {
-          viewportId,
-          slabThickness,
-          displaySetInstanceUID,
-        })
-      ),
-    [commandsManager, viewportId, displaySetInstanceUID]
+    (slabThickness: number) => run('setSlabThickness', { slabThickness }),
+    [run]
   );
 
   const projection = snapshot?.projection;
