@@ -32,6 +32,10 @@ The following is an example command running the Docker container over SSL. Note 
 docker run -d -e SSL_PORT=443 -p 3003:443/tcp -v /path/to/certificate:/etc/ssl/certs/ssl-certificate.crt -v /path/to/private/key:/etc/ssl/private/ssl-private-key.key --name ohif-viewer-container ohif-viewer-image
 ```
 
+:::tip
+The SSL configuration also serves HTTP/3 (QUIC) over UDP on `{SSL_PORT}`, and it sends an `Alt-Svc` header that names `{SSL_PORT}`. To use HTTP/3, publish the UDP port with the same host port number as `{SSL_PORT}`, for example `-p 443:443/tcp -p 443:443/udp`. Otherwise the browser uses HTTP/2 over TCP.
+:::
+
 :::caution
 The above deploys OHIF over SSL using `nginx`'s default SSL configuration. For further OHIF server hardening and security configuration, consider enlisting an expert and then editing OHIF's `nginx` [SSL template configuration file](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.ssl.conf.template) with further [security settings](https://nginx.org/en/docs/http/ngx_http_ssl_module.html) and [tweaks](http://nginx.org/en/docs/http/configuring_https_servers.html) and then [build a new Docker image](#building-the-docker-image) from there.
 :::
