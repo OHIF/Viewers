@@ -4,7 +4,6 @@ import {
   test,
   visitStudy,
   waitForViewportRenderCycle,
-  waitForViewportsRendered,
 } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
@@ -49,7 +48,6 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
   // navigation is focus-dependent and lossy, so jump via the app command.
   const defaultViewport = await viewportPageObject.getById('default');
   await defaultViewport.sliceNavigation.toSlice(12);
-  await waitForViewportsRendered(page);
 
   await checkForGridScreenshot({
     page,

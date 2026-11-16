@@ -457,7 +457,7 @@ const toolbarButtons: Button[] = [
         'evaluate.cornerstoneTool',
         {
           name: 'evaluate.modality.supported',
-          supportedModalities: ['US'],
+          supportedModalities: ['US', 'ECG'],
         },
       ],
     },

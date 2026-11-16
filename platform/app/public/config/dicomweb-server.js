@@ -21,7 +21,6 @@ window.config = {
         wadoUriRoot: 'http://localhost:5985',
         qidoRoot: 'http://localhost:5985',
         wadoRoot: 'http://localhost:5985',
-        qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadouri',
         thumbnailRendering: 'wadouri',

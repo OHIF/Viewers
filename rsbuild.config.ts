@@ -9,6 +9,7 @@ import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFi
 import resolveConfig from './.webpack/resolveConfig';
 // Service-worker manifest injection shared with the rspack build (webpack.pwa.js).
 import InjectServiceWorkerManifestPlugin from './platform/app/.webpack/InjectServiceWorkerManifestPlugin';
+import optionalSplitRulesCopyPattern from './platform/app/.webpack/optionalSplitRulesCopyPattern';
 import fs from 'fs';
 
 const APP_ROOT = path.resolve(__dirname, './platform/app');
@@ -79,6 +80,7 @@ export default defineConfig(({ env }) => {
         'process.env.PUBLIC_URL': JSON.stringify(PUBLIC_URL),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
+        'process.env.DCMJS_VERSION': JSON.stringify(require('./.webpack/dcmjsVersion')),
         'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
         'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
@@ -292,6 +294,7 @@ export default defineConfig(({ env }) => {
           to: `${DIST_DIR}/ort`,
           force: true,
         },
+        optionalSplitRulesCopyPattern(DIST_DIR),
         // Copy the public directory except config/ and html-templates/.
         // Enumerated explicitly because CopyRspackPlugin's globOptions.ignore
         // is not reliably honored across the rspack versions bundled by
