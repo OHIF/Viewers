@@ -123,8 +123,10 @@ let segmentAIEnabled = false;
  * Converts a CSS color (hex or rgb/rgba string) to the { r, g, b, a }
  * object shape the color picker dialog expects.
  */
-function _cssColorToRgba(cssColor: string): { r: number; g: number; b: number; a: number } {
-  const rgbMatch = cssColor.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/);
+function _cssColorToRgba(cssColor = ''): { r: number; g: number; b: number; a: number } {
+  const rgbMatch = cssColor.match(
+    /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/
+  );
   if (rgbMatch) {
     return {
       r: Number(rgbMatch[1]),
@@ -133,12 +135,7 @@ function _cssColorToRgba(cssColor: string): { r: number; g: number; b: number; a
       a: rgbMatch[4] !== undefined ? Number(rgbMatch[4]) : 1,
     };
   }
-  const hexMatch = cssColor.match(/^#?([0-9a-f]{6})$/i);
-  if (hexMatch) {
-    const hex = parseInt(hexMatch[1], 16);
-    return { r: (hex >> 16) & 255, g: (hex >> 8) & 255, b: hex & 255, a: 1 };
-  }
-  return { r: 255, g: 255, b: 0, a: 1 };
+  return { r: 255, g: 255, b: 0, ...csUtils.color.hexToRgb(cssColor), a: 1 };
 }
 
 function commandsModule({
@@ -882,11 +879,10 @@ function commandsModule({
         return;
       }
 
-      const currentColor =
-        annotation.config.style.getStyleProperty('color', {
-          annotationUID: uid,
-          toolName: measurement.toolName,
-        }) || 'rgb(255, 255, 0)';
+      const currentColor = annotation.config.style.getStyleProperty('color', {
+        annotationUID: uid,
+        toolName: measurement.toolName,
+      });
 
       uiDialogService.show({
         content: colorPickerDialog,
@@ -894,7 +890,8 @@ function commandsModule({
         contentProps: {
           value: _cssColorToRgba(currentColor),
           onSave: newRgbaColor => {
-            const cssColor = `rgb(${newRgbaColor.r}, ${newRgbaColor.g}, ${newRgbaColor.b})`;
+            const { r, g, b, a = 1 } = newRgbaColor;
+            const cssColor = `rgba(${r}, ${g}, ${b}, ${a})`;
             actions.updateMeasurement({
               uid,
               style: {
