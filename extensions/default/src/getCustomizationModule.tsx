@@ -4,6 +4,7 @@ import datasourcesCustomization from './customizations/datasourcesCustomization'
 import multimonitorCustomization from './customizations/multimonitorCustomization';
 import customRoutesCustomization from './customizations/customRoutesCustomization';
 import studyBrowserCustomization from './customizations/studyBrowserCustomization';
+import thumbnailDetailsCustomization from './customizations/thumbnailDetailsCustomization';
 import overlayItemCustomization from './customizations/overlayItemCustomization';
 import contextMenuCustomization from './customizations/contextMenuCustomization';
 import contextMenuUICustomization from './customizations/contextMenuUICustomization';
@@ -25,6 +26,11 @@ import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomiz
 import onboardingCustomization from './customizations/onboardingCustomization';
 import instanceSortingCriteriaCustomization from './customizations/instanceSortingCriteriaCustomization';
 import getWorkListCustomization from './customizations/workListCustomization';
+import getMetadataDisplaySetCustomization from './customizations/metadataDisplaySetCustomization';
+import getMetadataContextCustomization from './customizations/metadataContextCustomization';
+import headerRightSideCustomization from './customizations/headerRightSideCustomization';
+import hideHeaderUndoRedoCustomization from './customizations/hideHeaderUndoRedoCustomization';
+import hangingProtocolsCustomization from './customizations/hangingProtocolsCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -34,11 +40,19 @@ import getWorkListCustomization from './customizations/workListCustomization';
  * custom page for the user to view their profile, or to add a custom
  * page for login etc.
  */
-export default function getCustomizationModule({ servicesManager, extensionManager }) {
+export default function getCustomizationModule({ servicesManager, extensionManager, appConfig }) {
   return [
     {
       name: 'helloPage',
       value: helloPageCustomization,
+    },
+    {
+      // Enables metadata-driven display set splitting when listed in
+      // `appConfig.customizationService` (Global scope).
+      name: 'metadataDisplaySet',
+      value: {
+        useMetadataDisplaySet: { enabled: { $set: true } },
+      },
     },
     {
       name: 'theme',
@@ -53,10 +67,17 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       value: multimonitorCustomization,
     },
     {
+      // Opt-in: drops the undo/redo buttons from the right side of the
+      // header's menu bar, leaving the rest of that list in place.
+      name: 'hideHeaderUndoRedo',
+      value: hideHeaderUndoRedoCustomization,
+    },
+    {
       name: 'default',
       value: {
         ...customRoutesCustomization,
         ...studyBrowserCustomization,
+        ...thumbnailDetailsCustomization,
         ...overlayItemCustomization,
         ...contextMenuCustomization,
         ...menuContentCustomization,
@@ -78,6 +99,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...onboardingCustomization,
         ...instanceSortingCriteriaCustomization,
         ...getWorkListCustomization(),
+        ...getMetadataDisplaySetCustomization({ servicesManager, extensionManager, appConfig }),
+        ...getMetadataContextCustomization(),
+        ...headerRightSideCustomization,
+        ...hangingProtocolsCustomization,
       },
     },
   ];

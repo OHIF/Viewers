@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { CodeNameCodeSequenceValues } from '../enums';
 import formatContentItemValue from '../utils/formatContentItem';
@@ -54,10 +53,6 @@ function OHIFCornerstoneSRContentItem(props) {
   );
 }
 
-OHIFCornerstoneSRContentItem.propTypes = {
-  contentItem: PropTypes.object,
-  nodeIndexesTree: PropTypes.arrayOf(PropTypes.number),
-  continuityOfContent: PropTypes.string,
-};
+
 
 export { OHIFCornerstoneSRContentItem };

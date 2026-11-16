@@ -11,6 +11,10 @@ const state = {
  * if there are two viewports rendering the same imageId, we don't want to show
  * the same SR annotation twice on irrelevant viewport, hence, we are storing the state
  * of the SR tools in state here, so that we can filter them later.
+ *
+ * Each lookup below tolerates a disabled element: switching display sets in a
+ * viewport tears the old one down while callers may still hold a reference to
+ * it, and getEnabledElement returns undefined for it rather than throwing.
  */
 
 function setTrackingUniqueIdentifiersForElement(
@@ -19,6 +23,12 @@ function setTrackingUniqueIdentifiersForElement(
   activeIndex = 0
 ) {
   const enabledElement = getEnabledElement(element);
+
+  // The element may have been disabled since the caller captured it.
+  if (!enabledElement) {
+    return;
+  }
+
   const { viewport } = enabledElement;
 
   state.trackingIdentifiersByViewportId[viewport.id] = {
@@ -29,6 +39,12 @@ function setTrackingUniqueIdentifiersForElement(
 
 function setActiveTrackingUniqueIdentifierForElement(element, TrackingUniqueIdentifier) {
   const enabledElement = getEnabledElement(element);
+
+  // The element may have been disabled since the caller captured it.
+  if (!enabledElement) {
+    return;
+  }
+
   const { viewport } = enabledElement;
 
   const trackingIdentifiersForElement = state.trackingIdentifiersByViewportId[viewport.id];
@@ -44,6 +60,12 @@ function setActiveTrackingUniqueIdentifierForElement(element, TrackingUniqueIden
 
 function getTrackingUniqueIdentifiersForElement(element) {
   const enabledElement = getEnabledElement(element);
+
+  // The element may have been disabled since the caller captured it.
+  if (!enabledElement) {
+    return { trackingUniqueIdentifiers: [] };
+  }
+
   const { viewport } = enabledElement;
 
   if (state.trackingIdentifiersByViewportId[viewport.id]) {

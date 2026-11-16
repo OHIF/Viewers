@@ -35,6 +35,45 @@ window.config = {
 
 With this example, navigation preserves the default keys plus `customizationAlt` and `experimentFlag`.
 
+## `ohif.headerRightSide`
+
+- **Purpose**: Fills the right side of the viewer header's menu bar, ahead of the
+  settings menu. The key is named for the area, not its contents — the shipped
+  default is the undo/redo buttons followed by the patient info, but the list is
+  yours to reorder, extend or trim.
+- **Value**: `{ items: ComponentType[] }` — an ordered list of components.
+- **How it is applied**: `ViewerHeader` renders each entry as a component
+  (`<Item />`) in array order, each in its own slot with a separator after it. An
+  item takes no props and may use hooks (both defaults use `useSystem()`), and an
+  item that renders `null` collapses its slot and separator — that is how patient
+  info disappears under `showPatientInfo: 'disabled'`.
+- **Default**: `extensions/default/src/customizations/headerRightSideCustomization.ts`.
+
+Reordering the list reorders the header — putting patient info ahead of undo/redo
+is just a different array:
+
+```js
+import HeaderPatientInfo from '@ohif/extension-default/src/ViewerLayout/HeaderPatientInfo';
+import HeaderUndoRedo from '@ohif/extension-default/src/ViewerLayout/HeaderUndoRedo';
+
+window.config = {
+  customizationService: [
+    { 'ohif.headerRightSide': { items: { $set: [HeaderPatientInfo, HeaderUndoRedo] } } },
+  ],
+};
+```
+
+Adding your own component is a `$push`, and removing one is a `$filter`.
+`extension-default` ships the undo/redo removal as a named customization module,
+so hiding those buttons — and only those, leaving the rest of the list alone — is
+a one-line config change:
+
+```js
+window.config = {
+  customizationService: ['@ohif/extension-default.customizationModule.hideHeaderUndoRedo'],
+};
+```
+
 ## `customizationUrlPrefixes` (app config)
 
 - **Purpose**: Allowlist of prefixes that `?customization=` values may resolve against. The `?customization=` feature is **off until this is configured**.
@@ -300,6 +339,60 @@ also append to a list or merge into an existing object rather than replacing it 
 > customizations at the bottom of the mode scope, then applies the `mode` phase blocks, then
 > resolves the sidebars from the final values — so commands compose with the mode's own list and
 > global-scope values win by scope precedence.
+
+#### 5. Select the GPU settings preset
+
+Select the GPU settings preset that a volume viewport fits its texture to (key:
+`cornerstone.gpuSettingsPreset`). The value is the `id` of a Cornerstone3D GPU settings preset. A
+preset is a named set of values: the largest texture edge and the texture memory. A viewport reduces
+its texture to fit those values, which is a lossy final downsampling.
+
+A preset applies only when final downsampling is on. The app config turns it on with
+`lossyDownsampling: { final: true }`. `config/dev.js`, `config/netlify.js`, `config/e2e.js` and
+`config/customization.js` do that. The other bundled configs, `config/default.js` and the Docker
+recipes among them, do not. A value in this customization also turns final downsampling on, so a
+deployment of `config/default.js` gets the preset that it selects. `config/default.js` has no
+`customizationUrlPrefixes`, so `?customization=gpu/...` stops the app at startup there. Set the
+value through `customizationService` in the config, or use a config that allows URL
+customizations. When no
+module sets the key, the default preset of Cornerstone3D applies, and only if the app config turns
+final downsampling on.
+
+Set the key in the `bootstrap` phase, so the value is in place before the cornerstone extension
+registers. The `global` phase also works, because the extension re-reads the value when the global
+phase applies, and both phases run before a mode opens a viewport.
+
+No preset tests the device. A preset is a set of values, and a real device may hold more or less
+than the preset states. A later pull request will add an automatic mode that probes the device.
+
+```jsonc
+// platform/app/public/customizations/gpu/low-tablet.jsonc  ->  ?customization=gpu/low-tablet
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "low-tablet"
+  }
+}
+```
+
+The shipped files, one for each preset:
+
+| Value | Texture edge | Texture memory | Use |
+| ----- | ------------ | -------------- | --- |
+| `gpu/low-tablet` | 256 | 1 GB | Almost every volume reduces, so the reduction is easy to see. |
+| `gpu/low` | 256 | 2 GB | A weak integrated GPU. The same edge as `low-tablet`, with more memory. |
+| `gpu/medium` | 2048 | 8 GB | A device of the middle class. |
+| `gpu/high` | 2048 | 32 GB | The largest memory. A device of the middle class can crash under it. |
+| `gpu/high-texture-4096` | 4096 | 32 GB | Testing only: a control that fits no real device. |
+
+Pick exactly one file. A later value in the `?customization=` list overrides an earlier one.
+
+**`gpu/high-texture-4096` is a control.** No device is tested to render a texture edge above 2048.
+Some devices report a larger `MAX_3D_TEXTURE_SIZE`, but a reported size is not a reliable limit, so
+a real device can fail to allocate the texture. The preset exists to show that a reduction comes
+from the limit and not from a defect: a series renders with no reduction under
+`gpu/high-texture-4096` and with a reduction under `gpu/medium`. Do not select the preset in
+production. When the automatic mode is re-implemented, use this preset to test the path of a device
+that reports a large texture edge.
 
 ### URL modules, bootstrap, and client-side navigation (intended behavior)
 
