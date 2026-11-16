@@ -111,12 +111,6 @@ export default class ToolbarService extends PubSubService {
   _servicesManager: AppTypes.ServicesManager;
   _evaluateFunction: Record<string, EvaluateFunction> = {};
   _serviceSubscriptions = [];
-  /**
-   * Enhanced option -> the pristine option it was built from, so repeated
-   * refreshes re-wrap the original rather than the previous wrapper. Weak so
-   * discarded wrappers stay collectable.
-   */
-  private _pristineOptions = new WeakMap<ButtonOptions, ButtonOptions>();
 
   constructor(
     commandsManager: CommandsManager,
@@ -596,71 +590,55 @@ export default class ToolbarService extends PubSubService {
 
     !buttonSection ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
-    const { id: buttonId, props: componentProps } = btn;
+    const { props: componentProps } = btn;
 
-    const createEnhancedOptions = (options: ButtonOptions[], itemId) => {
-      const optionsToUse = Array.isArray(options) ? options : [options];
-      const toolProps = this.getButtonProps(itemId);
+    /**
+     * Wraps each option of `owner` with an `onChange` handler. The caller writes
+     * the result back to `owner.options`, so the next refresh wraps these wrappers.
+     * The handler therefore closes over `owner` and the option id only, and finds
+     * the live option at call time. A handler that closed over the option object
+     * would retain the previous wrapper, and each refresh would add one link to a
+     * chain that `state.buttons` keeps alive.
+     */
+    const createEnhancedOptions = (owner: { options?: ButtonOptions | ButtonOptions[] }) => {
+      const optionsToUse = Array.isArray(owner.options) ? owner.options : [owner.options];
 
-      return optionsToUse.map(currentOption => {
-        if (typeof currentOption.optionComponent === 'function') {
-          return currentOption;
+      return optionsToUse.map(option => {
+        if (typeof option.optionComponent === 'function') {
+          return option;
         }
+        const optionId = option.id;
 
-        // Enhanced options are written back onto the button props below, so a
-        // refresh sees the previous pass's output here. onChange must close over
-        // the option the button was defined with: closing over the wrapper would
-        // make each refresh's closure retain the previous one, and the button
-        // props keep the newest wrapper reachable — so the chain would grow by
-        // one closure per refresh and never become collectable.
-        const original = this._pristineOptions.get(currentOption) ?? currentOption;
-
-        // Spread the current option rather than the original, because evaluate
-        // functions run before this and write live tool state onto whatever is
-        // on the button props at that moment.
-        const enhancedOption = {
-          ...currentOption,
+        return {
+          ...option,
           onChange: value => {
-            // Update the option's value for UI
-            original.value = value;
-            enhancedOption.value = value;
-
-            const cmds = Array.isArray(original.commands)
-              ? original.commands
-              : [original.commands];
-
-            // Find the parent button and update its options
-            if (toolProps && toolProps.options) {
-              // Find the option in the button's options array and update its value
-              const optionIndex = toolProps.options.findIndex(opt => opt.id === original.id);
-              if (optionIndex !== -1) {
-                toolProps.options[optionIndex].value = value;
-              }
+            const options = owner.options as ButtonOptions[];
+            const liveOption = options.find(opt => opt.id === optionId);
+            if (!liveOption) {
+              return;
             }
+            liveOption.value = value;
+
+            const cmds = Array.isArray(liveOption.commands)
+              ? liveOption.commands
+              : [liveOption.commands];
 
             cmds.forEach(command => {
-              const commandOptions = {
-                ...original,
+              this._commandsManager.run(command, {
+                ...liveOption,
                 value,
-                options: toolProps.options,
+                options,
                 servicesManager: this._servicesManager,
                 commandsManager: this._commandsManager,
-              };
-
-              this._commandsManager.run(command, commandOptions);
+              });
             });
 
-            // Notify that toolbar state has been modified
             this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
               buttons: this.state.buttons,
               buttonSections: this.state.buttonSections,
             });
           },
         };
-
-        this._pristineOptions.set(enhancedOption, original);
-
-        return enhancedOption;
       });
     };
 
@@ -671,12 +649,11 @@ export default class ToolbarService extends PubSubService {
         if (!item.options) {
           return;
         }
-        item.options = createEnhancedOptions(item.options, item.id);
+        item.options = createEnhancedOptions(item);
       });
     } else if ((componentProps as ButtonProps).options?.length) {
       (componentProps as ButtonProps).options = createEnhancedOptions(
-        (componentProps as ButtonProps).options,
-        buttonId
+        componentProps as ButtonProps
       );
     } else if ((componentProps as ButtonProps).optionComponent) {
       (componentProps as ButtonProps).optionComponent = options.optionComponent;

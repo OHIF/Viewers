@@ -6,9 +6,7 @@ function createService() {
   const commandsManager = { run: jest.fn() };
   const extensionManager = {
     modules: {
-      toolbarModule: [
-        { module: [{ name: BUTTON_UI_TYPE, defaultComponent: () => null }] },
-      ],
+      toolbarModule: [{ module: [{ name: BUTTON_UI_TYPE, defaultComponent: () => null }] }],
     },
   };
   const servicesManager = { services: {} };
@@ -63,54 +61,18 @@ function currentNestedOption(service) {
 }
 
 describe('ToolbarService option enhancement', () => {
-  it('keeps the button definition as the source of truth across repeated refreshes', () => {
+  it('writes onChange values to the live option after repeated refreshes', () => {
     const { service } = createService();
-    const option = { id: 'radius', value: 5, commands: [] };
-    addButtonWithOption(service, option);
+    addButtonWithOption(service, { id: 'radius', value: 5, commands: [] });
 
-    // Every refresh re-wraps the button's options. If a refresh wrapped the
-    // previous wrapper instead of the original, onChange would write to that
-    // intermediate object and the button's own option would go stale.
+    // A stale wrapper from an earlier refresh must also write to the live option.
+    const stale = currentOption(service);
     currentOption(service);
     currentOption(service);
-    currentOption(service).onChange(42);
+    stale.onChange(42);
 
-    expect(option.value).toBe(42);
-  });
-
-  it('returns a fresh wrapper over the same option on each refresh', () => {
-    const { service } = createService();
-    const option = { id: 'radius', value: 5, commands: [] };
-    addButtonWithOption(service, option);
-
-    const first = currentOption(service);
-    const second = currentOption(service);
-
-    // Each refresh yields a fresh wrapper over the same original, so the
-    // wrapper never nests: its own enumerable shape stays that of the original.
-    expect(Object.keys(second).sort()).toEqual(Object.keys(first).sort());
-    expect(second).not.toBe(first);
-    expect(second.id).toBe('radius');
-  });
-
-  it('anchors every wrapper to the definition, never to the previous wrapper', () => {
-    const { service } = createService();
-    const option = { id: 'radius', value: 5, commands: [] };
-    addButtonWithOption(service, option);
-
-    const wrappers = [currentOption(service), currentOption(service), currentOption(service)];
-
-    const { _pristineOptions } = service as unknown as {
-      _pristineOptions: WeakMap<object, object>;
-    };
-
-    // This is what keeps the closure chain from forming: onChange closes over
-    // whatever this resolves to, so it must be the definition every time. If a
-    // refresh anchored to the previous wrapper, each closure would retain the
-    // one before it and the chain would grow by one per refresh.
-    for (const wrapper of wrappers) {
-      expect(_pristineOptions.get(wrapper)).toBe(option);
-    }
+    expect(service.getButtonProps('brush').options[0].value).toBe(42);
+    expect(currentOption(service).value).toBe(42);
   });
 
   it('keeps live values an evaluate function wrote onto the button props', () => {
@@ -152,5 +114,18 @@ describe('ToolbarService option enhancement', () => {
       expect.objectContaining({ value: 9, id: 'radius' })
     );
     expect(onStateModified).toHaveBeenCalled();
+  });
+
+  it('runs the option commands of a nested button that is not registered on its own', () => {
+    const { service, commandsManager } = createService();
+    addNestedButtonWithOption(service, { id: 'radius', value: 5, commands: ['setBrushSize'] });
+
+    currentNestedOption(service).onChange(9);
+
+    expect(service.getButtonProps('toolbox').items[0].options[0].value).toBe(9);
+    expect(commandsManager.run).toHaveBeenCalledWith(
+      'setBrushSize',
+      expect.objectContaining({ value: 9, id: 'radius' })
+    );
   });
 });
