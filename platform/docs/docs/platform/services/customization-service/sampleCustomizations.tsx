@@ -1093,6 +1093,24 @@ window.config = {
   `,
   },
   {
+    id: 'viewportGrid.emptyViewport',
+    description:
+      'Component rendered by the viewport grid for a viewport that has no display set. It receives the same props as other viewport components (viewportId, viewportOptions, displaySets, ...). Defaults to an empty element.',
+    default: 'EmptyViewport (renders an empty div)',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportGrid.emptyViewport': {
+        $set: ({ viewportId }) => <div>Drop a series here ({viewportId})</div>,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
     id: 'ui.notificationComponent',
     description: 'Define the component which is used to render viewport notifications',
     default: 'Default Notification component in viewport',
