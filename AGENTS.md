@@ -94,7 +94,7 @@ Aggregates and exposes extension modules throughout the OHIF application, manage
 
 ### Key Technologies
 
-- **React 18 + TypeScript**: UI framework
+- **React 19 + React Compiler + TypeScript**: UI framework. The compiler is on for all workspace source; see the `ohif-react-compiler` skill before editing components or hooks.
 - **Cornerstone.js**: Medical image rendering
 - **DICOM**: Medical imaging standard support
 - **ONNX Runtime**: AI model inference (SAM segmentation models)
@@ -178,7 +178,8 @@ Do not modify the core and always find a way to implement the solution via the e
 
 ## Skills
 
-The `ohif-test-agent` skill (Playwright E2E test guidance) lives at `.agents/skills/ohif-test-agent/`.
+- `ohif-test-agent` — Playwright E2E test guidance. `.agents/skills/ohif-test-agent/`
+- `ohif-react-compiler` — rules and workflow for editing React code under the React Compiler: the CI gates, the budgets, what is banned, and how to read a refusal. `.agents/skills/ohif-react-compiler/`
 
 ## Configuration
 

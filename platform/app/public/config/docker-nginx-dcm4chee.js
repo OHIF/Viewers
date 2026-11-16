@@ -9,6 +9,8 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  // Off by default; can lose the WebGL context on some devices. See configurationFiles.md.
+  // lossyDownsampling: { final: true, interactive: true, interleavedLoading: true },
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
@@ -20,7 +22,6 @@ window.config = {
         wadoUriRoot: '/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: '/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: '/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         dicomUploadEnabled: true,

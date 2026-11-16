@@ -1,5 +1,5 @@
 import {
-  checkForScreenshot,
+  checkForGridScreenshot,
   screenShotPaths,
   test,
   visitStudy,
@@ -27,11 +27,11 @@ test('should properly display MPR for MR', async ({
 
   await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segHydrationFromMPR.mprBeforeSEG
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.segHydrationFromMPR.mprBeforeSEG,
+  });
 
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
@@ -41,11 +41,11 @@ test('should properly display MPR for MR', async ({
   // finished upload rather than a mid-stream frame.
   await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segHydrationFromMPR.mprAfterSEG
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.segHydrationFromMPR.mprAfterSEG,
+  });
 
   // start watching for viewports to render
   const viewportRenderCycle = waitForViewportRenderCycle(page);
@@ -59,11 +59,11 @@ test('should properly display MPR for MR', async ({
   // propagated labelmaps report loadStatus.loaded, then settles.
   await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segHydrationFromMPR.mprAfterSegHydrated
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.segHydrationFromMPR.mprAfterSegHydrated,
+  });
 
   const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
 
@@ -74,9 +74,9 @@ test('should properly display MPR for MR', async ({
   // + labelmap) to report loaded before settling and capturing.
   await waitForViewportsRendered(page);
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.segHydrationFromMPR.mprAfterSegHydratedAfterLayoutChange
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.segHydrationFromMPR.mprAfterSegHydratedAfterLayoutChange,
+  });
 });

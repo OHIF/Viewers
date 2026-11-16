@@ -197,6 +197,30 @@ describe('CustomizationService - Registration + API Operations', () => {
       expect(result).toEqual([1, 2, 99, 4]);
     });
 
+    it('applies $spliceById with an id as the position', () => {
+      customizationService.setCustomizations({
+        IdList: ['video', 'volume3d', { id: 'ecg' }, 'unsupported'],
+      });
+      customizationService.setCustomizations({
+        IdList: {
+          $spliceById: [
+            ['volume3d', 0, 'dwiByBValue'],
+            ['ecg', 1],
+            ['volume3d', 1, 'myVolume'],
+          ],
+        },
+      });
+      expect(customizationService.getCustomization('IdList')).toEqual([
+        'video',
+        'dwiByBValue',
+        'myVolume',
+        'unsupported',
+      ]);
+      expect(() =>
+        customizationService.setCustomizations({ IdList: { $spliceById: [['missing', 1]] } })
+      ).toThrow(/missing/);
+    });
+
     it('applies $push, $unshift, and $splice to default array', () => {
       // Update array using merge commands
       customizationService.setCustomizations({

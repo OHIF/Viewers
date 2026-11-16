@@ -1,4 +1,4 @@
-import { expect, test, visitStudyAndHydrate } from './utils';
+import { expect, press, test, visitStudyAndHydrate } from './utils';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 const defautSegment0Name = 'Threshold';
@@ -14,9 +14,7 @@ test.beforeEach(async ({ page, leftPanelPageObject, DOMOverlayPageObject }) => {
   });
 });
 
-test('should rename contour segments', async ({
-  rightPanelPageObject,
-}) => {
+test('should rename contour segments', async ({ rightPanelPageObject }) => {
   const segment0 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
   const segment1 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1);
 
@@ -53,3 +51,22 @@ test('should not rename segment when dialog is cancelled after filling', async (
 
   await expect(segment.title).toHaveText(defautSegment0Name);
 });
+
+// Expected to fail until https://github.com/OHIF/Viewers/issues/5781 is fixed
+test.fail(
+  'should undo and redo a segment rename',
+  async ({ page, mainToolbarPageObject, rightPanelPageObject }) => {
+    const segment = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
+    await expect(segment.title).toHaveText(defautSegment0Name);
+
+    await segment.actions.rename('Renamed Segment');
+    await expect(segment.title).toHaveText('Renamed Segment');
+    await expect(mainToolbarPageObject.undo.button).toBeEnabled();
+
+    await press({ page, key: 'Control+z' });
+    await expect(segment.title).toHaveText(defautSegment0Name);
+
+    await press({ page, key: 'Control+y' });
+    await expect(segment.title).toHaveText('Renamed Segment');
+  }
+);

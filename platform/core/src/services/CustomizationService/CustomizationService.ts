@@ -1,16 +1,14 @@
 import update, { extend } from 'immutability-helper';
 import JSON5 from 'json5';
+import { spliceById } from '@cornerstonejs/metadata';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
-import type { Customization } from './types';
+import type { Customization, CustomizationEntries } from './types';
 import type { CommandsManager } from '../../classes';
 import type ExtensionManager from '../../extensions/ExtensionManager';
 import { getCustomizationUrlPolicy } from './customizationUrl';
 import { getUrlCustomizationModulePayload } from './getUrlCustomizationModulePayload';
 import { resolveCustomizationUrl } from './resolve';
-import {
-  parseCustomizationParams,
-  validateCustomizationRequests,
-} from './validate';
+import { parseCustomizationParams, validateCustomizationRequests } from './validate';
 import type { ValidatedCustomization } from './validate';
 import type { CustomizationUrlPolicy } from './customizationUrlDefaults';
 import type {
@@ -221,6 +219,17 @@ export default class CustomizationService extends PubSubService {
       this.addReferences(config.legacyReferences);
       Object.defineProperty(this.configuration, '_hasBeenAdded', { value: true, writable: false });
     }
+
+    // The mode customizations cleared above are a mutation like any other, but
+    // unlike the setters this path had no broadcast, so a consumer holding a
+    // mode-scoped value (e.g. via the useCustomization hook) kept serving the
+    // outgoing mode's value when the incoming mode does not re-register it.
+    // The extension module blocks above are applied once, so re-entry emits
+    // nothing else to converge on.
+    this._broadcastEvent(this.EVENTS.MODE_CUSTOMIZATION_MODIFIED, {
+      buttons: this.modeCustomizations,
+      button: undefined,
+    });
   }
 
   /**
@@ -228,7 +237,10 @@ export default class CustomizationService extends PubSubService {
    * phase-tagged form (any of `requires` / `bootstrap` / `global` / `mode`)
    * and otherwise treats the value as legacy Global references.
    */
-  private _getCustomizationConfig(): { phased?: PhasedCustomizationConfig; legacyReferences?: unknown } {
+  private _getCustomizationConfig(): {
+    phased?: PhasedCustomizationConfig;
+    legacyReferences?: unknown;
+  } {
     if (!this._customizationConfig) {
       this._customizationConfig = normalizeCustomizationConfig(this.configuration);
     }
@@ -469,11 +481,19 @@ export default class CustomizationService extends PubSubService {
   /**
    * Unified getter for customizations.
    *
+   * Ids registered in `AppTypes.Customizations` (via declaration merging, see
+   * that interface) return their declared value type; any other string id
+   * falls back to the loose `Customization` union.
+   *
    * @param customizationId - The ID of the customization to retrieve.
    * @param scope - (Optional) The scope to retrieve from: 'global', 'mode', or 'default'.
    *                 If not specified, it retrieves based on priority: global > mode > default.
    * @returns The requested customization, or undefined if not found
    */
+  public getCustomization<K extends keyof AppTypes.Customizations>(
+    customizationId: K
+  ): AppTypes.Customizations[K];
+  public getCustomization(customizationId: string): Customization | undefined;
   public getCustomization(customizationId: string): Customization | undefined {
     const transformed = this.transformedCustomizations.get(customizationId);
 
@@ -529,7 +549,12 @@ export default class CustomizationService extends PubSubService {
       let changed = false;
       const result: any[] = [];
       for (const item of value) {
-        if (item && typeof item === 'object' && !item.$$typeof && typeof item.$reference === 'string') {
+        if (
+          item &&
+          typeof item === 'object' &&
+          !item.$$typeof &&
+          typeof item.$reference === 'string'
+        ) {
           changed = true;
           const resolved = this._resolveReferenceName(item.$reference, seen);
           if (Array.isArray(resolved)) {
@@ -579,9 +604,14 @@ export default class CustomizationService extends PubSubService {
   /**
    * Returns a customization value, or the provided fallback when unset.
    */
-  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined {
+  public getValue<K extends keyof AppTypes.Customizations>(
+    customizationId: K,
+    fallbackValue?: AppTypes.Customizations[K]
+  ): AppTypes.Customizations[K];
+  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined;
+  public getValue(customizationId: string, fallbackValue?: unknown): unknown {
     const value = this.getCustomization(customizationId);
-    return (value === undefined ? fallbackValue : (value as T)) as T | undefined;
+    return value === undefined ? fallbackValue : value;
   }
 
   /**
@@ -601,7 +631,7 @@ export default class CustomizationService extends PubSubService {
    *   customizationService.setCustomizations(['@ohif/extension-cornerstone-dicom-seg.customizationModule.dicom-seg-sorts'], CustomizationScope.Mode)
    */
   public setCustomizations(
-    customizations: string[] | Record<string, Customization>,
+    customizations: string[] | CustomizationEntries,
     scope: CustomizationScope = CustomizationScope.Mode
   ): void {
     if (Array.isArray(customizations)) {
@@ -610,7 +640,7 @@ export default class CustomizationService extends PubSubService {
       });
     } else {
       Object.entries(customizations).forEach(([key, value]) => {
-        this._setCustomization(key, value, scope);
+        this._setCustomization(key, value as Customization, scope);
       });
     }
   }
@@ -649,6 +679,8 @@ export default class CustomizationService extends PubSubService {
    *  Returns true if there is a mode customization.  Doesn't include defaults, but
    * does return global overrides.
    */
+  public hasCustomization<K extends keyof AppTypes.Customizations>(customizationId: K): boolean;
+  public hasCustomization(customizationId: string): boolean;
   public hasCustomization(customizationId: string) {
     return (
       this.globalCustomizations.has(customizationId) || this.modeCustomizations.has(customizationId)
@@ -923,7 +955,37 @@ export default class CustomizationService extends PubSubService {
     for (const entry of loaded) {
       const payload = getUrlCustomizationModulePayload(entry.module);
       if (payload?.global) {
-        this.setCustomizations(payload.global, CustomizationScope.Global);
+        this._setGlobalBlock(payload.global, `"${entry.request.raw}" (${entry.url})`);
+      }
+    }
+  }
+
+  /**
+   * Applies one Global block of a customization source. A block that throws,
+   * for example a `$spliceById` with an unknown id, is logged and skipped, so
+   * one bad module does not stop the app. When the block changes
+   * `useMetadataDisplaySet`, the error is also put in its `moduleErrors`, so
+   * that display set creation stops with an error that names the module
+   * (SP-SAFE-7).
+   */
+  private _setGlobalBlock(block: CustomizationPhaseInput, source: string): void {
+    try {
+      this.setCustomizations(block, CustomizationScope.Global);
+    } catch (err) {
+      const message = `customization ${source} did not apply: ${(err as Error).message}`;
+      console.error(`[customizationUrl] ${message}`);
+      if (block && typeof block === 'object' && 'useMetadataDisplaySet' in block) {
+        this.setCustomizations(
+          {
+            useMetadataDisplaySet: {
+              $apply: (value: { moduleErrors?: string[] } = {}) => ({
+                ...value,
+                moduleErrors: [...(value.moduleErrors ?? []), message],
+              }),
+            },
+          },
+          CustomizationScope.Global
+        );
       }
     }
   }
@@ -954,7 +1016,7 @@ export default class CustomizationService extends PubSubService {
     for (const block of this._collectPhaseBlocks(phase)) {
       const value = block[phase] as CustomizationPhaseInput | undefined;
       if (value) {
-        this.setCustomizations(value, CustomizationScope.Global);
+        this._setGlobalBlock(value, `the ${phase} block`);
       }
     }
   }
@@ -1085,6 +1147,13 @@ export default class CustomizationService extends PubSubService {
   }
 }
 
+/**
+ * `$spliceById`: `$splice` with a rule id as the position, for example
+ * `{ $spliceById: [['volume3d', 0, 'myRule']] }`. See `spliceById` of
+ * `@cornerstonejs/metadata`, which a server host registers the same way.
+ */
+extend('$spliceById', (spec, original) => spliceById(original as unknown[], spec));
+
 /** Add custom $filter command */
 extend('$filter', (query, original) => {
   // This helper checks if an object matches all key/value pairs in `match`
@@ -1187,7 +1256,9 @@ export function normalizeCustomizationConfig(configuration: unknown): {
       const phased: PhasedCustomizationConfig = {};
       for (const key of PHASE_CONFIG_KEYS) {
         if (key in (configuration as object)) {
-          (phased as Record<string, unknown>)[key] = (configuration as Record<string, unknown>)[key];
+          (phased as Record<string, unknown>)[key] = (configuration as Record<string, unknown>)[
+            key
+          ];
         }
       }
       return { phased };

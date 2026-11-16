@@ -1,7 +1,8 @@
-import { Locator } from '@playwright/test';
 import {
-  checkForScreenshot,
+  checkForViewportScreenshot,
   expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
   screenShotPaths,
   test,
   visitStudy,
@@ -10,13 +11,7 @@ import {
   waitForViewportsRendered,
 } from './utils';
 
-async function expectNonEmptyDetailLines(lines: Locator) {
-  const lineCount = await lines.count();
-  expect(lineCount).toBeGreaterThan(0);
-  for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-    await expect(lines.nth(lineIndex)).not.toBeEmpty();
-  }
-}
+const probeFindingCount = 2;
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
@@ -59,11 +54,11 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   const activeViewport = await viewportPageObject.active;
 
   // Take screenshot before hydration - use viewport locator instead of full page
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.scoord3dProbe.scoord3dProbePreHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoord3dProbe.scoord3dProbePreHydration,
+  });
 
   // Zoom in to better see the measurements
   await page.evaluate(() => {
@@ -102,20 +97,21 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   await waitForViewportsRendered(page, { timeout: 30000 });
 
   // Take screenshot after hydration showing the probe measurements - use viewport locator
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.scoord3dProbe.scoord3dProbePostHydration
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoord3dProbe.scoord3dProbePostHydration,
+  });
 
-  // Verify the measurements list has the correct probe measurements
-  expect(await rightPanelPageObject.measurementsPanel.panel.rows).not.toHaveCount(0);
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+  // The SR carries exactly two probe findings, each labeled "Lesion" with the
+  // finding site as its only detail line and no series/instance line.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(probeFindingCount);
 
-  for (let i = 0; i < rowCount; i++) {
+  for (let i = 0; i < probeFindingCount; i++) {
     const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
-    await expect(measurement.title).not.toBeEmpty();
-    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
+    await expect(measurement.title).toHaveText('Lesion');
+    await expect(measurement.stats.primary.lines).toHaveText(['Peripheral zone of the prostate']);
+    await expect(measurement.stats.secondary.lines).toHaveCount(0);
   }
 
   // Test jumping to a specific measurement by scrolling and clicking
@@ -148,11 +144,36 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   await jumpRenderCycle;
   await waitForPaintToSettle(page);
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement,
+  });
+
+  // A hydrated probe computes its stats only once it renders on its slice, so
+  // after the jump the first finding reports its voxel coordinate and pixel
+  // value (MR has no modality unit).
+  const expectedIndex = [151, 173, 5];
+  const expectedValue = '291';
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Probe',
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.probeValueLine(expectedValue, ''),
+      'Peripheral zone of the prostate',
+    ],
+    expectedSvgLines: [
+      measurementTextFormatters.probeIndexSvgLine(expectedIndex),
+      measurementTextFormatters.probeValueLine(expectedValue, ''),
+    ],
+    assertStats: stats => {
+      expect(stats.index as number[]).toEqual(expectedIndex);
+      expect(stats.value).toBe(Number(expectedValue));
+    },
+  });
 });
 
 test('should display SCOORD3D probe measurements correctly', async ({
@@ -204,20 +225,19 @@ test('should display SCOORD3D probe measurements correctly', async ({
   await waitForViewportsRendered(page);
 
   // Take screenshot showing the SCOORD3D probe measurements rendered correctly - use viewport locator
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    activeViewport.pane,
-    screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly,
+  });
 
-  // Verify the measurements list has the correct probe measurements and not others
-  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-  expect(rowCount).toBeGreaterThan(0);
-
-  // Verify that the measurements are probe measurements (not other types like rectangle)
-  for (let i = 0; i < rowCount; i++) {
+  // The SR carries exactly two probe findings, each labeled "Lesion" with the
+  // finding site as its only detail line and no series/instance line.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(probeFindingCount);
+  for (let i = 0; i < probeFindingCount; i++) {
     const measurement = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(i);
-    await expect(measurement.title).not.toBeEmpty();
-    await expectNonEmptyDetailLines(measurement.stats.primary.lines);
+    await expect(measurement.title).toHaveText('Lesion');
+    await expect(measurement.stats.primary.lines).toHaveText(['Peripheral zone of the prostate']);
+    await expect(measurement.stats.secondary.lines).toHaveCount(0);
   }
 });

@@ -1,0 +1,8 @@
+{
+  "Loading document...": "Loading document...",
+  "This document type cannot be displayed": "This document type cannot be displayed",
+  "Document content does not match its declared type": "Document content does not match its declared type",
+  "Unable to retrieve this document": "Unable to retrieve this document",
+  "No viewer installed for {{mimeType}}": "No viewer installed for {{mimeType}}",
+  "Encapsulated document": "Encapsulated document"
+}
