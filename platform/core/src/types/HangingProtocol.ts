@@ -169,6 +169,14 @@ export type DisplaySetSelector = {
    */
   allowUnmatchedView?: boolean;
 
+  /**
+   * The selector id under which the user's display set choice for a viewport is
+   * remembered across stages.  Defaults to the id of this selector.  Selectors
+   * that share a selectorMapId keep the user's choice when the stage changes
+   * between stages that use different selectors for the same viewport.
+   */
+  selectorMapId?: string;
+
   // The image matching rule (not currently implemented) selects which image to
   // display initially, only for stack views.
   imageMatchingRules?: MatchingRule[];

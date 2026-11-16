@@ -11,6 +11,10 @@ import DocCardList from '@theme/DocCardList';
 
 This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 
+- **[Display set storage](./display-set-store.md)** — display sets now live in
+  the `@cornerstonejs/metadata` typed metadata cache.
+  `DisplaySetService.getDisplaySetCache()` is deprecated and returns a
+  read-only snapshot.
 - **[React 19](./react-19.md)** — the monorepo moves to **React 19.2.7**.
   `@ohif/ui-next` now declares react/react-dom as `peerDependencies`, so
   consuming applications must supply React 19, and extensions and modes require
@@ -87,5 +91,21 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   change (`@ohif/hpMammo` with no `PatientOrientation`, a text `numImageFrames`, and the
   `OneOrMoreSeries` weight of `@ohif/mnGrid`, `@ohif/mnGrid8` and `@ohif/hpScale`); the page
   lists them.
+
+- **[Multi-resolution volumes and Cornerstone3D 5.17](./multi-resolution-volumes.md)** —
+  every volume loads with `coarseInterleavedRetrieveStages`, and the `mpr` protocol no longer
+  sets `imageLoadStrategy: 'nth'`. The data source `volumeRetrieveOptions` and a copy of `mpr`
+  with `nth` restore the 3.13 load. The Cornerstone3D "Transient Low Fidelity" label shows
+  while a volume loads, until the OHIF indicator
+  ([#6413](https://github.com/OHIF/Viewers/pull/6413)) replaces it. Cornerstone3D 5.17 makes
+  `volume.vtkOpenGLTexture` a getter that can return `undefined`, and removes
+  `RenderingCapabilities.webgl2`; use `volume.modified()` in place of the per-frame
+  texture updates. The developer configs select the `medium` GPU settings preset.
+
+- **[Display set split rules](./display-set-split-rules.md)** — the split rules of
+  `@cornerstonejs/metadata` are an opt-in customization, off by default. With the rules on, a
+  SOP class handler of another extension runs only when it declares `handlerNames` and
+  `extendDisplaySet`, and a rule names it. Otherwise its series shows as an unsupported display
+  set.
 
 <DocCardList />
