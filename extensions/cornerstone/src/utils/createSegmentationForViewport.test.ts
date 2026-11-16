@@ -13,12 +13,11 @@ function createServicesManager(isDynamicVolume: boolean) {
     createContourForDisplaySet: jest.fn(async (_ds, { segmentationId }) => segmentationId),
     addSegmentationRepresentation: jest.fn(),
   };
+  const viewports = new Map([['vp', { displaySetInstanceUIDs: ['ds'] }]]);
   const servicesManager = {
     services: {
       viewportGridService: {
-        getState: () => ({
-          viewports: new Map([['vp', { displaySetInstanceUIDs: ['ds'] }]]),
-        }),
+        getState: () => ({ viewports }),
       },
       displaySetService: {
         getDisplaySetByUID: () => ({ displaySetInstanceUID: 'ds', isDynamicVolume }),
@@ -28,7 +27,7 @@ function createServicesManager(isDynamicVolume: boolean) {
       cornerstoneViewportService: { getCornerstoneViewport: () => undefined },
     },
   };
-  return { servicesManager: servicesManager as never, segmentationService };
+  return { servicesManager: servicesManager as never, segmentationService, viewports };
 }
 
 describe('createSegmentationForViewport on a 4D display set', () => {
@@ -37,6 +36,22 @@ describe('createSegmentationForViewport on a 4D display set', () => {
   it('creates no segmentation when the user cancels the dialog', async () => {
     (promptTimePointScope as jest.Mock).mockResolvedValue(undefined);
     const { servicesManager, segmentationService } = createServicesManager(true);
+
+    const result = await createSegmentationForViewport(servicesManager, {
+      viewportId: 'vp',
+      segmentationType: SegmentationRepresentations.Labelmap,
+    });
+
+    expect(result).toBeUndefined();
+    expect(segmentationService.createLabelmapForDisplaySet).not.toHaveBeenCalled();
+  });
+
+  it('creates no segmentation when the viewport changes series during the dialog', async () => {
+    const { servicesManager, segmentationService, viewports } = createServicesManager(true);
+    (promptTimePointScope as jest.Mock).mockImplementation(async () => {
+      viewports.set('vp', { displaySetInstanceUIDs: ['other'] });
+      return 'all';
+    });
 
     const result = await createSegmentationForViewport(servicesManager, {
       viewportId: 'vp',

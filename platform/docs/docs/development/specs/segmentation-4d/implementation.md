@@ -25,7 +25,10 @@ into the requirements specification first.
 **SEG4D-I-1 — The dialog**
 `createSegmentationForViewport` shall show `promptTimePointScope` for a labelmap on a display set
 with `isDynamicVolume`. The command option `timePointScope: 'all' | 'each'` shall skip the
-dialog. A cancel shall return `undefined`. *Satisfies `SEG4D-U-1`, `SEG4D-U-2`.*
+dialog. A cancel shall return `undefined`. When the viewport shows a different display set after
+the dialog closes, the command shall return `undefined`. "All" shall read the time point from
+the volume of the display set, and not from the first volume of a fusion. *Satisfies
+`SEG4D-U-1`, `SEG4D-U-2`.*
 
 **SEG4D-I-2 — Service options**
 `SegmentationService.createLabelmapForDisplaySet` shall take `timePointScope` (default `'all'`)
@@ -42,7 +45,8 @@ shall get no extra volume. *Satisfies `SEG4D-U-4`, `SEG4D-U-6`.*
 
 **SEG4D-I-4 — Stack edits**
 An edit in a stack viewport shall first select the time point of `viewport.getCurrentImageId()`
-in the dynamic labelmap volume. *Satisfies `SEG4D-U-6`, `SEG4D-U-7`.*
+in the dynamic labelmap volume. An edit on a time point that the labelmap does not cover shall
+change nothing. *Satisfies `SEG4D-U-6`, `SEG4D-U-7`.*
 
 **SEG4D-I-5 — Undo memo**
 An edit of a dynamic labelmap volume shall use the voxel manager of one time point
@@ -62,7 +66,9 @@ dynamic volume, which gives the time point on display. *Satisfies `SEG4D-U-9`.*
 **SEG4D-I-8 — View references**
 The view reference of a volume viewport that shows a dynamic volume shall have
 `dimensionGroupNumber`. `isReferenceViewable` without navigation shall return false for a
-different time point. `setViewReference` shall select the time point. *Satisfies `SEG4D-U-10`.*
+different time point. Both shall use the volume of `viewRef.volumeId` when it is set.
+`setViewReference` shall select the time point only when the volume has that time point.
+*Satisfies `SEG4D-U-10`.*
 
 **SEG4D-I-9 — Volume to stack**
 `convertVolumeToStackLabelmap` shall keep the labelmap images of every time point. *Satisfies

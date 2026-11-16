@@ -82,9 +82,18 @@ export async function createSegmentationForViewport(
     if (!timePointScope) {
       return undefined;
     }
+    // The viewport can show a different series after the dialog closes.
+    const shownDisplaySetUID = viewportGridService.getState().viewports.get(viewportId)
+      ?.displaySetInstanceUIDs?.[0];
+    if (!options.displaySetInstanceUID && shownDisplaySetUID !== displaySetInstanceUID) {
+      return undefined;
+    }
     if (timePointScope === 'all') {
       const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const volumeId = csViewport?.getVolumeId?.();
+      // The volume of this display set, and not the first volume of a fusion.
+      const volumeId =
+        csViewport?.getAllVolumeIds?.().find(id => id.includes(displaySetInstanceUID)) ??
+        csViewport?.getVolumeId?.();
       const groupNumber = volumeId && cache.getVolume(volumeId)?.dimensionGroupNumber;
       timePointIndex = (groupNumber || 1) - 1;
     }
