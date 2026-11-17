@@ -36,11 +36,10 @@ jest.mock('@cornerstonejs/tools', () => ({
     segmentation: {
       getOrCreateSegmentationVolume: jest.fn(),
       LabelmapMemo: { createLabelmapMemo: jest.fn() },
-      // Every voxel that the region view offers passes the threshold.
-      thresholdVolumeByRange: jest.fn((volume, _info, { segmentIndex }) =>
-        volume.voxelManager.forEach(({ index }) =>
-          volume.voxelManager.setAtIndex(index, segmentIndex)
-        )
+      // Every voxel that the region offers passes the threshold.
+      thresholdVolumeByRange: jest.fn(
+        (_volume, _info, { segmentIndex, forEachVoxel, writeVoxelManager }) =>
+          forEachVoxel(({ index }) => writeVoxelManager.setAtIndex(index, segmentIndex))
       ),
     },
   },

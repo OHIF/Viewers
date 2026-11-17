@@ -260,33 +260,26 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         voxelManager
       );
 
-      // shortcut: thresholdVolumeByRange walks an IJK box, so this view hands it only the
-      // free voxels of the exact regions. Remove it when the Cornerstone threshold takes
-      // a voxel region.
-      const regionVolume = {
-        imageData: labelmapVolume.imageData,
-        spacing: labelmapVolume.spacing,
-        voxelManager: {
-          getScalarDataLength: () => voxelManager.getScalarDataLength(),
-          forEach: callback =>
-            forEachVoxelInRegions(regions, labelmapVolume, (index, pointIJK, pointLPS) => {
-              if (isFree(index)) {
-                callback({ index, pointIJK, pointLPS });
-              }
-            }),
-          setAtIndex: (index, value) => memo.voxelManager.setAtIndex(index, value),
-        },
-      } as unknown as cs.Types.IImageVolume;
-
       try {
         clearSegmentFromLabelmap(voxelManager, targetSegmentIndex, memo.voxelManager);
         csTools.utilities.segmentation.thresholdVolumeByRange(
-          regionVolume,
+          labelmapVolume,
           [
             { volume: ptVolume, lower: ptLower, upper: ptUpper },
             { volume: ctVolume, lower: ctLower, upper: ctUpper },
           ],
-          { overwrite: false, segmentIndex: targetSegmentIndex, segmentationId, boundsIJK: null }
+          {
+            overwrite: false,
+            segmentIndex: targetSegmentIndex,
+            segmentationId,
+            forEachVoxel: callback =>
+              forEachVoxelInRegions(regions, labelmapVolume, (index, pointIJK, pointLPS) => {
+                if (isFree(index)) {
+                  callback({ index, pointIJK, pointLPS });
+                }
+              }),
+            writeVoxelManager: memo.voxelManager as cs.Types.IVoxelManager<number>,
+          }
         );
       } finally {
         // Also after a throw, so that undo can restore a partial run.
