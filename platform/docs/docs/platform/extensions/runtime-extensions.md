@@ -55,3 +55,6 @@ The **normative reference** for the descriptor fields, the
 in the Configuration Files guide. CSP and CORS setup is covered in the
 deployment guide under
 [Extending the baseline](../../deployment/runtime-plugins.md#extending-the-baseline).
+What the viewer does with a runtime plugin (how it loads it, what it checks,
+which packages it shares, and how failures show) is specified in the
+[runtime plugins specification](../../development/specs/runtime-plugins/requirements.md).

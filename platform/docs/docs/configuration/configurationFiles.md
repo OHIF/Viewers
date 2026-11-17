@@ -351,10 +351,12 @@ configuration: {
 ## Runtime Extensions and Modes
 
 :::note Normative reference
-This section is the normative reference for the runtime extension descriptor
-and the `runtimePluginOrigins` allowlist. Other pages (the Runtime
-Extensions page, deployment docs, plugin author guides) link here; if wording
-differs, this section wins.
+This section is the reference for writing a runtime extension descriptor and
+the `runtimePluginOrigins` allowlist. Other pages (the Runtime Extensions page,
+deployment docs, plugin author guides) link here; if their wording differs,
+this section wins. What the viewer does with a descriptor is specified in the
+[runtime plugins specification](../development/specs/runtime-plugins/requirements.md);
+if this section and the specification differ, the specification wins.
 :::
 
 Besides bundled (build-time) plugins declared in `pluginConfig.json`, the

@@ -15,10 +15,11 @@ export interface RuntimePluginDescriptor {
   /** Absolute URL, '/rooted' path, or path relative to PUBLIC_URL. */
   importPath: string;
   /**
-   * Format discriminator (strict, per the loader behavior matrix in
-   * platform/app/.rspack/CONTRACT.md): UMD builds MUST set globalName (normally equal to
-   * packageName, matching the plugin build's output.library name) and the
-   * loader returns window[globalName]; ESM builds MUST omit it and the loader
+   * Format discriminator (strict, per RP-DESC-4 in
+   * platform/docs/docs/development/specs/runtime-plugins/implementation.md): UMD builds
+   * MUST set globalName (normally equal to packageName, matching the plugin build's
+   * output.library name) and the loader returns window[globalName]; ESM builds
+   * MUST omit it and the loader
    * returns the import() namespace's default export. There is no fallback
    * chain and the loader never defaults globalName to packageName.
    */
@@ -354,7 +355,8 @@ export async function loadRuntimeDescriptor(
       // same-origin skip: no integrity verification; direct dynamic import
       imported = await (window as any).browserImportFunction(url.href);
     }
-    // STRICT format discriminator (loader behavior matrix, platform/app/.rspack/CONTRACT.md):
+    // STRICT format discriminator (RP-DESC-4 in
+    // platform/docs/docs/development/specs/runtime-plugins/implementation.md):
     // UMD (globalName set): the wrapper sees no exports/define and assigns
     // self[library.name] — return window[globalName], nothing else. The
     // create-ohif template puts the whole module there, and the unwrap below
@@ -433,9 +435,12 @@ export async function loadRuntimeDescriptor(
  *      allowlist IS the trust decision. An allowlisted origin is treated as
  *      trusted to serve code, so there is deliberately no integrity check, no
  *      coreVersionRange gate, no id check, and no runtimeModules cache write.
- *      Callers here pass bare library specifiers or URLs the deployment chose
- *      (e.g. peerImport('dicom-microscopy-viewer')), with no descriptor to
- *      carry a digest.
+ *      Callers here pass URLs the deployment chose (a URL string in
+ *      extensions/modes, or appConfig.peerImport('https://...')), with no
+ *      descriptor to carry a digest. A name that is not a URL is never
+ *      imported here. If pluginConfig.json declares it, the generated
+ *      loadModule loads it before reaching this function (tier 1); if not,
+ *      the isUrlLike check below throws.
  *   3. loadRuntimeDescriptor: additionally REQUIRES integrity for cross-origin,
  *      because a descriptor has somewhere to put the digest and the loaded
  *      module is registered as an extension/mode. That requirement does not

@@ -188,6 +188,8 @@ Extensions and modes are explicitly declared in `platform/app/pluginConfig.json`
 
 ### Extension Contract (v1 summary)
 
+The full contract, with its requirements and the gate for contract v2, is the runtime plugins spec in `platform/docs/docs/development/specs/runtime-plugins/`.
+
 - An extension/mode is an npm package whose **`id` equals its package name**; `src/index.tsx` default-exports `{ id, preRegistration?, get*Module…, onModeEnter?, onModeExit? }`.
 - Third-party packages build a **single UMD bundle**: `output.library = { name: pkg.name, type: 'umd' }` → runtime global `window['@scope/name']`, holding the whole module (the extension or mode as `default`, plus its named exports), as a compiled-in plugin's global does.
 - **Never bundle host-provided packages.** The canonical externals list is `.rspack/pluginExternals.js`: `react`, `react-dom`, `react/jsx-runtime`, `react-router`, `react-router-dom`, `i18next`, `react-i18next`, `@ohif/*`, `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. The host exposes these as globals via `platform/app/src/runtimeShared.ts`, which `shareHostPackages()` in `runtimeExtensionLoader.ts` loads just before the first runtime plugin is fetched; any new code path that fetches and runs plugin code must `await shareHostPackages()` first.

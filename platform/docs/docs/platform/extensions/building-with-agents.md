@@ -23,6 +23,10 @@ implementation of everything below. The always-green reference is
 When this page and generated code disagree, the `create-ohif` output wins — it is
 built and tested against the current host; this page describes it.
 
+What the host does when it loads a plugin is specified in the
+[runtime plugins specification](../../development/specs/runtime-plugins/requirements.md);
+the `create-ohif` template follows it.
+
 ## The extension object (default export)
 
 `src/index` default-exports a plain object matching the `Extension` interface

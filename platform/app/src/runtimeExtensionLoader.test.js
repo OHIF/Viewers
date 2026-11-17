@@ -129,8 +129,9 @@ describe('loadExternalModule', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Descriptor loader behaviors (the strict globalName format discriminator in
-// platform/app/.rspack/CONTRACT.md: globalName present = UMD global lookup, absent = ESM
+// Descriptor loader behaviors (the strict globalName format discriminator, RP-DESC-4 in
+// platform/docs/docs/development/specs/runtime-plugins/implementation.md: globalName
+// present = UMD global lookup, absent = ESM
 // .default, no fallback chain in either direction), Mode bare-name cache
 // resolution, audit records, integrity, styles, and failure surfacing.
 //

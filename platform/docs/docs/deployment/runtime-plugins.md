@@ -20,6 +20,9 @@ in the Configuration Files guide. See also the
 [Runtime Extensions](../platform/extensions/runtime-extensions.md) overview. This
 page does not restate the descriptor contract; it only documents deployment.
 
+What the viewer guarantees when it loads a plugin is specified in the
+[runtime plugins specification](../development/specs/runtime-plugins/requirements.md).
+
 :::note Requires a 3.14 or later image
 The `/plugins/` location, its cache rules, and `CSP_HEADER` exist only in
 images built from OHIF 3.14 or later. An older `ohif/app` image (including a
