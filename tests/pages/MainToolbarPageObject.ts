@@ -366,4 +366,47 @@ export class MainToolbarPageObject {
       },
     };
   }
+
+  // NiiVue mode only: the views split button that switches every NiiVue viewport.
+  get niivueViews() {
+    const page = this.page;
+
+    const button = page.getByTestId('NiivueViews-split-button-secondary');
+    const niivueViews = {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+
+    const view = (testId: string) => {
+      const button = page.getByTestId(testId);
+      return {
+        button,
+        async click() {
+          await niivueViews.click();
+          await button.click();
+        },
+      };
+    };
+
+    return {
+      ...niivueViews,
+      get multiplanar() {
+        return view('NiivueMultiplanar');
+      },
+      get axial() {
+        return view('NiivueAxial');
+      },
+      get coronal() {
+        return view('NiivueCoronal');
+      },
+      get sagittal() {
+        return view('NiivueSagittal');
+      },
+      get render() {
+        return view('NiivueRender');
+      },
+    };
+  }
 }
