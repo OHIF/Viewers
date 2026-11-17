@@ -351,8 +351,10 @@ clinician label, or both (key: `cornerstone.fidelityIndicator.display`).
 | `text` | OHIF label only (“Transient Low Fidelity” / “Low Fidelity” / “Full Fidelity”) |
 | `both` | Glyph and OHIF label |
 
-To remove the indicator entirely, clear or override `viewportOverlay.topRight` rather than
-this key — that removes disclosure of substituted pixels (`VF-CFG`).
+To remove the indicator entirely, clear or override the FidelityIndicator entry on
+`viewportOverlay.topLeft` rather than this key — that removes disclosure of substituted
+pixels (`VF-CFG`). Default placement is top-left, after the orientation and data-overlay
+action icons.
 
 ```js
 window.config = {

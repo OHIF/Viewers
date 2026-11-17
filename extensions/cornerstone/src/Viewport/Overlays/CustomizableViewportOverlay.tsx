@@ -464,13 +464,15 @@ function InstanceNumberOverlayItem({
   );
 }
 
-/** Viewport fidelity indicator (#6256 / VF-REG-1). */
+/** Viewport fidelity indicator (#6256 / VF-REG-1). Slot class drives top-left layout. */
 function FidelityOverlayItem({ viewportId, element }: OverlayItemProps) {
   return (
-    <FidelityIndicator
-      viewportId={viewportId}
-      element={element}
-    />
+    <div className="ohif-fidelity-slot">
+      <FidelityIndicator
+        viewportId={viewportId}
+        element={element}
+      />
+    </div>
   );
 }
 

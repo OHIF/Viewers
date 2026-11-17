@@ -297,9 +297,9 @@ failure. A later pull request will add an automatic mode that probes the device.
   the volume. These protocols still show gray lines while a volume loads.
 - **The Cornerstone3D fidelity indicator is disabled in OHIF.** `init.tsx` sets
   `dangerouslyDisableFidelityIndicator: true` so CS3D’s `.fi-root` (z-index 1000) cannot
-  cover OHIF menus. OHIF shows fidelity on `viewportOverlay.topRight` instead (#6256),
-  flush with the action-corner top-right band; the action menus stay hover-gated and
-  leave a small right-side reserve so badges do not cover the icon.
+  cover OHIF menus. OHIF shows fidelity on `viewportOverlay.topLeft` instead (#6256),
+  flush with the action-corner top-left band after the orientation and data-overlay
+  icons; the action menus stay hover-gated.
 - **No automatic test covers the new viewports or the reduction.** See
   [OHIF/Viewers#6404](https://github.com/OHIF/Viewers/issues/6404).
 

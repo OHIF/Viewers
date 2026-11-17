@@ -10,10 +10,11 @@ import './ViewportOverlay.css';
  * The parent is responsible for styling offsets.
  */
 const classes = {
-  // topLeft stays below the action-corner menu row; topRight is flush with it
-  // so the fidelity indicator shares that band (VF-REG-1 / #6256).
-  topLeft: 'overlay-top left-viewport',
-  topRight: 'overlay-top-right right-viewport-scrollbar',
+  // topLeft is flush with the action-corner icon band so fidelity can sit
+  // after orientation/dataOverlay (VF-REG-1 / #6256); metadata is pushed
+  // below that row in ViewportOverlay.css.
+  topLeft: 'overlay-top-left left-viewport',
+  topRight: 'overlay-top right-viewport-scrollbar',
   bottomRight: 'overlay-bottom right-viewport-scrollbar',
   bottomLeft: 'overlay-bottom left-viewport',
 };

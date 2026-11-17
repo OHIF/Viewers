@@ -18,11 +18,9 @@ const locationClasses = {
     commonClasses,
     'absolute top-[4px] left-[0px] pl-[4px]'
   ),
-  // pr reserves the fidelity warning-triangle slot on viewportOverlay.topRight
-  // so hover badges sit to its left (24px glyph; text/both need a larger reserve).
   [ViewportActionCornersLocations.topRight]: classNames(
     commonClasses,
-    'absolute top-[4px] right-viewport-scrollbar pr-[28px]'
+    'absolute top-[4px] right-viewport-scrollbar'
   ),
   [ViewportActionCornersLocations.bottomLeft]: classNames(
     commonClasses,

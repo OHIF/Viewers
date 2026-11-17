@@ -1,5 +1,14 @@
 export default {
+  // VF-REG-1 / #6256: always-visible overlay surface (not viewportActionMenu).
+  // Fidelity is first so it can sit flush with the top-left action-icon band;
+  // StudyDate / SeriesDescription stay below that row. Menus stay hover-gated.
+  // Remove or override the FidelityIndicator entry to disable (VF-CFG-1).
   'viewportOverlay.topLeft': [
+    {
+      id: 'FidelityIndicator',
+      inheritsFrom: 'ohif.overlayItem.fidelity',
+      title: 'Image fidelity',
+    },
     {
       id: 'StudyDate',
       inheritsFrom: 'ohif.overlayItem',
@@ -20,16 +29,7 @@ export default {
       contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
     },
   ],
-  // VF-REG-1 / #6256: always-visible overlay surface (not viewportActionMenu).
-  // Laid out flush with the action-corner top-right band; menus stay hover-gated.
-  // Remove or override this entry to disable (VF-CFG-1).
-  'viewportOverlay.topRight': [
-    {
-      id: 'FidelityIndicator',
-      inheritsFrom: 'ohif.overlayItem.fidelity',
-      title: 'Image fidelity',
-    },
-  ],
+  'viewportOverlay.topRight': [],
   'viewportOverlay.bottomLeft': [
     {
       id: 'WindowLevel',
