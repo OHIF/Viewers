@@ -324,10 +324,8 @@ function _getViewportComponent(
   customizationService
 ) {
   if (!displaySets || !displaySets.length) {
-    /** An extension can render viewports that have no display set, e.g. to prompt for a series */
-    const CustomEmptyViewport = customizationService?.getCustomization(
-      'viewportGrid.emptyViewport'
-    );
+    // An extension can render viewports that have no display set, e.g. to prompt for a series
+    const CustomEmptyViewport = customizationService.getCustomization('viewportGrid.emptyViewport');
     return {
       component: CustomEmptyViewport || EmptyViewport,
       isReferenceViewable: () => false,
