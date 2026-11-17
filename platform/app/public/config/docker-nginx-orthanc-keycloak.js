@@ -10,13 +10,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
-  // Lossy downsampling is off here. To turn it on, uncomment the line below.
-  // Cornerstone3D defaults: final false, interactive true, interleavedLoading true.
-  // `final` reduces a volume texture to fit the GPU settings preset. Select the
-  // preset with the `cornerstone.gpuSettingsPreset` customization: auto, low-tablet,
-  // low, medium, high, high-texture-4096. These options are not fully safe on every
-  // device: a texture that is too large can lose the WebGL context, and then the
-  // user must reload. See configurationFiles.md and specificCustomizations.md.
+  // Off by default; can lose the WebGL context on some devices. See configurationFiles.md.
   // lossyDownsampling: { final: true, interactive: true, interleavedLoading: true },
   groupEnabledModesFirst: true,
   maxNumRequests: {
@@ -35,7 +29,6 @@ window.config = {
         wadoUriRoot: 'http://127.0.0.1/pacs',
         qidoRoot: 'http://127.0.0.1/pacs',
         wadoRoot: 'http://127.0.0.1/pacs',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,

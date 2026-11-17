@@ -407,6 +407,10 @@ class MetadataProvider {
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.CALIBRATION_MODULE:
+        // No regions: return nothing, so a later provider (for example the ECG one) can answer
+        if (!instance.SequenceOfUltrasoundRegions) {
+          return;
+        }
         // map the DICOM tags to the cornerstone tags since cornerstone tags
         // are camelCase and instance tags are all caps
         metadata = {

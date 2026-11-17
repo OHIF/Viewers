@@ -10,13 +10,7 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
-  // Lossy downsampling is off here. To turn it on, uncomment the line below.
-  // Cornerstone3D defaults: final false, interactive true, interleavedLoading true.
-  // `final` reduces a volume texture to fit the GPU settings preset. Select the
-  // preset with the `cornerstone.gpuSettingsPreset` customization: auto, low-tablet,
-  // low, medium, high, high-texture-4096. These options are not fully safe on every
-  // device: a texture that is too large can lose the WebGL context, and then the
-  // user must reload. See configurationFiles.md and specificCustomizations.md.
+  // Off by default; can lose the WebGL context on some devices. See configurationFiles.md.
   // lossyDownsampling: { final: true, interactive: true, interleavedLoading: true },
   studyPrefetcher: {
     enabled: true,
@@ -35,7 +29,6 @@ window.config = {
         wadoUriRoot: '/wado',
         qidoRoot: '/pacs/dicom-web',
         wadoRoot: '/pacs/dicom-web',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         dicomUploadEnabled: true,
@@ -51,7 +44,6 @@ window.config = {
         wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -78,7 +70,6 @@ window.config = {
         name: 'DCM4CHEE',
         qidoRoot: 'http://localhost:5000/dicomweb',
         wadoRoot: 'http://localhost:5000/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: true,
         supportsStow: true,
         imageRendering: 'wadors',

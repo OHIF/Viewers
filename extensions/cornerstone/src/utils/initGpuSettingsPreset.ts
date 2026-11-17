@@ -1,32 +1,21 @@
-import * as cornerstone from '@cornerstonejs/core';
+import { setGpuSettingsPreset, resetGpuSettingsPreset, setLossyDownsampling } from '@cornerstonejs/core';
 
 const CUSTOMIZATION_ID = 'cornerstone.gpuSettingsPreset';
 
 /**
- * Selects the GPU settings preset from the `cornerstone.gpuSettingsPreset`
- * customization, and turns on final downsampling when the customization
- * states a preset.
+ * Applies the `cornerstone.gpuSettingsPreset` customization, and applies it
+ * again when the global or the mode customization changes.
  *
- * A preset is a named set of GPU settings in Cornerstone3D: the largest
- * texture edge and the texture memory. With final downsampling on, a volume
- * viewport reduces its texture to fit those values. The value `auto` asks
- * Cornerstone3D to compute the settings for the device, when the build of
- * Cornerstone3D has `auto`.
+ * - A preset id selects that preset and turns final downsampling on, also in a
+ *   config that keeps `lossyDownsampling.final` off, such as `config/default.js`.
+ * - `null` returns to the Cornerstone3D default preset and to
+ *   `appConfig.lossyDownsampling.final`.
  *
- * - The customization states a preset: final downsampling is on, with that
- *   preset, also in a locked-down config such as `config/default.js`. That
- *   config has no `customizationUrlPrefixes`, so it must set the value through
- *   `customizationService` in the config, not with `?customization=`.
- * - The customization states no preset: `appConfig.lossyDownsampling.final`
- *   decides, with the default preset of Cornerstone3D.
+ * A volume viewport reads the preset when it adds its actor, so call this
+ * before a mode opens a viewport. The `bootstrap` and `global` phases of a
+ * `?customization=` module both apply early enough.
  *
- * A viewport reads the preset when it adds its actor, so the value must arrive
- * before a mode opens a viewport. The `bootstrap` phase of a `?customization=`
- * module applies before this extension registers, and the `global` phase
- * applies immediately after it, so both are early enough.
- *
- * A build of Cornerstone3D that has no presets keeps its own behaviour, and
- * this function reports the omission and does not throw.
+ * See the "Select the GPU settings preset" section of specificCustomizations.md.
  */
 export default function initGpuSettingsPreset({ customizationService, appConfig }): void {
   const configuredFinal = Boolean(appConfig?.lossyDownsampling?.final);
@@ -39,30 +28,16 @@ export default function initGpuSettingsPreset({ customizationService, appConfig 
       return;
     }
 
-    const { setGpuSettingsPreset, resetGpuSettingsPreset, setLossyDownsampling } = cornerstone;
-
     if (!presetId) {
-      // A preset that changes to null returns to the config and to the
-      // Cornerstone3D default preset.
-      resetGpuSettingsPreset?.();
-      setLossyDownsampling?.({ final: configuredFinal });
+      resetGpuSettingsPreset();
+      setLossyDownsampling({ final: configuredFinal });
       appliedId = null;
-      return;
-    }
-
-    if (typeof setGpuSettingsPreset !== 'function') {
-      console.warn(
-        `${CUSTOMIZATION_ID} states "${presetId}", and this build of ` +
-          '@cornerstonejs/core has no GPU settings presets. The viewer keeps ' +
-          'the behaviour of that build.'
-      );
-      appliedId = presetId;
       return;
     }
 
     try {
       setGpuSettingsPreset(presetId);
-      setLossyDownsampling?.({ final: true });
+      setLossyDownsampling({ final: true });
       appliedId = presetId;
     } catch (error) {
       console.warn(`${CUSTOMIZATION_ID} states "${presetId}", which is not a preset.`, error);

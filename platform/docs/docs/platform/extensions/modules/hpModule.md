@@ -238,9 +238,11 @@ extension sets the volume retrieve configuration to the Cornerstone3D
 line while the volume loads. The `mpr` protocol sets no strategy, so it uses this configuration. A
 strategy above does not copy images to empty frames.
 
-A Cornerstone3D version without `coarseInterleavedRetrieveStages` gets
-`interleavedRetrieveStages` instead. That configuration does not copy images to empty frames, so
-a reformat can show gray lines until the volume loads.
+Earlier versions of the `mpr` protocol used the `nth` strategy. The change applies to all users, also
+with lossy downsampling off: the load order changes, and the first images show at a coarse depth
+resolution before they refine. The data source `volumeRetrieveOptions` selects other volume
+stages. See the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/multi-resolution-volumes.md)
+to get the 3.13 load back.
 
 ### protocolMatchingRules
 A list of criteria for the protocol along with the provided points for ranking.
@@ -377,6 +379,24 @@ The ptDisplaySet will match against all the series that are PT and reconstructab
 
 As you see each selector is composed of an `id` as the key and a set of `seriesMatchingRules` (displaySetMatchingRules) which gives score to the displaySet
 based on the matching rules. The displaySet with the highest score will be used for the `id`.
+
+The viewer remembers the display set that the user puts in a viewport, under
+the selector `id` and the `matchedDisplaySetsIndex`, and reuses it when the
+stage changes. When two stages use different selectors for the same viewport,
+set `selectorMapId` on one selector to the `id` of the other. The two selectors
+then share the user's choice. The viewer does not check a reused display set
+against the rules of the selector, so a display set that the user put in a
+viewport stays when the stage changes. For example, `@ohif/mnGrid` uses
+`viewableDisplaySetId` (images, ECG, SM and PDF) in the 2x1 and 1x1 stages, and
+`defaultDisplaySetId` (images only) in the 2x2 and 3x1 stages:
+
+```js
+viewableDisplaySetId: {
+  allowUnmatchedView: true,
+  selectorMapId: 'defaultDisplaySetId',
+  seriesMatchingRules: seriesViewable,
+},
+```
 
 ### stages
 Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is an array of objects, each object being one stage.
