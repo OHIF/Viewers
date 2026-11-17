@@ -106,6 +106,7 @@ function FidelityIndicator({
       <TooltipTrigger asChild>
         <button
           type="button"
+          data-cy="fidelity-indicator"
           className={`ohif-fidelity${isIdle ? ' ohif-fidelity--idle' : ''}`}
           aria-label={t(ariaKeyOf(ariaPresentation))}
           onMouseEnter={revealRecovered}
