@@ -7,6 +7,7 @@
 // descriptor loader for window.config.extensions / window.config.modes.
 
 import satisfies from 'semver/functions/satisfies';
+import { isOriginAllowed } from './utils/isOriginAllowed';
 
 export interface RuntimePluginDescriptor {
   /** MUST equal the extension/mode id exported by the package (settled contract). */
@@ -181,18 +182,11 @@ export function getAllowedRuntimeOrigins(): string[] {
 
 /**
  * Deny-by-default origin allowlist check for runtime-loaded plugin code.
- * Allowlist entries are normalized through new URL(...) so a full URL entry
- * (e.g. 'https://cdn.example.com/some/path') allowlists that origin; ports
- * are part of the origin; malformed entries are skipped, never fatal.
+ * The allowed origins are this page's plus window.config.runtimePluginOrigins
+ * (see getAllowedRuntimeOrigins); isOriginAllowed does the comparison.
  */
 export function isAllowedRuntimeOrigin(url: URL): boolean {
-  return getAllowedRuntimeOrigins().some(entry => {
-    try {
-      return new URL(entry, window.location.href).origin === url.origin;
-    } catch {
-      return false;
-    }
-  });
+  return isOriginAllowed(url, getAllowedRuntimeOrigins());
 }
 
 function resolveImportUrl(importPath: string): URL {

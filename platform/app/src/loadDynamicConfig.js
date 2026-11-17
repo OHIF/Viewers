@@ -1,3 +1,5 @@
+import { isOriginAllowed } from './utils/isOriginAllowed';
+
 // Deployment-gated `?configUrl=` loading.
 //
 // This is the highest-value target in the whole configuration surface: the
@@ -6,22 +8,6 @@
 // the viewer loads. Every check below is therefore fail-closed and loud — a
 // misconfiguration refuses the load and says why, rather than silently
 // widening what a `?configUrl=` may point at.
-
-/**
- * Origin comparison, normalized through the URL parser so a full-URL entry
- * ('https://config.example.com/configs/') allowlists that URL's origin, ports
- * are part of the origin, and a malformed entry is skipped rather than fatal.
- * Mirrors isAllowedRuntimeOrigin in runtimeExtensionLoader.ts.
- */
-function originAllowed(url, origins) {
-  return origins.some(entry => {
-    try {
-      return new URL(entry, window.location.href).origin === url.origin;
-    } catch {
-      return false;
-    }
-  });
-}
 
 export default async config => {
   const useDynamicConfig = config.dangerouslyUseDynamicConfig;
@@ -82,7 +68,7 @@ export default async config => {
   // The origin allowlist is the strong gate: it compares url.origin for
   // equality, so no pattern subtlety applies. When both are configured both
   // must pass.
-  if (hasOrigins && !originAllowed(url, origins)) {
+  if (hasOrigins && !isOriginAllowed(url, origins)) {
     return refuse(
       `origin "${url.origin}" is not listed in dangerouslyUseDynamicConfig.origins ` +
         `(${origins.join(', ')})`
