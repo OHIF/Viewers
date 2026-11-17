@@ -26,22 +26,12 @@ const CircleROIStartEndThreshold = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
-      referencedImageId,
-      displaySetService,
-      annotation
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID, displaySetInstanceUID } =
+      getSOPInstanceAttributes(referencedImageId, displaySetService, annotation);
 
-    let displaySet;
-
-    if (SOPInstanceUID) {
-      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-        SOPInstanceUID,
-        SeriesInstanceUID
-      );
-    } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
-    }
+    const displaySet = displaySetInstanceUID
+      ? displaySetService.getDisplaySetByUID(displaySetInstanceUID)
+      : displaySetService.getDisplaySetForSOPInstanceUID(SOPInstanceUID, SeriesInstanceUID);
 
     const { cachedStats } = data;
 

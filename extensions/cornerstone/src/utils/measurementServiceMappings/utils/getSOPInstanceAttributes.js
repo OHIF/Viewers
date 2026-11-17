@@ -34,7 +34,9 @@ function getDisplaySet({ metadata, displaySetService }) {
 /**
  * It checks if the imageId is provided then it uses it to query
  * the metadata and get the SOPInstanceUID, SeriesInstanceUID and StudyInstanceUID.
- * If the imageId is not provided then undefined is returned.
+ * Without an imageId (a volume annotation), it finds the display set of the
+ * annotation volume, and also returns its displaySetInstanceUID: a series can
+ * have more than one display set, so the series UID alone does not identify it.
  * @param {string} imageId The image id of the referenced image
  * @returns
  */
@@ -45,12 +47,13 @@ export default function getSOPInstanceAttributes(imageId, displaySetService, ann
 
   const { metadata } = annotation;
   const displaySet = getDisplaySet({ metadata, displaySetService });
-  const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
+  const { StudyInstanceUID, SeriesInstanceUID, displaySetInstanceUID } = displaySet;
 
   return {
     SOPInstanceUID: undefined,
     SeriesInstanceUID,
     StudyInstanceUID,
+    displaySetInstanceUID,
   };
 }
 
