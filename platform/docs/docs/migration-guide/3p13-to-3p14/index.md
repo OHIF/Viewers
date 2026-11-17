@@ -124,4 +124,10 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   other extensions and modes, and `@ohif/ui`, are no longer published; their
   3.13.x releases stay on npm.
 
+- **[Dynamic config URLs](./dynamic-config.md)** — `dangerouslyUseDynamicConfig`
+  now requires an `origins` list or a `regex` that starts with `^`, and checks
+  the absolute URL the browser will fetch. A deployment with `regex: /.*/` or
+  `regex: /hospital\.com/` has its `configUrl` refused after the upgrade, and the
+  viewer starts with its built-in configuration.
+
 <DocCardList />
