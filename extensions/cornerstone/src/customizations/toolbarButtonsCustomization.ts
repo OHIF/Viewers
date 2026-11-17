@@ -742,11 +742,10 @@ export const toolbarSections = {
     'MoreTools',
   ],
 
-  [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: [
-    'orientationMenu',
-    'projectionMenu',
-    'dataOverlayMenu',
-  ],
+  // 'projectionMenu' (MIP and slab thickness) is registered above but kept out
+  // of the default corner menu: a deployment or mode adds it with the shipped
+  // 'tools/projectionMenu' customization module or its own section layout.
+  [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.bottomMiddle]: ['AdvancedRenderingControls'],
 

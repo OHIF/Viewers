@@ -4,7 +4,7 @@ import {
   screenShotPaths,
   test,
   expect,
-  visitStudy,
+  visitStudyOptions,
   waitForViewportsRendered,
 } from './utils';
 
@@ -58,7 +58,13 @@ async function runCommand(page, commandName: string, options: Record<string, unk
 }
 
 test.beforeEach(async ({ page }) => {
-  await visitStudy(page, STUDY_INSTANCE_UID, 'viewer', 2000);
+  // The projection button is not in the default corner menu; the shipped
+  // customization module adds it (see platform/app/public/customizations/tools).
+  await visitStudyOptions(page, STUDY_INSTANCE_UID, {
+    mode: 'viewer',
+    delay: 2000,
+    customization: 'tools/projectionMenu',
+  });
 });
 
 test.describe('MIP (maximum intensity projection)', () => {

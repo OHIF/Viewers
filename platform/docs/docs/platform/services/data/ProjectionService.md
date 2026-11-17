@@ -33,11 +33,23 @@ Key properties:
 
 ## UI
 
-The viewport action corner (top left, next to the orientation menu) shows a
-projection button whenever the viewport's data is reconstructable. The menu
-holds an on/off switch and a slab-thickness slider (1 mm steps, capped at the
-volume diagonal). The slider commits once per drag; every value shown is read
-back from the rendering engine.
+The cornerstone extension registers a `projectionMenu` button for the viewport
+action corner, but it is not in the default corner menu: projection is a
+specialist function, so a deployment or a mode opts in. The shipped
+`tools/projectionMenu` customization module adds the button to the top-left
+corner (after the orientation and data overlay menus) of every viewport whose
+data is reconstructable:
+
+- in the URL: `?customization=tools/projectionMenu` (needs
+  `customizationUrlPrefixes` in the app config), or
+- in the app config: add `tools/projectionMenu` to
+  `customizationService.requires`, or
+- in a mode: list `projectionMenu` in its `viewportActionMenu.topLeft` section.
+
+The menu holds an on/off switch and a slab-thickness slider (1 mm steps, capped
+at the volume diagonal). The slider commits once per drag; every value shown is
+read back from the rendering engine. The commands and the service below work
+without the button.
 
 ## Commands
 
