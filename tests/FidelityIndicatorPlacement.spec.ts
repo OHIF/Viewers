@@ -43,6 +43,11 @@ test.describe('Fidelity indicator placement', () => {
       const studyDateBox = await studyDate.boundingBox();
       expect(studyDateBox).toBeTruthy();
       expect(studyDateBox!.y).toBeGreaterThan(fidelityBox!.y + fidelityBox!.height - 2);
+      // Historic .overlay-top band (2.15rem from viewport top); fidelity is absolute so it
+      // must not add an extra icon row above StudyDate.
+      const historicOverlayTop = viewportBox!.y + 2.15 * 16;
+      expect(studyDateBox!.y).toBeGreaterThanOrEqual(historicOverlayTop - 4);
+      expect(studyDateBox!.y).toBeLessThan(historicOverlayTop + 8);
     }
   });
 

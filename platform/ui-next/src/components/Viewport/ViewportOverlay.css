@@ -18,10 +18,14 @@
 }
 /*
  * After orientationMenu + dataOverlayMenu: pl-[4px] + 2× ToolButton size="tiny" (w-6).
- * Slot wrapper stays mounted when the glyph is idle/null so metadata margin stays stable.
+ * Absolute so the reserved slot does not push StudyDate below the historic overlay-top band.
+ * left is 52px from the viewport edge, minus left-viewport (0.5rem) on this overlay.
+ * Slot stays mounted when idle/null so metadata margin stays stable.
  */
 .overlay-top-left .ohif-fidelity-slot {
-  margin-left: 52px;
+  position: absolute;
+  top: 0;
+  left: calc(52px - 0.5rem);
   min-height: 24px;
   display: flex;
   align-items: center;
