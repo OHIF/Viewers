@@ -17,9 +17,13 @@ export function isOverlayComponent(
   if (typeof value === 'function') {
     return true;
   }
+  // memo / forwardRef components are objects with a `$$typeof` tag; a
+  // rendered element (`<Badge />` instead of `Badge`) has one too but is not
+  // a component type.
   return (
     typeof value === 'object' &&
     value !== null &&
+    !React.isValidElement(value) &&
     typeof (value as { $$typeof?: unknown }).$$typeof === 'symbol'
   );
 }

@@ -14,6 +14,8 @@ describe('isOverlayComponent', () => {
     expect(isOverlayComponent(null)).toBe(false);
     expect(isOverlayComponent({ id: 'not-a-component' })).toBe(false);
     expect(isOverlayComponent('Badge')).toBe(false);
+    // An element, not a component type.
+    expect(isOverlayComponent(React.createElement(() => null))).toBe(false);
   });
 
   it('renders the component with the display set, or nothing when unset', () => {

@@ -152,7 +152,7 @@ const Thumbnail = ({
             {/* over the image: the `studyBrowser.thumbnailOverlay` customization */}
             {overlay ? (
               <div
-                className="pointer-events-none absolute inset-0 overflow-hidden rounded"
+                className="pointer-events-none absolute inset-0 isolate overflow-hidden rounded"
                 data-cy="thumbnail-overlay"
               >
                 {overlay as React.ReactNode}
