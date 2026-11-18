@@ -396,7 +396,7 @@ module.exports = {
 ```
 
 ```bash
-OHIF_BUILD_EXTEND=../../my-app/build-extend.js pnpm run build
+MY_BUILD_ID=example OHIF_BUILD_EXTEND=../../my-app/build-extend.js pnpm run build
 ```
 
 <!--
