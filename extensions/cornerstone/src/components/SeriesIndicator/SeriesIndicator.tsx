@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSystem } from '@ohif/core/src';
+import { useSystem } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui-next';
 import { seriesIndicatorText } from './seriesIndicatorText';
+
+/** A new array of the display sets in study browser order. */
+function readDisplaySets(displaySetService) {
+  return displaySetService.getDisplaySets
+    ? displaySetService.getDisplaySets({ order: 'thumbnailTray' })
+    : [...(displaySetService.getActiveDisplaySets() ?? [])];
+}
 
 /**
  * Shows which series a viewport displays and where it sits in its study:
@@ -19,10 +26,13 @@ function SeriesIndicator({ viewportId }: { viewportId?: string; [key: string]: u
   const { displaySetService } = servicesManager.services;
   const [viewportGrid] = useViewportGrid();
   const { t } = useTranslation('Common');
-  const [, setVersion] = useState(0);
+  // Kept in state so a render reads the snapshot taken when the display sets
+  // or their order last changed.
+  const [displaySets, setDisplaySets] = useState(() => readDisplaySets(displaySetService));
 
   useEffect(() => {
-    const update = () => setVersion(version => version + 1);
+    const update = () => setDisplaySets(readDisplaySets(displaySetService));
+    update();
     const { EVENTS } = displaySetService;
     const subscriptions = [
       EVENTS.DISPLAY_SETS_ADDED,
@@ -37,9 +47,6 @@ function SeriesIndicator({ viewportId }: { viewportId?: string; [key: string]: u
 
   const id = viewportId ?? viewportGrid?.activeViewportId;
   const viewport = id ? viewportGrid?.viewports?.get?.(id) : undefined;
-  const displaySets =
-    displaySetService.getDisplaySets?.({ order: 'thumbnailTray' }) ??
-    displaySetService.getActiveDisplaySets();
   const text = seriesIndicatorText(viewport?.displaySetInstanceUIDs, displaySets);
 
   if (!text) {
