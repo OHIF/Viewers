@@ -4,6 +4,7 @@ server {
   gunzip       on;
   listen ${PORT} default_server;
   listen [::]:${PORT} default_server;
+  server_tokens off; # no nginx version in the Server header or error pages
   # Runtime plugins (see docs/deployment/runtime-plugins). Convention:
   #   ${PUBLIC_URL}plugins/<packageName>/<version>/<files>
   # Mounted at /usr/share/nginx/html${PUBLIC_URL}plugins. Missing files must

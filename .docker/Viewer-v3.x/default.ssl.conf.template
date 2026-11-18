@@ -9,6 +9,7 @@ server {
   # reachable, and HTTP/1.1 otherwise. Set back to `on` once the Dockerfile's
   # nginx base image is on a fixed version.
   http2 off;
+  server_tokens off; # no nginx version in the Server header or error pages
   ssl_certificate /etc/ssl/certs/ssl-certificate.crt;
   ssl_certificate_key /etc/ssl/private/ssl-private-key.key;
   # Runtime plugins (see docs/deployment/runtime-plugins). Convention:

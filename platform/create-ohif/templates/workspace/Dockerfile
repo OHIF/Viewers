@@ -16,6 +16,7 @@ FROM nginx:1.30.7-alpine
 COPY <<'NGINXCONF' /etc/nginx/conf.d/default.conf
 server {
   listen 80;
+  server_tokens off; # no nginx version in the Server header or error pages
   root /usr/share/nginx/html;
   index index.html;
   location / {
