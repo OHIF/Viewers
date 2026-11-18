@@ -24,7 +24,7 @@ ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js
 RUN pnpm run build
 
 # Use nginx as the base image
-FROM nginx:1.30-alpine
+FROM nginx:1.30.7-alpine
 
 # Install dependencies for oauth2-proxy
 RUN apk add --no-cache curl

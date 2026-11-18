@@ -10,7 +10,7 @@
 # JS text of an app config) replaces the baked-in app-config.js:
 #   docker run -p 3000:80 -e APP_CONFIG="$(cat config/app-config.js)" {{dirName}}
 
-FROM nginx:1.27-alpine
+FROM nginx:1.30.7-alpine
 
 # Single-page app routing: unknown paths fall back to index.html.
 COPY <<'NGINXCONF' /etc/nginx/conf.d/default.conf
