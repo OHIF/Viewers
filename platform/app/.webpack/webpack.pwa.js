@@ -35,6 +35,7 @@ const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 // Shared with the rsbuild build (rsbuild.config.ts).
 const InjectServiceWorkerManifestPlugin = require('./InjectServiceWorkerManifestPlugin.js');
 const optionalSplitRulesCopyPattern = require('./optionalSplitRulesCopyPattern.js');
+const applyBuildExtension = require('./applyBuildExtension.js');
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
@@ -221,5 +222,9 @@ module.exports = (env, argv) => {
     followSymlinks: true,
   };
 
-  return mergedConfig;
+  // Optional downstream hook (OHIF_BUILD_EXTEND); unchanged when unset.
+  return applyBuildExtension(mergedConfig, 'rspack', {
+    mode: process.env.NODE_ENV,
+    isProd: isProdBuild,
+  });
 };

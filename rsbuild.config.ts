@@ -1,4 +1,4 @@
-import { defineConfig } from '@rsbuild/core';
+import { defineConfig, type RsbuildConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import { pluginBabel } from '@rsbuild/plugin-babel';
@@ -10,6 +10,8 @@ import resolveConfig from './.webpack/resolveConfig';
 // Service-worker manifest injection shared with the rspack build (webpack.pwa.js).
 import InjectServiceWorkerManifestPlugin from './platform/app/.webpack/InjectServiceWorkerManifestPlugin';
 import optionalSplitRulesCopyPattern from './platform/app/.webpack/optionalSplitRulesCopyPattern';
+// Optional downstream hook (OHIF_BUILD_EXTEND), shared with webpack.pwa.js.
+import applyBuildExtension from './platform/app/.webpack/applyBuildExtension';
 import fs from 'fs';
 
 const APP_ROOT = path.resolve(__dirname, './platform/app');
@@ -54,6 +56,13 @@ const SOURCE_MAP_LOADER = (() => {
 })();
 
 export default defineConfig(({ env }) => {
+  return applyBuildExtension(buildConfig(env), 'rsbuild', {
+    mode: env,
+    isProd: env === 'production',
+  });
+});
+
+function buildConfig(env: string): RsbuildConfig {
   const isProd = env === 'production';
   // Honor an explicit APP_CONFIG; otherwise the dev server gets the
   // full-featured `config/dev.js` and a production build the locked-down
@@ -362,4 +371,4 @@ export default defineConfig(({ env }) => {
       },
     },
   };
-});
+}

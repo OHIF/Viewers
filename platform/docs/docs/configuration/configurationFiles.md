@@ -354,6 +354,7 @@ alternative data source (or even specify different default hotkeys).
 | `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
 | `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
 | `OHIF_PORT`          | The port to run the webpack server on for PWA builds.                                              | `3000`              |
+| `OHIF_BUILD_EXTEND`  | Path to a module that adjusts the build config (see [Extending the build](#extending-the-build)).  | `undefined`         |
 
 You can also create a new config file and specify its path relative to the build
 output's root by setting the `APP_CONFIG` environment variable. You can set the
@@ -370,6 +371,33 @@ value of this environment variable a few different ways:
 
 After updating the configuration, `yarn run build` to generate updated build
 output.
+
+### Extending the build
+
+An app built on OHIF can adjust the build without editing the upstream build
+configs: set `OHIF_BUILD_EXTEND` to a CommonJS module (path relative to the
+directory the build runs in, `platform/app` for the package scripts). The module
+exports a function per build: `rsbuild` for `build` and `dev:fast`
+(`rsbuild.config.ts`), `rspack` for `build:legacy` and `dev` (`webpack.pwa.js`).
+Each receives the finished config and `{ mode, isProd, env }` and returns the
+config to use (or nothing to keep the mutated one).
+
+```js title="my-app/build-extend.js"
+module.exports = {
+  rsbuild(config) {
+    config.source.define['process.env.MY_BUILD_ID'] = JSON.stringify(process.env.MY_BUILD_ID);
+    return config;
+  },
+  rspack(config, { isProd }) {
+    // e.g. add a plugin to the rspack build
+    return config;
+  },
+};
+```
+
+```bash
+MY_BUILD_ID=example OHIF_BUILD_EXTEND=../../my-app/build-extend.js pnpm run build
+```
 
 <!--
   Links
