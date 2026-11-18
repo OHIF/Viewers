@@ -216,7 +216,10 @@ function ViewerLayout({
           </ResizablePanelGroup>
         </React.Fragment>
       </div>
-      <Onboarding tours={customizationService.getCustomization('ohif.tours')} />
+      <Onboarding
+        tours={customizationService.getCustomization('ohif.tours')}
+        persistence={customizationService.getCustomization('ohif.tourPersistence')}
+      />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );

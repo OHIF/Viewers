@@ -1,3 +1,5 @@
 import { Onboarding } from './Onboarding';
+import { localStorageTourPersistence, type TourPersistence } from './utilities';
 
-export { Onboarding };
+export { Onboarding, localStorageTourPersistence };
+export type { TourPersistence };

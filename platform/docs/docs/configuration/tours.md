@@ -117,6 +117,32 @@ when: {
 }
 ```
 
+## Remembering Which Tours Were Shown
+
+By default a tour is shown once per browser: its `id` is stored in the
+`shownTours` list in `localStorage` when its first step is displayed. To show a
+tour once per user across browsers and devices, provide the
+`ohif.tourPersistence` customization. Both functions may return a promise:
+
+```javascript
+customizationService.setCustomizations({
+  'ohif.tourPersistence': {
+    $set: {
+      // The tour starts only when this resolves to false.
+      hasBeenShown: async tourId => {
+        const response = await fetch(`/api/me/tours/${tourId}`);
+        return (await response.json()).shown;
+      },
+      // Called once, when the tour's first step is displayed.
+      markShown: tourId => fetch(`/api/me/tours/${tourId}`, { method: 'PUT' }),
+    },
+  },
+});
+```
+
+If `hasBeenShown` fails, the tour is not started. The default implementation is
+exported from `@ohif/ui-next` as `localStorageTourPersistence`.
+
 ## Customizing Your Tour
 
 Once you have a basic tour in place, you can extend it with more advanced features like custom scrolling behavior, dynamic elements, and event-based step advancement. For more details, check out the [Shepherd.js documentation](https://shepherdjs.dev/).

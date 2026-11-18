@@ -4,10 +4,16 @@ import { useLocation } from 'react-router';
 import 'shepherd.js/dist/css/shepherd.css';
 import './Onboarding.css';
 
-import { hasTourBeenShown, markTourAsShown, defaultShowHandler, middleware } from './utilities';
+import {
+  defaultShowHandler,
+  localStorageTourPersistence,
+  middleware,
+  type TourPersistence,
+} from './utilities';
 
 const Onboarding = ({
   tours = [],
+  persistence,
 }: {
   tours?: Array<{
     id: string;
@@ -15,6 +21,12 @@ const Onboarding = ({
     tourOptions: TourOptions;
     steps: StepOptions[];
   }>;
+  /**
+   * Where "this tour was shown" is read and written. Defaults to the
+   * browser's localStorage; pass e.g. a server-backed store to show a tour
+   * once per user across browsers and devices (`ohif.tourPersistence`).
+   */
+  persistence?: TourPersistence;
 }) => {
   const location = useLocation();
 
@@ -28,29 +40,55 @@ const Onboarding = ({
     }
 
     const matchingTour = tours.find(tour => tour.route === location.pathname);
-    if (!matchingTour || hasTourBeenShown(matchingTour.id)) {
+    if (!matchingTour) {
       return;
     }
 
-    const tourInstance = new Shepherd.Tour({
-      ...matchingTour.tourOptions,
-      defaultStepOptions: {
-        ...matchingTour.tourOptions?.defaultStepOptions,
-        floatingUIOptions: matchingTour.tourOptions?.defaultStepOptions?.floatingUIOptions || {
-          middleware,
+    const store = persistence ?? localStorageTourPersistence;
+    let cancelled = false;
+
+    const startTour = () => {
+      const tourInstance = new Shepherd.Tour({
+        ...matchingTour.tourOptions,
+        defaultStepOptions: {
+          ...matchingTour.tourOptions?.defaultStepOptions,
+          floatingUIOptions: matchingTour.tourOptions?.defaultStepOptions?.floatingUIOptions || {
+            middleware,
+          },
+          when: {
+            ...matchingTour.tourOptions?.defaultStepOptions?.when,
+            show:
+              matchingTour.tourOptions?.defaultStepOptions?.when?.show ||
+              (() => defaultShowHandler(Shepherd)),
+          },
         },
-        when: {
-          ...matchingTour.tourOptions?.defaultStepOptions?.when,
-          show:
-            matchingTour.tourOptions?.defaultStepOptions?.when?.show ||
-            (() => defaultShowHandler(Shepherd)),
+      });
+      matchingTour.steps.forEach(step => tourInstance.addStep(step));
+      // Recorded when the user actually sees the first step, not when the
+      // tour is created (a step can wait for its element or be cancelled).
+      tourInstance.once('show', () => {
+        Promise.resolve()
+          .then(() => store.markShown(matchingTour.id))
+          .catch(error => console.warn('Onboarding: could not record the tour as shown', error));
+      });
+      tourInstance.start();
+    };
+
+    Promise.resolve()
+      .then(() => store.hasBeenShown(matchingTour.id))
+      .then(
+        shown => {
+          if (!shown && !cancelled) {
+            startTour();
+          }
         },
-      },
-    });
-    matchingTour.steps.forEach(step => tourInstance.addStep(step));
-    tourInstance.start();
-    markTourAsShown(matchingTour.id);
-  }, [tours, location.pathname]);
+        error => console.warn('Onboarding: could not read whether the tour was shown', error)
+      );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [tours, persistence, location.pathname]);
 
   return null;
 };
