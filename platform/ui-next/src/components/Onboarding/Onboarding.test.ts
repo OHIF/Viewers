@@ -6,19 +6,27 @@ type Handler = () => void;
 const created: Array<{ start: jest.Mock; addStep: jest.Mock; show: () => void }> = [];
 
 jest.mock('shepherd.js', () => {
+  class Step {
+    handlers: Handler[] = [];
+    once(event: string, handler: Handler) {
+      if (event === 'show') {
+        this.handlers.push(handler);
+      }
+    }
+  }
   class Tour {
-    handlers: Record<string, Handler[]> = {};
-    addStep = jest.fn();
+    steps: Step[] = [];
+    addStep = jest.fn(() => {
+      this.steps.push(new Step());
+    });
     start = jest.fn();
     constructor() {
       created.push({
         start: this.start,
         addStep: this.addStep,
-        show: () => (this.handlers.show || []).splice(0).forEach(handler => handler()),
+        // The first step is displayed (after any beforeShowPromise).
+        show: () => this.steps[0].handlers.splice(0).forEach(handler => handler()),
       });
-    }
-    once(event: string, handler: Handler) {
-      (this.handlers[event] = this.handlers[event] || []).push(handler);
     }
   }
   return { __esModule: true, default: { Tour } };
@@ -104,5 +112,34 @@ describe('Onboarding persistence', () => {
     expect(created).toHaveLength(0);
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
+  });
+
+  it('does not start the tour again in this session while the record is being saved', async () => {
+    let saved: () => void = () => undefined;
+    const persistence = {
+      hasBeenShown: jest.fn().mockResolvedValue(false),
+      markShown: jest.fn(() => new Promise<void>(resolve => (saved = resolve))),
+    };
+    const view = render(React.createElement(Onboarding, { tours, persistence }));
+    await flush();
+    created[0].show();
+    await flush();
+    view.unmount();
+
+    render(React.createElement(Onboarding, { tours, persistence }));
+    await flush();
+    expect(created).toHaveLength(1);
+    saved();
+  });
+
+  it('records nothing when the tour starts but no step is displayed', async () => {
+    const persistence = {
+      hasBeenShown: jest.fn().mockResolvedValue(false),
+      markShown: jest.fn(),
+    };
+    render(React.createElement(Onboarding, { tours, persistence }));
+    await flush();
+    expect(created[0].start).toHaveBeenCalled();
+    expect(persistence.markShown).not.toHaveBeenCalled();
   });
 });

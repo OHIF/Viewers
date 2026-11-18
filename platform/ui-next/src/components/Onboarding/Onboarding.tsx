@@ -11,6 +11,22 @@ import {
   type TourPersistence,
 } from './utilities';
 
+/**
+ * Tours shown in this page session, per persistence. Checked before the
+ * (possibly remote) lookup, so a tour is not started again while its record is
+ * still being written, or after a write failed.
+ */
+const shownInSession = new WeakMap<TourPersistence, Set<string>>();
+
+const sessionShown = (store: TourPersistence): Set<string> => {
+  let shown = shownInSession.get(store);
+  if (!shown) {
+    shown = new Set();
+    shownInSession.set(store, shown);
+  }
+  return shown;
+};
+
 const Onboarding = ({
   tours = [],
   persistence,
@@ -64,21 +80,31 @@ const Onboarding = ({
         },
       });
       matchingTour.steps.forEach(step => tourInstance.addStep(step));
-      // Recorded when the user actually sees the first step, not when the
-      // tour is created (a step can wait for its element or be cancelled).
-      tourInstance.once('show', () => {
+      // Recorded when a step is actually displayed, not when the tour is
+      // created or starts: a step can wait for a `beforeShowPromise` or its
+      // element, and the tour can be cancelled before anything shows.
+      const record = () => {
+        if (sessionShown(store).has(matchingTour.id)) {
+          return;
+        }
+        sessionShown(store).add(matchingTour.id);
         Promise.resolve()
           .then(() => store.markShown(matchingTour.id))
           .catch(error => console.warn('Onboarding: could not record the tour as shown', error));
-      });
+      };
+      tourInstance.steps.forEach(step => step.once('show', record));
       tourInstance.start();
     };
+
+    if (sessionShown(store).has(matchingTour.id)) {
+      return;
+    }
 
     Promise.resolve()
       .then(() => store.hasBeenShown(matchingTour.id))
       .then(
         shown => {
-          if (!shown && !cancelled) {
+          if (!shown && !cancelled && !sessionShown(store).has(matchingTour.id)) {
             startTour();
           }
         },

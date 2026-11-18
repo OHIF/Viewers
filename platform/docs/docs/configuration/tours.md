@@ -120,8 +120,8 @@ when: {
 ## Remembering Which Tours Were Shown
 
 By default a tour is shown once per browser: its `id` is stored in the
-`shownTours` list in `localStorage` when its first step is displayed. To show a
-tour once per user across browsers and devices, provide the
+`shownTours` list in `localStorage` when one of its steps is displayed. To share
+that history across a user's browsers and devices, provide the
 `ohif.tourPersistence` customization. Both functions may return a promise:
 
 ```javascript
@@ -131,17 +131,33 @@ customizationService.setCustomizations({
       // The tour starts only when this resolves to false.
       hasBeenShown: async tourId => {
         const response = await fetch(`/api/me/tours/${tourId}`);
-        return (await response.json()).shown;
+        if (!response.ok) {
+          throw new Error(`tour lookup failed: ${response.status}`);
+        }
+        const { shown } = await response.json();
+        if (typeof shown !== 'boolean') {
+          throw new Error('tour lookup returned no "shown" flag');
+        }
+        return shown;
       },
-      // Called once, when the tour's first step is displayed.
-      markShown: tourId => fetch(`/api/me/tours/${tourId}`, { method: 'PUT' }),
+      // Called once, when a step of the tour is first displayed.
+      markShown: async tourId => {
+        const response = await fetch(`/api/me/tours/${tourId}`, { method: 'PUT' });
+        if (!response.ok) {
+          throw new Error(`tour record failed: ${response.status}`);
+        }
+      },
     },
   },
 });
 ```
 
-If `hasBeenShown` fails, the tour is not started. The default implementation is
-exported from `@ohif/ui-next` as `localStorageTourPersistence`.
+If `hasBeenShown` fails, the tour is not started; if `markShown` fails, a
+warning is logged. Within a page session a tour that was displayed is not
+started again, even before `markShown` completes. Two browsers that look up a
+tour at the same moment can both start it; the shared history applies once the
+record is written. The default implementation is `localStorageTourPersistence`
+(`platform/ui-next/src/components/Onboarding/utilities.ts`).
 
 ## Customizing Your Tour
 
