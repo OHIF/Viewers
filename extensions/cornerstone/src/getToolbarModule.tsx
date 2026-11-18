@@ -13,6 +13,7 @@ import NavigationComponent from './components/NavigationComponent/NavigationComp
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
 import ViewportColorbarsContainer from './components/ViewportColorbar';
 import AdvancedRenderingControls from './components/AdvancedRenderingControls';
+import SeriesIndicator from './components/SeriesIndicator';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -112,6 +113,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           disabled: !isSupportedType,
         };
       },
+    },
+    // Series n/N and description of the viewport (place in a viewportActionMenu section)
+    {
+      name: 'ohif.seriesIndicator',
+      defaultComponent: SeriesIndicator,
     },
     // NavigationComponent
     {
