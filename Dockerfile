@@ -65,7 +65,7 @@ RUN ./.docker/compressDist.sh
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
-FROM nginxinc/nginx-unprivileged:1.27-alpine as final
+FROM nginxinc/nginx-unprivileged:1.30-alpine as final
 #RUN apk add --no-cache bash
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}
