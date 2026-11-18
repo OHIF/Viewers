@@ -2,6 +2,9 @@ import { ExtensionManager } from '../../extensions';
 import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
+import { seriesSortCriteria } from '../../utils/sortStudy';
+
+type DisplaySetComparator = (a: DisplaySet, b: DisplaySet) => number;
 
 const displaySetCache = new Map<string, DisplaySet>();
 
@@ -30,8 +33,10 @@ export default class DisplaySetService extends PubSubService {
   public static REGISTRATION = {
     altName: 'DisplaySetService',
     name: 'displaySetService',
-    create: ({ configuration = {} }) => {
-      return new DisplaySetService();
+    create: ({ configuration = {}, servicesManager }) => {
+      const service = new DisplaySetService();
+      service.servicesManager = servicesManager;
+      return service;
     },
   };
 
@@ -45,6 +50,18 @@ export default class DisplaySetService extends PubSubService {
   // that fewer events need to be fired when creating multiple display sets
   protected activeDisplaySetsChanged = false;
 
+  /** Used to read the `sortingCriteria` customization (the default order). */
+  servicesManager?: AppTypes.ServicesManager;
+
+  /** The sort last applied with `sortDisplaySets` (e.g. picked in the study browser). */
+  protected displaySetSort: {
+    sortFn: DisplaySetComparator;
+    direction: 'ascending' | 'descending';
+  } | null = null;
+
+  /** The display set added last; `activeDisplaySets` is sorted, not in add order. */
+  protected mostRecentDisplaySetUID: string | undefined;
+
   constructor() {
     super(EVENTS);
     this.unsupportedSOPClassHandler =
@@ -56,6 +73,7 @@ export default class DisplaySetService extends PubSubService {
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];
     this.activeDisplaySetsMap.clear();
+    this.mostRecentDisplaySetUID = undefined;
   }
 
   _addDisplaySetsToCache(displaySets: DisplaySet[]) {
@@ -66,14 +84,45 @@ export default class DisplaySetService extends PubSubService {
 
   _addActiveDisplaySets(displaySets: DisplaySet[]) {
     const { activeDisplaySets, activeDisplaySetsMap } = this;
+    let added = false;
 
     displaySets.forEach(displaySet => {
       if (!activeDisplaySetsMap.has(displaySet.displaySetInstanceUID)) {
         this.activeDisplaySetsChanged = true;
+        added = true;
         activeDisplaySets.push(displaySet);
         activeDisplaySetsMap.set(displaySet.displaySetInstanceUID, displaySet);
+        this.mostRecentDisplaySetUID = displaySet.displaySetInstanceUID;
       }
     });
+    if (added) {
+      this._sortActiveDisplaySets();
+    }
+  }
+
+  /**
+   * Keeps `activeDisplaySets` in a stable order whatever order the series
+   * metadata arrives in: the sort last applied with `sortDisplaySets`, or else
+   * the `sortingCriteria` customization (the study browser's default order).
+   * Without it, next/previous series (`updateViewportDisplaySet`) followed the
+   * network completion order and changed between loads.
+   */
+  protected _sortActiveDisplaySets(): void {
+    const { sortFn, direction } = this.displaySetSort ?? {
+      sortFn: this.getDefaultSortCriteria(),
+      direction: 'ascending',
+    };
+    this.activeDisplaySets.sort(sortFn);
+    if (direction === 'descending') {
+      this.activeDisplaySets.reverse();
+    }
+  }
+
+  /** The default display set order: the `sortingCriteria` customization. */
+  public getDefaultSortCriteria(): DisplaySetComparator {
+    const customized =
+      this.servicesManager?.services?.customizationService?.getCustomization?.('sortingCriteria');
+    return typeof customized === 'function' ? customized : seriesSortCriteria.default;
   }
 
   /**
@@ -108,7 +157,7 @@ export default class DisplaySetService extends PubSubService {
   }
 
   public getMostRecentDisplaySet(): DisplaySet {
-    return this.activeDisplaySets[this.activeDisplaySets.length - 1];
+    return this.activeDisplaySetsMap.get(this.mostRecentDisplaySetUID);
   }
 
   public getActiveDisplaySets(): DisplaySet[] {
@@ -182,6 +231,8 @@ export default class DisplaySetService extends PubSubService {
     if (!displaySet) {
       return;
     }
+    // New metadata can change the sort keys.
+    this._sortActiveDisplaySets();
 
     // broadcast event to update listeners with the new displaySets
     this._broadcastEvent(EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED, {
@@ -287,6 +338,9 @@ export default class DisplaySetService extends PubSubService {
     this.getDisplaySetCache().clear();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
+    this.mostRecentDisplaySetUID = undefined;
+    // A sort picked for one study does not carry over to the next one.
+    this.displaySetSort = null;
   }
 
   /**
@@ -477,10 +531,9 @@ export default class DisplaySetService extends PubSubService {
     direction: 'ascending' | 'descending' = 'ascending',
     suppressEvent = false
   ): void {
-    this.activeDisplaySets.sort(sortFn);
-    if (direction === 'descending') {
-      this.activeDisplaySets.reverse();
-    }
+    // Remembered so display sets added later keep this order.
+    this.displaySetSort = { sortFn, direction };
+    this._sortActiveDisplaySets();
     if (!suppressEvent) {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     }
