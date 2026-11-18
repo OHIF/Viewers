@@ -17,7 +17,7 @@ ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 # Install from the package manifests first, for layer caching. See the root Dockerfile.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
 COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
-RUN pnpm install --no-frozen-lockfile
+RUN pnpm install --frozen-lockfile --filter '!ohif-docs'
 COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
 ENV APP_CONFIG=config/docker-nginx-dcm4chee.js

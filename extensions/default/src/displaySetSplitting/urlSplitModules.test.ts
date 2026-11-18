@@ -14,7 +14,7 @@ import {
 import { CustomizationService } from '@ohif/core';
 import getMetadataDisplaySetCustomization from '../customizations/metadataDisplaySetCustomization';
 import getMetadataContextCustomization from '../customizations/metadataContextCustomization';
-import optionalSplitRulesCopyPattern from '../../../../platform/app/.webpack/optionalSplitRulesCopyPattern';
+import optionalSplitRulesCopyPattern from '../../../../platform/app/.rspack/optionalSplitRulesCopyPattern';
 
 /**
  * The `split/*.jsonc` URL modules in platform/app/public are data that no
