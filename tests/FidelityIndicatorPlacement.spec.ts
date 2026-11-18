@@ -45,4 +45,21 @@ test.describe('Fidelity indicator placement', () => {
       expect(studyDateBox!.y).toBeGreaterThan(fidelityBox!.y + fidelityBox!.height - 2);
     }
   });
+
+  test('shows on Volume3D when hideOverlays is set (fidelity only)', async ({
+    page,
+    mainToolbarPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.threeDOnly.click();
+    await waitForViewportsRendered(page);
+
+    await forceViewportFidelity(page, { lossy: true, transient: false });
+
+    const viewportPane = page.locator('[data-cy="viewport-pane"]').first();
+    const topLeftOverlay = viewportPane.locator('[data-cy="viewport-overlay-top-left"]');
+    const fidelity = topLeftOverlay.getByTestId('fidelity-indicator');
+
+    await expect(fidelity).toBeVisible({ timeout: 30_000 });
+    await expect(topLeftOverlay.locator('[title="Study date"]')).toHaveCount(0);
+  });
 });

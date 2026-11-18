@@ -58,6 +58,20 @@ const OverlayItemComponents = {
   'ohif.overlayItem.fidelity': FidelityOverlayItem,
 };
 
+function isFidelityOverlayItem(item: { inheritsFrom?: string; id?: string } | null | undefined) {
+  return (
+    item?.inheritsFrom === 'ohif.overlayItem.fidelity' || item?.id === 'FidelityIndicator'
+  );
+}
+
+function filterOverlayCustomization(customization: unknown, fidelityOnly: boolean) {
+  const items = Array.isArray(customization) ? customization : [];
+  if (!fidelityOnly) {
+    return items;
+  }
+  return items.filter(isFidelityOverlayItem);
+}
+
 /**
  * Customizable Viewport Overlay
  */
@@ -67,12 +81,15 @@ function CustomizableViewportOverlay({
   imageSliceData,
   viewportId,
   servicesManager,
+  fidelityOnly = false,
 }: {
   element: HTMLElement;
   viewportData: ViewportData;
   imageSliceData: ImageSliceData;
   viewportId: string;
   servicesManager: AppTypes.ServicesManager;
+  /** Volume3D hideOverlays: only the fidelity indicator, no DICOM chrome text. */
+  fidelityOnly?: boolean;
 }) {
   const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
@@ -85,13 +102,21 @@ function CustomizableViewportOverlay({
   // append functionality.  This code enables the historical usage, but
   // the recommended functionality is to append to the default values in
   // cornerstoneOverlay rather than defining individual items.
-  const topLeftCustomization = customizationService.getCustomization('viewportOverlay.topLeft');
-  const topRightCustomization = customizationService.getCustomization('viewportOverlay.topRight');
-  const bottomLeftCustomization = customizationService.getCustomization(
-    'viewportOverlay.bottomLeft'
+  const topLeftCustomization = filterOverlayCustomization(
+    customizationService.getCustomization('viewportOverlay.topLeft'),
+    fidelityOnly
   );
-  const bottomRightCustomization = customizationService.getCustomization(
-    'viewportOverlay.bottomRight'
+  const topRightCustomization = filterOverlayCustomization(
+    customizationService.getCustomization('viewportOverlay.topRight'),
+    fidelityOnly
+  );
+  const bottomLeftCustomization = filterOverlayCustomization(
+    customizationService.getCustomization('viewportOverlay.bottomLeft'),
+    fidelityOnly
+  );
+  const bottomRightCustomization = filterOverlayCustomization(
+    customizationService.getCustomization('viewportOverlay.bottomRight'),
+    fidelityOnly
   );
 
   const instanceNumber = useMemo(
