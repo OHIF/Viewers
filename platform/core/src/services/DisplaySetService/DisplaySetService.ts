@@ -59,8 +59,8 @@ export default class DisplaySetService extends PubSubService {
     direction: 'ascending' | 'descending';
   } | null = null;
 
-  /** The display set added last; `activeDisplaySets` is sorted, not in add order. */
-  protected mostRecentDisplaySetUID: string | undefined;
+  /** The active display set UIDs in add order; `activeDisplaySets` is sorted. */
+  protected addOrder: string[] = [];
 
   constructor() {
     super(EVENTS);
@@ -73,7 +73,7 @@ export default class DisplaySetService extends PubSubService {
     this.SOPClassHandlerIds = SOPClassHandlerIds;
     this.activeDisplaySets = [];
     this.activeDisplaySetsMap.clear();
-    this.mostRecentDisplaySetUID = undefined;
+    this.addOrder = [];
   }
 
   _addDisplaySetsToCache(displaySets: DisplaySet[]) {
@@ -92,7 +92,7 @@ export default class DisplaySetService extends PubSubService {
         added = true;
         activeDisplaySets.push(displaySet);
         activeDisplaySetsMap.set(displaySet.displaySetInstanceUID, displaySet);
-        this.mostRecentDisplaySetUID = displaySet.displaySetInstanceUID;
+        this.addOrder.push(displaySet.displaySetInstanceUID);
       }
     });
     if (added) {
@@ -112,10 +112,9 @@ export default class DisplaySetService extends PubSubService {
       sortFn: this.getDefaultSortCriteria(),
       direction: 'ascending',
     };
-    this.activeDisplaySets.sort(sortFn);
-    if (direction === 'descending') {
-      this.activeDisplaySets.reverse();
-    }
+    // A negated comparator rather than sort + reverse: the sort is stable, so
+    // display sets that compare equal keep their places on every re-sort.
+    this.activeDisplaySets.sort(direction === 'descending' ? (a, b) => sortFn(b, a) : sortFn);
   }
 
   /** The default display set order: the `sortingCriteria` customization. */
@@ -157,7 +156,7 @@ export default class DisplaySetService extends PubSubService {
   }
 
   public getMostRecentDisplaySet(): DisplaySet {
-    return this.activeDisplaySetsMap.get(this.mostRecentDisplaySetUID);
+    return this.activeDisplaySetsMap.get(this.addOrder[this.addOrder.length - 1]);
   }
 
   public getActiveDisplaySets(): DisplaySet[] {
@@ -254,6 +253,7 @@ export default class DisplaySetService extends PubSubService {
     displaySetCache.delete(displaySetInstanceUID);
     activeDisplaySets.splice(activeDisplaySetsIndex, 1);
     activeDisplaySetsMap.delete(displaySetInstanceUID);
+    this.addOrder = this.addOrder.filter(uid => uid !== displaySetInstanceUID);
 
     this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     this._broadcastEvent(EVENTS.DISPLAY_SETS_REMOVED, {
@@ -338,7 +338,7 @@ export default class DisplaySetService extends PubSubService {
     this.getDisplaySetCache().clear();
     this.activeDisplaySets.length = 0;
     this.activeDisplaySetsMap.clear();
-    this.mostRecentDisplaySetUID = undefined;
+    this.addOrder = [];
     // A sort picked for one study does not carry over to the next one.
     this.displaySetSort = null;
   }

@@ -71,4 +71,31 @@ describe('DisplaySetService active display set order', () => {
     [2, 1].forEach(n => service.addDisplaySets(displaySet(n) as never));
     expect(order(service)).toEqual([1, 2]);
   });
+
+  it('returns the previous display set as most recent after the last one is deleted', () => {
+    const service = create();
+    [1, 5, 2].forEach(n => service.addDisplaySets(displaySet(n) as never));
+    service.deleteDisplaySet('ds-2');
+    expect(service.getMostRecentDisplaySet().SeriesNumber).toBe(5);
+  });
+
+  it('keeps equal display sets in place when a descending sort is applied again', () => {
+    const service = create();
+    const sameDay = (uid: string, seriesNumber: number) => ({
+      ...displaySet(seriesNumber),
+      displaySetInstanceUID: uid,
+      SeriesDate: '20260101',
+    });
+    ['a', 'b', 'c'].forEach((uid, i) => service.addDisplaySets(sameDay(uid, i + 1) as never));
+    const byDate = (x, y) => x.SeriesDate.localeCompare(y.SeriesDate);
+    service.sortDisplaySets(byDate, 'descending', true);
+    const first = service.getActiveDisplaySets().map(ds => ds.displaySetInstanceUID);
+    service.addDisplaySets(sameDay('d', 4) as never);
+    service.sortDisplaySets(byDate, 'descending', true);
+    const second = service
+      .getActiveDisplaySets()
+      .map(ds => ds.displaySetInstanceUID)
+      .filter(uid => uid !== 'd');
+    expect(second).toEqual(first);
+  });
 });
