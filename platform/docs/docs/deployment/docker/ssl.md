@@ -33,10 +33,6 @@ docker run -d -e SSL_PORT=443 -p 3003:443/tcp -v /path/to/certificate:/etc/ssl/c
 ```
 
 :::caution
-HTTP/2 is turned off (`http2 off;`) in the SSL configuration for now, so browsers use HTTP/1.1. nginx versions before 1.30.7 (stable) and 1.31.9 (mainline) have remote code execution vulnerabilities in their HTTP/2 code (CVE-2026-123633 and CVE-2026-123007), and the image's nginx base has no fixed release yet. HTTP/2 will be turned back on once it does. If you build your own image on a fixed nginx version, you can set `http2 on;` in the SSL template. Check the version with `docker exec <container> nginx -v`.
-:::
-
-:::caution
 The above deploys OHIF over SSL using `nginx`'s default SSL configuration. For further OHIF server hardening and security configuration, consider enlisting an expert and then editing OHIF's `nginx` [SSL template configuration file](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.ssl.conf.template) with further [security settings](https://nginx.org/en/docs/http/ngx_http_ssl_module.html) and [tweaks](http://nginx.org/en/docs/http/configuring_https_servers.html) and then [build a new Docker image](#building-the-docker-image) from there.
 :::
 
