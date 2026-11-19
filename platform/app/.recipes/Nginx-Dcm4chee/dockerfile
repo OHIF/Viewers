@@ -24,7 +24,7 @@ ENV APP_CONFIG=config/docker-nginx-dcm4chee.js
 RUN pnpm run build
 
 # # Stage 2: Bundle the built application into a Docker container which runs NGINX using Alpine Linux
-FROM nginx:1.30-alpine
+FROM nginx:1.30.7-alpine
 
 # # Create directories for logs and html content if they don't already exist
 RUN mkdir -p /var/log/nginx /var/www/html

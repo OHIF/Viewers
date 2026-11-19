@@ -24,7 +24,7 @@ ENV APP_CONFIG=config/docker-nginx-dcm4chee-keycloak.js
 RUN pnpm run build
 
 # Stage 2: Setup the NGINX environment with OAuth2 Proxy
-FROM nginx:1.30-alpine
+FROM nginx:1.30.7-alpine
 
 # Install dependencies for oauth2-proxy
 RUN apk add --no-cache curl
