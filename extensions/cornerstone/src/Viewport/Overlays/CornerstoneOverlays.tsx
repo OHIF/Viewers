@@ -52,7 +52,11 @@ function CornerstoneOverlays(props: withAppTypes) {
   return (
     <Replaceable
       id="cornerstoneOverlays"
-      props={{ ...props, imageSliceData, setImageSliceData, viewportData, hideOverlays }}
+      props={props}
+      imageSliceData={imageSliceData}
+      setImageSliceData={setImageSliceData}
+      viewportData={viewportData}
+      hideOverlays={hideOverlays}
     >
       {element && !hideOverlays && (
         <div className="noselect">

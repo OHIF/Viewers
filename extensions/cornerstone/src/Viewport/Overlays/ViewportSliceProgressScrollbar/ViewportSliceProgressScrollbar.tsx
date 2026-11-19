@@ -24,14 +24,9 @@ import {
 } from './hooks';
 import { ViewportSliceProgressScrollbarProps } from './types';
 
-function ViewportSliceProgressScrollbar({
-  viewportData,
-  viewportId,
-  element,
-  imageSliceData,
-  setImageSliceData,
-  servicesManager,
-}: ViewportSliceProgressScrollbarProps) {
+function ViewportSliceProgressScrollbar(props: ViewportSliceProgressScrollbarProps) {
+  const { viewportData, viewportId, element, imageSliceData, setImageSliceData, servicesManager } =
+    props;
   const { cineService, cornerstoneViewportService, customizationService, viewedDataService } =
     servicesManager.services;
 
@@ -134,21 +129,14 @@ function ViewportSliceProgressScrollbar({
   return (
     <Replaceable
       id="viewportScrollbar"
-      props={{
-        variant: 'progress',
-        viewportData,
-        viewportId,
-        element,
-        imageSliceData,
-        setImageSliceData,
-        servicesManager,
-        isShown,
-        isFullMode,
-        isLoading,
-        loadedBytes,
-        viewedBytes,
-        onScrollbarValueChange,
-      }}
+      props={props}
+      variant="progress"
+      isShown={isShown}
+      isFullMode={isFullMode}
+      isLoading={isLoading}
+      loadedBytes={loadedBytes}
+      viewedBytes={viewedBytes}
+      onScrollbarValueChange={onScrollbarValueChange}
     >
       {isShown && (
         <div

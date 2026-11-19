@@ -1,6 +1,6 @@
 ﻿import { createElement as h } from 'react';
 import { render } from '@testing-library/react';
-import { Replaceable } from './Replaceable';
+import { Replaceable, useReplaceableProps } from './Replaceable';
 
 const mockEntries: Record<string, unknown> = {};
 jest.mock('@ohif/core', () => ({ useCustomization: (id: string) => mockEntries[id] }), {
@@ -10,8 +10,8 @@ jest.mock('@ohif/core', () => ({ useCustomization: (id: string) => mockEntries[i
 const Default = (props: { label?: string }) => h('span', { 'data-label': props.label }, 'default');
 const html = (element: React.ReactElement) => render(element).container.innerHTML;
 
-function replaceable(id: string, props = {}) {
-  return h(Replaceable, { id, props }, h(Default, { label: 'a' }));
+function replaceable(id: string, given = {}) {
+  return h(Replaceable, { id, ...given }, h(Default, { label: 'a' }));
 }
 
 describe('Replaceable', () => {
@@ -21,9 +21,11 @@ describe('Replaceable', () => {
     expect(html(replaceable('x'))).toBe('<span data-label="a">default</span>');
   });
 
-  it('replaces the default and gives the props', () => {
-    mockEntries['components.x'] = { component: (p: { n: number }) => h('b', null, `n=${p.n}`) };
-    expect(html(replaceable('x', { n: 3 }))).toBe('<b>n=3</b>');
+  it('replaces the default, and keeps the part props apart from the computed values', () => {
+    mockEntries['components.x'] = {
+      component: (p: { n: number; props: { n: number } }) => h('b', null, `${p.props.n},${p.n}`),
+    };
+    expect(html(replaceable('x', { props: { n: 1 }, n: 3 }))).toBe('<b>1,3</b>');
   });
 
   it('wraps the default with a replacement that renders children', () => {
@@ -43,11 +45,14 @@ describe('Replaceable', () => {
     expect(html(replaceable('x'))).toBe('');
   });
 
-  it('merges the props of two nested levels', () => {
-    mockEntries['components.inner'] = {
-      component: (p: { a: number; b: number }) => h('i', null, `${p.a},${p.b}`),
+  it('gives the props of a level above by its id', () => {
+    const Inner = () => {
+      const outer = useReplaceableProps<{ b: number }>('outer');
+      const inner = useReplaceableProps<{ b: number }>('inner');
+      return h('i', null, `${outer?.b},${inner?.b}`);
     };
-    const tree = h(Replaceable, { id: 'outer', props: { a: 1, b: 1 } }, replaceable('inner', { b: 2 }));
+    mockEntries['components.inner'] = { component: Inner };
+    const tree = h(Replaceable, { id: 'outer', b: 1 }, replaceable('inner', { b: 2 }));
     expect(html(tree)).toBe('<i>1,2</i>');
   });
 });

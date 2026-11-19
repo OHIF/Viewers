@@ -3,17 +3,15 @@ import { Replaceable, useCine } from '@ohif/ui-next';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { useAppConfig } from '@state';
 
-function WrappedCinePlayer({
-  enabledVPElement,
-  viewportId,
-  servicesManager,
-  componentId,
-}: withAppTypes<{
-  enabledVPElement: HTMLElement;
-  viewportId: string;
-  /** Replaceable id of this instance (experiment E9); default `cinePlayer`. */
-  componentId?: string;
-}>) {
+function WrappedCinePlayer(
+  props: withAppTypes<{
+    enabledVPElement: HTMLElement;
+    viewportId: string;
+    /** Replaceable id of this instance (experiment E9); default `cinePlayer`. */
+    componentId?: string;
+  }>
+) {
+  const { enabledVPElement, viewportId, servicesManager, componentId } = props;
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
@@ -150,20 +148,16 @@ function WrappedCinePlayer({
   return (
     <Replaceable
       id={componentId ?? 'cinePlayer'}
-      props={{
-        viewportId,
-        enabledVPElement,
-        servicesManager,
-        isCineEnabled,
-        isPlaying,
-        frameRate: newStackFrameRate,
-        cineFrameRate: cines?.[viewportId]?.frameRate,
-        dynamicInfo,
-        cineService,
-        onClose,
-        onPlayPauseChange,
-        onFrameRateChange,
-      }}
+      props={props}
+      isCineEnabled={isCineEnabled}
+      isPlaying={isPlaying}
+      frameRate={newStackFrameRate}
+      cineFrameRate={cines?.[viewportId]?.frameRate}
+      dynamicInfo={dynamicInfo}
+      cineService={cineService}
+      onClose={onClose}
+      onPlayPauseChange={onPlayPauseChange}
+      onFrameRateChange={onFrameRateChange}
     >
       {isCineEnabled && (
         <RenderCinePlayer

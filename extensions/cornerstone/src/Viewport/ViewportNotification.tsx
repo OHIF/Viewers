@@ -3,7 +3,8 @@ import { useSystem } from '@ohif/core';
 import { Replaceable, useViewportDialog } from '@ohif/ui-next';
 
 /** The viewport dialog notification of one viewport. */
-function ViewportNotification({ viewportId }: { viewportId: string }) {
+function ViewportNotification(props: { viewportId: string }) {
+  const { viewportId } = props;
   const { servicesManager } = useSystem();
   const [viewportDialogState] = useViewportDialog();
   const Notification = servicesManager.services.customizationService.getCustomization(
@@ -14,7 +15,9 @@ function ViewportNotification({ viewportId }: { viewportId: string }) {
   return (
     <Replaceable
       id="viewportNotification"
-      props={{ viewportId, viewportDialogState, isShown }}
+      props={props}
+      viewportDialogState={viewportDialogState}
+      isShown={isShown}
     >
       {/* top offset of 24px to account for ViewportActionCorners. */}
       <div className="absolute top-[24px] w-full">

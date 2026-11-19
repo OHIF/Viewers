@@ -322,13 +322,11 @@ const OHIFCornerstoneViewport = React.memo(
     return (
       <Replaceable
         id="cornerstoneViewport"
-        props={{
-          ...props,
-          viewportId,
-          element: elementRef.current,
-          enabledVPElement,
-          scrollbarHeight,
-        }}
+        props={props}
+        viewportId={viewportId}
+        element={elementRef.current}
+        enabledVPElement={enabledVPElement}
+        scrollbarHeight={scrollbarHeight}
       >
         <div className="viewport-wrapper">
           <div

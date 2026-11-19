@@ -59,19 +59,14 @@ const OverlayItemComponents = {
 /**
  * Customizable Viewport Overlay
  */
-function CustomizableViewportOverlay({
-  element,
-  viewportData,
-  imageSliceData,
-  viewportId,
-  servicesManager,
-}: {
+function CustomizableViewportOverlay(props: {
   element: HTMLElement;
   viewportData: ViewportData;
   imageSliceData: ImageSliceData;
   viewportId: string;
   servicesManager: AppTypes.ServicesManager;
 }) {
+  const { element, viewportData, imageSliceData, viewportId, servicesManager } = props;
   const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
   const [scale, setScale] = useState(1);
@@ -247,18 +242,12 @@ function CustomizableViewportOverlay({
   return (
     <Replaceable
       id="viewportOverlay"
-      props={{
-        element,
-        viewportData,
-        imageSliceData,
-        viewportId,
-        servicesManager,
-        displaySetProps,
-        instanceNumber,
-        voi,
-        scale,
-        isLight,
-      }}
+      props={props}
+      displaySetProps={displaySetProps}
+      instanceNumber={instanceNumber}
+      voi={voi}
+      scale={scale}
+      isLight={isLight}
     >
       <ViewportOverlay
         topLeft={getContent(topLeftCustomization, 'topLeftOverlayItem')}

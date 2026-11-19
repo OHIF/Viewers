@@ -8,7 +8,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Enums } from '@cornerstonejs/core';
 import { Replaceable } from '@ohif/ui-next';
 
-function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
+function ViewportImageSliceLoadingIndicator(props) {
+  const { viewportData, element } = props;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -80,7 +81,9 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
   return (
     <Replaceable
       id="viewportLoadingIndicator"
-      props={{ viewportData, element, loading, error }}
+      props={props}
+      loading={loading}
+      error={error}
     >
       {content}
     </Replaceable>

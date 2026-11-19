@@ -17,14 +17,15 @@ import { useViewportRendering } from '../../hooks';
 import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
-function ViewportOrientationMarkers({
-  element,
-  viewportData,
-  imageSliceData,
-  viewportId,
-  servicesManager,
-  orientationMarkers = ['top', 'left'],
-}: withAppTypes) {
+function ViewportOrientationMarkers(props: withAppTypes) {
+  const {
+    element,
+    viewportData,
+    imageSliceData,
+    viewportId,
+    servicesManager,
+    orientationMarkers = ['top', 'left'],
+  } = props;
   const [cameraModifiedTime, setCameraModifiedTime] = useState(0);
   const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
   const { cornerstoneViewportService } = servicesManager.services;
@@ -110,16 +111,10 @@ function ViewportOrientationMarkers({
   return (
     <Replaceable
       id="viewportOrientationMarkers"
-      props={{
-        element,
-        viewportData,
-        imageSliceData,
-        viewportId,
-        servicesManager,
-        isLight,
-        markers,
-        orientationMarkers,
-      }}
+      props={props}
+      isLight={isLight}
+      markers={markers}
+      orientationMarkers={orientationMarkers}
     >
       <div className="ViewportOrientationMarkers select-none">{markers}</div>
     </Replaceable>

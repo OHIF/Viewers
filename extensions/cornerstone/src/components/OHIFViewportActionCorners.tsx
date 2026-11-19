@@ -13,7 +13,8 @@ export type OHIFViewportActionCornersProps = {
   viewportId: string;
 };
 
-function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCornersProps) {
+function OHIFViewportActionCornersComponent(props: OHIFViewportActionCornersProps) {
+  const { viewportId } = props;
   // Use the viewport hover hook to track if viewport is hovered or active
   const { isHovered, isActive } = useViewportHover(viewportId);
 
@@ -22,7 +23,10 @@ function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCo
   return (
     <Replaceable
       id="ohifViewportActionCorners"
-      props={{ viewportId, isHovered, isActive, shouldShowCorners }}
+      props={props}
+      isHovered={isHovered}
+      isActive={isActive}
+      shouldShowCorners={shouldShowCorners}
     >
       {shouldShowCorners && (
         <IconPresentationProvider
