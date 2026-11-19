@@ -59,7 +59,7 @@ RUN pnpm run build
 
 # Stage 2: Bundle the built application into a Docker container which runs NGINX using Alpine Linux
 # Same nginx line as the root Dockerfile, but the stock image rather than
-# nginxinc/nginx-unprivileged: this is a local development recipe whose
+# nginx/nginx-unprivileged: this is a local development recipe whose
 # config/nginx.conf listens on 80 as root and is mounted at runtime, so it
 # skips the unprivileged hardening the published ohif/app image carries.
 FROM nginx:1.30.7-alpine

@@ -3,12 +3,9 @@ server {
   listen [::]:${SSL_PORT} ssl default_server;
   listen ${SSL_PORT} quic reuseport;
   listen [::]:${SSL_PORT} quic reuseport;
-  # HTTP/2 is off until the base image ships nginx >= 1.30.7 (or >= 1.31.9 on
-  # mainline): CVE-2026-123633 and CVE-2026-123007 are remote code execution
-  # bugs in nginx's HTTP/2 code. Clients use HTTP/3 (quic, above) where UDP is
-  # reachable, and HTTP/1.1 otherwise. Set back to `on` once the Dockerfile's
-  # nginx base image is on a fixed version.
-  http2 off;
+  # HTTP/2 needs nginx >= 1.30.7 (CVE-2026-123633, CVE-2026-123007): keep the
+  # Dockerfile base image on a fixed version.
+  http2 on;
   server_tokens off; # no nginx version in the Server header or error pages
   ssl_certificate /etc/ssl/certs/ssl-certificate.crt;
   ssl_certificate_key /etc/ssl/private/ssl-private-key.key;

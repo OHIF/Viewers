@@ -33,11 +33,7 @@ docker run -d -e SSL_PORT=443 -p 3003:443/tcp -v /path/to/certificate:/etc/ssl/c
 ```
 
 :::tip
-The SSL configuration also serves HTTP/3 (QUIC) over UDP on `{SSL_PORT}`, and it sends an `Alt-Svc` header that names `{SSL_PORT}`. To use HTTP/3, publish the UDP port with the same host port number as `{SSL_PORT}`, for example `-p 443:443/tcp -p 443:443/udp`. Otherwise the browser uses HTTP/1.1 over TCP.
-:::
-
-:::caution
-HTTP/2 is turned off (`http2 off;`) in the SSL configuration for now. nginx versions before 1.30.7 (stable) and 1.31.9 (mainline) have remote code execution vulnerabilities in their HTTP/2 code (CVE-2026-123633 and CVE-2026-123007), and the image's nginx base has no fixed release yet. HTTP/2 will be turned back on once it does. If you build your own image on a fixed nginx version, you can set `http2 on;` in the SSL template. Check the version with `docker exec <container> nginx -v`.
+The SSL configuration also serves HTTP/3 (QUIC) over UDP on `{SSL_PORT}`, and it sends an `Alt-Svc` header that names `{SSL_PORT}`. To use HTTP/3, publish the UDP port with the same host port number as `{SSL_PORT}`, for example `-p 443:443/tcp -p 443:443/udp`. Otherwise the browser uses HTTP/2 over TCP.
 :::
 
 :::caution
