@@ -1,6 +1,10 @@
 server {
-  listen ${SSL_PORT} ssl http2 default_server;
-  listen [::]:${SSL_PORT} ssl http2 default_server;
+  listen ${SSL_PORT} ssl default_server;
+  listen [::]:${SSL_PORT} ssl default_server;
+  # HTTP/2 needs nginx >= 1.30.7 (CVE-2026-123633, CVE-2026-123007): keep the
+  # Dockerfile base image on a fixed version.
+  http2 on;
+  server_tokens off; # no nginx version in the Server header or error pages
   ssl_certificate /etc/ssl/certs/ssl-certificate.crt;
   ssl_certificate_key /etc/ssl/private/ssl-private-key.key;
   location / {

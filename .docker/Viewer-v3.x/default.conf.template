@@ -4,6 +4,7 @@ server {
   gunzip       on;
   listen ${PORT} default_server;
   listen [::]:${PORT} default_server;
+  server_tokens off; # no nginx version in the Server header or error pages
   location / {
     root   /usr/share/nginx/html;
     index  index.html index.htm;
