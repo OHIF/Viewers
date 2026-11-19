@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import { metaData, Enums, getEnabledElement } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
+import { Replaceable } from '@ohif/ui-next';
 
 import './ViewportOrientationMarkers.css';
 import { useViewportRendering } from '../../hooks';
@@ -106,7 +107,23 @@ function ViewportOrientationMarkers({
     ));
   }, [viewportData, imageSliceData, cameraModifiedTime, orientationMarkers, element, isLight]);
 
-  return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
+  return (
+    <Replaceable
+      id="viewportOrientationMarkers"
+      props={{
+        element,
+        viewportData,
+        imageSliceData,
+        viewportId,
+        servicesManager,
+        isLight,
+        markers,
+        orientationMarkers,
+      }}
+    >
+      <div className="ViewportOrientationMarkers select-none">{markers}</div>
+    </Replaceable>
+  );
 }
 
 /**

@@ -8,13 +8,14 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService, useViewportElementRegistration } from '@ohif/core';
-import { useViewportDialog } from '@ohif/ui-next';
+import { Replaceable } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
 
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
+import ViewportNotification from './ViewportNotification';
 import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
@@ -102,7 +103,6 @@ const OHIFCornerstoneViewport = React.memo(
       measurementService,
     } = servicesManager.services;
 
-    const [viewportDialogState] = useViewportDialog();
     // useCallback for scroll bar height calculation
     const setImageScrollBarHeight = useCallback(() => {
       const scrollbarHeight = `${elementRef.current.clientHeight - 10}px`;
@@ -319,10 +319,17 @@ const OHIFCornerstoneViewport = React.memo(
       loadViewportData();
     }, [viewportOptions, displaySets, dataSource]);
 
-    const Notification = customizationService.getCustomization('ui.notificationComponent');
-
     return (
-      <React.Fragment>
+      <Replaceable
+        id="cornerstoneViewport"
+        props={{
+          ...props,
+          viewportId,
+          element: elementRef.current,
+          enabledVPElement,
+          scrollbarHeight,
+        }}
+      >
         <div className="viewport-wrapper">
           <div
             className="cornerstone-viewport-element"
@@ -354,23 +361,10 @@ const OHIFCornerstoneViewport = React.memo(
             servicesManager={servicesManager}
           />
         </div>
-        {/* top offset of 24px to account for ViewportActionCorners. */}
-        <div className="absolute top-[24px] w-full">
-          {viewportDialogState.viewportId === viewportId && (
-            <Notification
-              id="viewport-notification"
-              message={viewportDialogState.message}
-              type={viewportDialogState.type}
-              actions={viewportDialogState.actions}
-              onSubmit={viewportDialogState.onSubmit}
-              onOutsideClick={viewportDialogState.onOutsideClick}
-              onKeyPress={viewportDialogState.onKeyPress}
-            />
-          )}
-        </div>
+        <ViewportNotification viewportId={viewportId} />
         {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
         <OHIFViewportActionCorners viewportId={viewportId} />
-      </React.Fragment>
+      </Replaceable>
     );
   },
   areEqual

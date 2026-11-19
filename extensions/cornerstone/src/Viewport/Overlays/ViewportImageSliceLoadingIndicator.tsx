@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Enums } from '@cornerstonejs/core';
+import { Replaceable } from '@ohif/ui-next';
 
 function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
   const [loading, setLoading] = useState(false);
@@ -51,26 +52,23 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
     };
   }, [element, viewportData]);
 
+  let content = null;
   if (error) {
-    return (
-      <>
-        <div className="absolute top-0 left-0 h-full w-full bg-black opacity-50">
-          <div className="transparent flex h-full w-full items-center justify-center">
-            <p className="text-highlight text-xl font-light">
-              <h4>Error Loading Image</h4>
-              <p>An error has occurred.</p>
-              <p>{error}</p>
-            </p>
-          </div>
+    content = (
+      <div className="absolute top-0 left-0 h-full w-full bg-black opacity-50">
+        <div className="transparent flex h-full w-full items-center justify-center">
+          <p className="text-highlight text-xl font-light">
+            <h4>Error Loading Image</h4>
+            <p>An error has occurred.</p>
+            <p>{error}</p>
+          </p>
         </div>
-      </>
+      </div>
     );
-  }
-
-  if (loading) {
-    return (
-      // IMPORTANT: we need to use the pointer-events-none class to prevent the loading indicator from
-      // interacting with the mouse, since scrolling should propagate to the viewport underneath
+  } else if (loading) {
+    // IMPORTANT: we need to use the pointer-events-none class to prevent the loading indicator from
+    // interacting with the mouse, since scrolling should propagate to the viewport underneath
+    content = (
       <div className="pointer-events-none absolute top-0 left-0 h-full w-full bg-black opacity-50">
         <div className="transparent flex h-full w-full items-center justify-center">
           <p className="text-highlight text-xl font-light">Loading...</p>
@@ -79,9 +77,14 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
     );
   }
 
-  return null;
+  return (
+    <Replaceable
+      id="viewportLoadingIndicator"
+      props={{ viewportData, element, loading, error }}
+    >
+      {content}
+    </Replaceable>
+  );
 }
-
-
 
 export default ViewportImageSliceLoadingIndicator;

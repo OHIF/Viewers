@@ -13,6 +13,7 @@ import {
   SmartScrollbarFill,
   SmartScrollbarIndicator,
   SmartScrollbarEndpoints,
+  Replaceable,
 } from '@ohif/ui-next';
 import { getViewportImageIds } from './helpers';
 import {
@@ -128,68 +129,85 @@ function ViewportSliceProgressScrollbar({
 
   const isLoading = isFullMode && showLoadingPattern ? !isFullyLoaded : false;
 
-  if (!numberOfSlices || numberOfSlices <= 1) {
-    return null;
-  }
+  const isShown = !!numberOfSlices && numberOfSlices > 1;
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        height: '100%',
-        padding: '8px 5px',
-        zIndex: 10,
+    <Replaceable
+      id="viewportScrollbar"
+      props={{
+        variant: 'progress',
+        viewportData,
+        viewportId,
+        element,
+        imageSliceData,
+        setImageSliceData,
+        servicesManager,
+        isShown,
+        isFullMode,
+        isLoading,
+        loadedBytes,
+        viewedBytes,
+        onScrollbarValueChange,
       }}
     >
-      <div
-        style={{
-          position: 'relative',
-          height: '100%',
-          width: '11px',
-        }}
-      >
-        <SmartScrollbar
-          className="absolute inset-0"
-          value={imageIndex || 0}
-          total={numberOfSlices}
-          onValueChange={onScrollbarValueChange}
-          isLoading={isLoading}
-          enableKeyboardNavigation={false}
-          aria-label="Image navigation scrollbar"
-          indicator={
-            customizationService.getCustomization('viewportScrollbar.indicator') as
-              | Record<string, unknown>
-              | undefined
-          }
+      {isShown && (
+        <div
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            height: '100%',
+            padding: '8px 5px',
+            zIndex: 10,
+          }}
         >
-          <SmartScrollbarTrack>
-            {isFullMode && showLoadedFill && (
-              <SmartScrollbarFill
-                marked={loadedBytes}
-                className="bg-neutral/25"
-                loadingClassName="bg-neutral/50"
-              />
-            )}
-            {isFullMode && showViewedFill && (
-              <SmartScrollbarFill
-                marked={viewedBytes}
-                className="bg-primary/35"
-                loadingClassName="bg-primary/35"
-              />
-            )}
-          </SmartScrollbarTrack>
-          <SmartScrollbarIndicator />
-          {isFullMode && showLoadedEndpoints && (
-            <SmartScrollbarEndpoints marked={loadedBytes} />
-          )}
-        </SmartScrollbar>
-      </div>
-    </div>
+          <div
+            style={{
+              position: 'relative',
+              height: '100%',
+              width: '11px',
+            }}
+          >
+            <SmartScrollbar
+              className="absolute inset-0"
+              value={imageIndex || 0}
+              total={numberOfSlices}
+              onValueChange={onScrollbarValueChange}
+              isLoading={isLoading}
+              enableKeyboardNavigation={false}
+              aria-label="Image navigation scrollbar"
+              indicator={
+                customizationService.getCustomization('viewportScrollbar.indicator') as
+                  | Record<string, unknown>
+                  | undefined
+              }
+            >
+              <SmartScrollbarTrack>
+                {isFullMode && showLoadedFill && (
+                  <SmartScrollbarFill
+                    marked={loadedBytes}
+                    className="bg-neutral/25"
+                    loadingClassName="bg-neutral/50"
+                  />
+                )}
+                {isFullMode && showViewedFill && (
+                  <SmartScrollbarFill
+                    marked={viewedBytes}
+                    className="bg-primary/35"
+                    loadingClassName="bg-primary/35"
+                  />
+                )}
+              </SmartScrollbarTrack>
+              <SmartScrollbarIndicator />
+              {isFullMode && showLoadedEndpoints && (
+                <SmartScrollbarEndpoints marked={loadedBytes} />
+              )}
+            </SmartScrollbar>
+          </div>
+        </div>
+      )}
+    </Replaceable>
   );
 }
-
-
 
 export default ViewportSliceProgressScrollbar;

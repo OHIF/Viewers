@@ -9,7 +9,7 @@ import { vec3 } from 'gl-matrix';
 import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
-import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
+import { Replaceable, ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
@@ -245,14 +245,30 @@ function CustomizableViewportOverlay({
   );
 
   return (
-    <ViewportOverlay
-      topLeft={getContent(topLeftCustomization, 'topLeftOverlayItem')}
-      topRight={getContent(topRightCustomization, 'topRightOverlayItem')}
-      bottomLeft={getContent(bottomLeftCustomization, 'bottomLeftOverlayItem')}
-      bottomRight={getContent(bottomRightCustomization, 'bottomRightOverlayItem')}
-      color={isLight ? 'text-neutral-dark' : 'text-neutral-light'}
-      shadowClass={isLight ? 'shadow-light' : 'shadow-dark'}
-    />
+    <Replaceable
+      id="viewportOverlay"
+      props={{
+        element,
+        viewportData,
+        imageSliceData,
+        viewportId,
+        servicesManager,
+        displaySetProps,
+        instanceNumber,
+        voi,
+        scale,
+        isLight,
+      }}
+    >
+      <ViewportOverlay
+        topLeft={getContent(topLeftCustomization, 'topLeftOverlayItem')}
+        topRight={getContent(topRightCustomization, 'topRightOverlayItem')}
+        bottomLeft={getContent(bottomLeftCustomization, 'bottomLeftOverlayItem')}
+        bottomRight={getContent(bottomRightCustomization, 'bottomRightOverlayItem')}
+        color={isLight ? 'text-neutral-dark' : 'text-neutral-light'}
+        shadowClass={isLight ? 'shadow-light' : 'shadow-dark'}
+      />
+    </Replaceable>
   );
 }
 
@@ -461,8 +477,6 @@ function InstanceNumberOverlayItem({
     </div>
   );
 }
-
-
 
 export default CustomizableViewportOverlay;
 

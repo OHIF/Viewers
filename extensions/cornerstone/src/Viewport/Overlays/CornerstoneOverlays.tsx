@@ -5,6 +5,7 @@
 'use no memo';
 
 import React, { useEffect, useState } from 'react';
+import { Replaceable } from '@ohif/ui-next';
 
 import ViewportImageScrollbar from './ViewportImageScrollbar';
 import ViewportSliceProgressScrollbar from './ViewportSliceProgressScrollbar/ViewportSliceProgressScrollbar';
@@ -38,65 +39,67 @@ function CornerstoneOverlays(props: withAppTypes) {
     };
   }, [viewportId]);
 
-  if (!element) {
-    return null;
-  }
+  const hideOverlays =
+    !!viewportData &&
+    !!cornerstoneViewportService.getViewportInfo(viewportId)?.viewportOptions?.customViewportProps
+      ?.hideOverlays;
 
-  if (viewportData) {
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-
-    if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
-      return null;
-    }
-  }
-
-  const viewportScrollbarVariant = customizationService.getCustomization('viewportScrollbar.variant');
+  const viewportScrollbarVariant = customizationService.getCustomization(
+    'viewportScrollbar.variant'
+  );
   const useProgressScrollbar = viewportScrollbarVariant !== 'legacy';
 
   return (
-    <div className="noselect">
-      {useProgressScrollbar ? (
-        <ViewportSliceProgressScrollbar
-          viewportId={viewportId}
-          viewportData={viewportData}
-          element={element}
-          imageSliceData={imageSliceData}
-          setImageSliceData={setImageSliceData}
-          servicesManager={servicesManager}
-        />
-      ) : (
-        <ViewportImageScrollbar
-          viewportId={viewportId}
-          viewportData={viewportData}
-          element={element}
-          imageSliceData={imageSliceData}
-          setImageSliceData={setImageSliceData}
-          scrollbarHeight={scrollbarHeight}
-          servicesManager={servicesManager}
-        />
+    <Replaceable
+      id="cornerstoneOverlays"
+      props={{ ...props, imageSliceData, setImageSliceData, viewportData, hideOverlays }}
+    >
+      {element && !hideOverlays && (
+        <div className="noselect">
+          {useProgressScrollbar ? (
+            <ViewportSliceProgressScrollbar
+              viewportId={viewportId}
+              viewportData={viewportData}
+              element={element}
+              imageSliceData={imageSliceData}
+              setImageSliceData={setImageSliceData}
+              servicesManager={servicesManager}
+            />
+          ) : (
+            <ViewportImageScrollbar
+              viewportId={viewportId}
+              viewportData={viewportData}
+              element={element}
+              imageSliceData={imageSliceData}
+              setImageSliceData={setImageSliceData}
+              scrollbarHeight={scrollbarHeight}
+              servicesManager={servicesManager}
+            />
+          )}
+
+          <CustomizableViewportOverlay
+            imageSliceData={imageSliceData}
+            viewportData={viewportData}
+            viewportId={viewportId}
+            servicesManager={servicesManager}
+            element={element}
+          />
+
+          <ViewportImageSliceLoadingIndicator
+            viewportData={viewportData}
+            element={element}
+          />
+
+          <ViewportOrientationMarkers
+            imageSliceData={imageSliceData}
+            element={element}
+            viewportData={viewportData}
+            servicesManager={servicesManager}
+            viewportId={viewportId}
+          />
+        </div>
       )}
-
-      <CustomizableViewportOverlay
-        imageSliceData={imageSliceData}
-        viewportData={viewportData}
-        viewportId={viewportId}
-        servicesManager={servicesManager}
-        element={element}
-      />
-
-      <ViewportImageSliceLoadingIndicator
-        viewportData={viewportData}
-        element={element}
-      />
-
-      <ViewportOrientationMarkers
-        imageSliceData={imageSliceData}
-        element={element}
-        viewportData={viewportData}
-        servicesManager={servicesManager}
-        viewportId={viewportId}
-      />
-    </div>
+    </Replaceable>
   );
 }
 
