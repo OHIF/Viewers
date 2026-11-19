@@ -7,9 +7,12 @@ function WrappedCinePlayer({
   enabledVPElement,
   viewportId,
   servicesManager,
+  componentId,
 }: withAppTypes<{
   enabledVPElement: HTMLElement;
   viewportId: string;
+  /** Replaceable id of this instance (experiment E9); default `cinePlayer`. */
+  componentId?: string;
 }>) {
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
@@ -146,7 +149,7 @@ function WrappedCinePlayer({
 
   return (
     <Replaceable
-      id="cinePlayer"
+      id={componentId ?? 'cinePlayer'}
       props={{
         viewportId,
         enabledVPElement,
