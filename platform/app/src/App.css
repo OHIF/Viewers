@@ -1,4 +1,8 @@
 body {
+  /* Keeps pull-to-refresh and rubber-banding out of the app shell. Note that
+     `touch-action` deliberately lives on `.viewport-wrapper` instead: the
+     permitted touch behaviours are the intersection of every ancestor's
+     `touch-action`, so `touch-action: none` here would strip touch scrolling
+     from the side panels, thumbnail list and modals with no way to opt back in. */
   overscroll-behavior: none;
-  touch-action: none;
 }

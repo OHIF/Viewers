@@ -52,8 +52,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
   // Whatever fills the right side of the menu bar, in order: undo/redo then
   // patient info by default. Each item is rendered as a component, so it can
   // bring its own hooks, and reordering the list reorders the header.
-  const rightSideItems =
-    customizationService.getCustomization('ohif.headerRightSide')?.items ?? [];
+  const rightSideItems = customizationService.getCustomization('ohif.headerRightSide')?.items ?? [];
 
   const menuOptions = [
     {
@@ -104,6 +103,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
 
   return (
     <Header
+      isResponsive
       menuOptions={menuOptions}
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
