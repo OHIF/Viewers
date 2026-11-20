@@ -183,6 +183,14 @@ function commandsModule({
     return toolGroup?.id;
   }
 
+  /** The tool group of the viewport (default: active viewport) when it holds VolumeCropping. */
+  function _getVolumeCroppingToolGroup(viewportId?: string) {
+    const toolGroup = toolGroupService.getToolGroupForViewport(
+      viewportId ?? viewportGridService.getActiveViewportId()
+    );
+    return toolGroup?.hasTool(toolNames.VolumeCropping) ? toolGroup : undefined;
+  }
+
   function _usesPrimaryActivation(bindings) {
     if (!bindings?.length) {
       return true;
@@ -1203,6 +1211,72 @@ function commandsModule({
 
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
+    },
+    /**
+     * Shows or hides the crop box of a volume3d viewport (default: the active viewport).
+     * While shown, VolumeCropping owns the primary button (drag a handle to crop, drag
+     * elsewhere to rotate), and VolumeCroppingControl shows the box in the MPR viewports.
+     * Hiding the box gives the primary button back to the previous tool.
+     */
+    toggleCropping: ({ viewportId, visible }: { viewportId?: string; visible?: boolean } = {}) => {
+      const toolGroup = _getVolumeCroppingToolGroup(viewportId);
+      if (!toolGroup) {
+        return;
+      }
+      const tool = toolGroup.getToolInstance(toolNames.VolumeCropping);
+      const show = visible ?? !tool.getClippingPlanesVisible();
+      const isActive =
+        toolGroup.getToolOptions(toolNames.VolumeCropping)?.mode === Enums.ToolModes.Active;
+
+      if (show && !isActive) {
+        actions.setToolActive({
+          toolName: toolNames.VolumeCropping,
+          toolGroupId: toolGroup.id,
+          bindings: [
+            { mouseButton: Enums.MouseBindings.Primary },
+            {
+              mouseButton: Enums.MouseBindings.Primary,
+              modifierKey: Enums.KeyboardBindings.Shift,
+            },
+          ],
+        });
+      }
+      tool.setClippingPlanesVisible(show);
+      if (!show && isActive) {
+        actions.setToolActive({
+          toolName: toolGroup.getPrevActivePrimaryToolName(),
+          toolGroupId: toolGroup.id,
+        });
+      }
+
+      toolGroupService.getToolGroupIds().forEach(toolGroupId => {
+        const controlGroup = toolGroupService.getToolGroup(toolGroupId);
+        if (!controlGroup?.hasTool(toolNames.VolumeCroppingControl)) {
+          return;
+        }
+        if (show) {
+          controlGroup.setToolEnabled(toolNames.VolumeCroppingControl);
+          controlGroup.setToolActive(toolNames.VolumeCroppingControl, {
+            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+          });
+        } else {
+          controlGroup.setToolDisabled(toolNames.VolumeCroppingControl);
+        }
+      });
+    },
+    /** Shows or hides the drag handles of the crop box. */
+    toggle3Dhandles: ({ viewportId, visible }: { viewportId?: string; visible?: boolean } = {}) => {
+      const tool = _getVolumeCroppingToolGroup(viewportId)?.getToolInstance(
+        toolNames.VolumeCropping
+      );
+      tool?.setHandlesVisible(visible ?? !tool.getHandlesVisible());
+    },
+    /** Makes a plain drag rotate the crop planes, not the camera (SHIFT-drag always does). */
+    togglePlaneRotation: ({ viewportId, enabled }: { viewportId?: string; enabled?: boolean } = {}) => {
+      const tool = _getVolumeCroppingToolGroup(viewportId)?.getToolInstance(
+        toolNames.VolumeCropping
+      );
+      tool?.setRotatePlanesOnDrag(enabled ?? !tool.getRotatePlanesOnDrag());
     },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
@@ -2799,6 +2873,15 @@ function commandsModule({
     },
     updateVolumeData: {
       commandFn: actions.updateVolumeData,
+    },
+    toggleCropping: {
+      commandFn: actions.toggleCropping,
+    },
+    toggle3Dhandles: {
+      commandFn: actions.toggle3Dhandles,
+    },
+    togglePlaneRotation: {
+      commandFn: actions.togglePlaneRotation,
     },
     toggleEnabledDisabledToolbar: {
       commandFn: actions.toggleEnabledDisabledToolbar,

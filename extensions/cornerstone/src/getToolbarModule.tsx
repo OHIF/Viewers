@@ -4,6 +4,8 @@ import { getViewportAdapter, isVolumeRenderingViewport } from './services/Viewpo
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
+import VolumeCroppingMenu from './components/VolumeCroppingMenu/VolumeCroppingMenu';
+import { toolNames } from './initCornerstoneTools';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
 import { VOIManualControlMenuWrapper } from './components/VOIManualControlMenu';
 import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
@@ -223,6 +225,23 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         return {
           disabled,
+        };
+      },
+    },
+    {
+      name: 'ohif.volumeCroppingMenu',
+      defaultComponent: VolumeCroppingMenu,
+    },
+    {
+      name: 'evaluate.volumeCroppingMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        const hasCropping = toolGroupService
+          .getToolGroupForViewport(viewportId)
+          ?.hasTool(toolNames.VolumeCropping);
+        return {
+          disabled:
+            !viewport || !hasCropping || getViewportAdapter(viewport).getShape() !== 'volume3d',
         };
       },
     },

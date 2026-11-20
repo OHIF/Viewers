@@ -114,6 +114,19 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'volumeCroppingMenu',
+    uiType: 'ohif.volumeCroppingMenu',
+    props: {
+      icon: 'Crop',
+      label: i18n.t('Buttons:Volume Cropping'),
+      tooltip: i18n.t('Buttons:Crop the 3D volume'),
+      evaluate: {
+        name: 'evaluate.volumeCroppingMenu',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'windowLevelMenuEmbedded',
     uiType: 'ohif.windowLevelMenuEmbedded',
     props: {
@@ -745,6 +758,7 @@ export const toolbarSections = {
     'modalityLoadBadge',
     'trackingStatus',
     'navigationComponent',
+    'volumeCroppingMenu',
   ],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],
