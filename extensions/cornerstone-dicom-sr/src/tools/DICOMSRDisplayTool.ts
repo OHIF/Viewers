@@ -10,6 +10,8 @@ import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule'
 import { SCOORDTypes } from '../enums';
 import toolNames from './toolNames';
 
+const { isAnnotationVisible } = annotation.visibility;
+
 export default class DICOMSRDisplayTool extends AnnotationTool {
   static toolName = toolNames.DICOMSRDisplay;
 
@@ -88,6 +90,12 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     for (let i = 0; i < filteredAnnotations.length; i++) {
       const annotation = filteredAnnotations[i];
       const annotationUID = annotation.annotationUID;
+
+      /** Skip annotations that have been hidden via visibility toggle */
+      if (!isAnnotationVisible(annotationUID)) {
+        continue;
+      }
+
       const { renderableData, TrackingUniqueIdentifier } = annotation.data;
       const { referencedImageId } = annotation.metadata;
 
