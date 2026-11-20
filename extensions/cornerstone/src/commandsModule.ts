@@ -109,13 +109,13 @@ const segmentAI = new ONNXSegmentationController({
     sam_b: [
       {
         name: 'sam-b-encoder',
-        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.encoder-fp16.onnx',
+        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/b64d0347d4d2cafd9a4e43b38853d6b5daa319fb/sam_vit_b_01ec64.encoder-fp16.onnx',
         size: 180,
         key: 'encoder',
       },
       {
         name: 'sam-b-decoder',
-        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.decoder.onnx',
+        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/b64d0347d4d2cafd9a4e43b38853d6b5daa319fb/sam_vit_b_01ec64.decoder.onnx',
         size: 17,
         key: 'decoder',
       },
