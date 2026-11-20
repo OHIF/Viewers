@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSystem } from '@ohif/core';
 import {
   Button,
@@ -54,6 +54,7 @@ function Viewport3DCompassMenu({
   const { toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
   const [spin, setSpin] = useState(0);
+  const triggerRef = useRef<HTMLDivElement>(null);
 
   const changeSpin = (speed: number) => {
     commandsManager.runCommand('setViewport3DSpin', { viewportId, speed });
@@ -86,11 +87,12 @@ function Viewport3DCompassMenu({
         asChild
         className="flex items-center justify-center"
       >
-        <div>
+        <div ref={triggerRef}>
           {IconContainer ? (
             <IconContainer
               disabled={disabled}
               icon="OrientationSwitch"
+              label="3D orientation"
               {...props}
               {...containerProps}
             >
@@ -101,6 +103,7 @@ function Viewport3DCompassMenu({
               variant="ghost"
               size="icon"
               disabled={disabled}
+              aria-label="3D orientation"
             >
               {Icon}
             </Button>
@@ -108,6 +111,11 @@ function Viewport3DCompassMenu({
         </div>
       </PopoverTrigger>
       <PopoverContent
+        // The trigger is a wrapper div that cannot take focus; return focus to its button.
+        onCloseAutoFocus={event => {
+          event.preventDefault();
+          triggerRef.current?.querySelector('button')?.focus();
+        }}
         className="w-auto flex-shrink-0 rounded-lg border-0 bg-neutral-800 p-1 shadow-none"
         align={align}
         side={side}
@@ -172,7 +180,7 @@ function Viewport3DCompassMenu({
             return (
               <g
                 key={direction}
-                className="cursor-pointer select-none outline-none"
+                className="group cursor-pointer select-none outline-none"
                 onClick={() => lookFrom(direction)}
                 onKeyDown={event => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -189,6 +197,7 @@ function Viewport3DCompassMenu({
                   cy={y}
                   r={10}
                   fill="transparent"
+                  className="group-focus-visible:stroke-white"
                 />
                 <text
                   x={x}
