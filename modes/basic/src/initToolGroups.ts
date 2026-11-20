@@ -281,7 +281,23 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
-  const { toolNames, Enums } = utilityModule.exports;
+  const { toolNames, Enums, isNextViewportsEnabled } = utilityModule.exports;
+
+  // shortcut: CS3D 5.18.3 OrientationControllerTool throws on generic 3D viewports (no
+  // isOrientationChangeable); enable it there once CS3D adds that method.
+  const orientationController = isNextViewportsEnabled?.()
+    ? []
+    : [
+        {
+          toolName: toolNames.OrientationController,
+          configuration: {
+            colorScheme: 'gray',
+            keepOrientationUp: true,
+            letterColorScheme: 'white',
+            size: 0.028,
+          },
+        },
+      ];
 
   const tools = {
     active: [
@@ -298,6 +314,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }, { numTouchPoints: 3 }],
       },
     ],
+    enabled: orientationController,
   };
 
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
