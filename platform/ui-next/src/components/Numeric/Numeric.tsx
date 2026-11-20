@@ -196,16 +196,24 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
   );
 
   const commitInputValue = useCallback(() => {
+    // Leaving the input without editing it must not change the value
+    if (inputValue === singleValue.toString()) {
+      return true;
+    }
+
     const parsedValue = Number(inputValue);
     if (inputValue.trim() === '' || !Number.isFinite(parsedValue)) {
       return false;
     }
 
-    const boundedValue = Math.max(min, Math.min(parsedValue, max));
+    // Round to the precision of the slider step so the input matches the slider position,
+    // then clamp, since min and max need not be aligned to the step.
+    const roundedValue = Number(parsedValue.toFixed(getDecimalPlaces(step)));
+    const boundedValue = Math.max(min, Math.min(roundedValue, max));
     setSingleValue(boundedValue);
     setInputValue(boundedValue.toString());
     return true;
-  }, [inputValue, max, min, setSingleValue]);
+  }, [inputValue, max, min, setSingleValue, singleValue, step]);
 
   const restorePreviousInputValue = useCallback(() => {
     setInputValue(singleValue.toString());
