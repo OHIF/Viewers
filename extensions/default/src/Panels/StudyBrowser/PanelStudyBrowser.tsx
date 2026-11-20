@@ -17,6 +17,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
+import { renderThumbnailOverlay } from './thumbnailOverlay';
 import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
@@ -100,6 +101,8 @@ function PanelStudyBrowser({
       const items = customizationService.getCustomization('studyBrowser.thumbnailDetails');
       const sources = customizationService.getCustomization('studyBrowser.thumbnailDetailSources');
       const tests = customizationService.getCustomization('studyBrowser.thumbnailDetailTests');
+      // A component drawn over the thumbnail image (badges, markers), given the display set.
+      const Overlay = customizationService.getCustomization('studyBrowser.thumbnailOverlay');
 
       return mapped.map(thumbnail => {
         const displaySet = displaySetService.getDisplaySetByUID(thumbnail.displaySetInstanceUID);
@@ -108,8 +111,10 @@ function PanelStudyBrowser({
           // number and instance count it was given.
           return thumbnail;
         }
+        const overlay = renderThumbnailOverlay(Overlay, displaySet);
         return {
           ...thumbnail,
+          ...(overlay && { overlay }),
           details: resolveThumbnailDetails({
             items,
             displaySet,

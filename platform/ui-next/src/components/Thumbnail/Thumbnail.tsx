@@ -41,6 +41,7 @@ const Thumbnail = ({
   seriesNumber,
   numInstances,
   details,
+  overlay,
   loadingProgress,
   countIcon,
   messages,
@@ -147,6 +148,16 @@ const Thumbnail = ({
             ) : (
               <div className="bg-background h-[114px] w-[128px] rounded">{children}</div>
             )}
+
+            {/* over the image: the `studyBrowser.thumbnailOverlay` customization */}
+            {overlay ? (
+              <div
+                className="pointer-events-none absolute inset-0 isolate overflow-hidden rounded"
+                data-cy="thumbnail-overlay"
+              >
+                {overlay as React.ReactNode}
+              </div>
+            ) : null}
 
             {/* bottom left */}
             <div className="absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[10px] pr-[6px] pl-[5px]">

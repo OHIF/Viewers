@@ -2268,6 +2268,35 @@ window.config = {
   `,
   },
   {
+    id: 'studyBrowser.thumbnailOverlay',
+    description:
+      'A React component drawn over the image of each study browser thumbnail (thumbnail ' +
+      'view), for badges or markers such as "used by an algorithm" or "reviewed". It is ' +
+      'called with `{ displaySet }` and placed in a layer covering the image, under the ' +
+      'modality label and the corner icons. The layer ignores the pointer so clicks, double ' +
+      'clicks and drags still reach the thumbnail; give an element `pointer-events-auto` to ' +
+      'make it interactive, and stop propagation in its handlers so a click on it does not ' +
+      'also select the thumbnail. The overlay is rendered when the thumbnails are mapped; ' +
+      'for state that changes later, read it from a store or service the component ' +
+      'subscribes to. Set the component itself, not an element. Unset by default (no overlay).',
+    default: null,
+    configuration: `
+// In an extension's customization module or a mode's onModeEnter.
+// useReviewedSeries: your own hook returning the reviewed series UIDs, which
+// re-renders the badge when that list changes.
+const ReviewedBadge = ({ displaySet }) =>
+  useReviewedSeries().has(displaySet.SeriesInstanceUID) ? (
+    <span className="bg-primary absolute top-1 left-1 rounded px-1 text-[10px] text-white">
+      Reviewed
+    </span>
+  ) : null;
+
+customizationService.setCustomizations({
+  'studyBrowser.thumbnailOverlay': { $set: ReviewedBadge },
+});
+  `,
+  },
+  {
     id: 'studyBrowser.thumbnailDetailSources',
     description:
       'Named value sources a `studyBrowser.thumbnailDetails` item can point at with `source`, ' +
