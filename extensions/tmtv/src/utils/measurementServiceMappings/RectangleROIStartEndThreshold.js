@@ -11,7 +11,7 @@ const RectangleROIStartEndThreshold = {
    * @return {Measurement} Measurement instance
    */
   toMeasurement: (csToolsEventDetail, displaySetService, cornerstoneViewportService) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -26,22 +26,12 @@ const RectangleROIStartEndThreshold = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
-      referencedImageId,
-      cornerstoneViewportService,
-      viewportId
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID, displaySetInstanceUID } =
+      getSOPInstanceAttributes(referencedImageId, displaySetService, annotation);
 
-    let displaySet;
-
-    if (SOPInstanceUID) {
-      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-        SOPInstanceUID,
-        SeriesInstanceUID
-      );
-    } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
-    }
+    const displaySet = displaySetInstanceUID
+      ? displaySetService.getDisplaySetByUID(displaySetInstanceUID)
+      : displaySetService.getDisplaySetForSOPInstanceUID(SOPInstanceUID, SeriesInstanceUID);
 
     return {
       uid: annotationUID,
