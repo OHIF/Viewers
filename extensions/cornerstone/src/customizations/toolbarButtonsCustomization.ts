@@ -290,6 +290,22 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'VolumeCropping',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'Crop',
+      label: i18n.t('Buttons:Volume Cropping'),
+      tooltip: i18n.t(
+        'Buttons:Crop the 3D volume. Click to activate, again to keep the crop box only, again to remove it'
+      ),
+      commands: 'cycleVolumeCropping',
+      evaluate: {
+        name: 'evaluate.volumeCropping',
+        disabledText: i18n.t('Buttons:Select a 3D viewport to enable this tool'),
+      },
+    },
+  },
+  {
     id: 'ImageOverlayViewer',
     uiType: 'ohif.toolButton',
     props: {
@@ -795,6 +811,7 @@ export const toolbarSections = {
     'UltrasoundDirectionalTool',
     'WindowLevelRegion',
     'SegmentLabelTool',
+    'VolumeCropping',
   ],
 };
 

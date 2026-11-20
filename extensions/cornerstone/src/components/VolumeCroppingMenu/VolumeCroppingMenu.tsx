@@ -9,13 +9,16 @@ import {
   Switch,
   useIconPresentation,
 } from '@ohif/ui-next';
+import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from '../../initCornerstoneTools';
+import { getVolumeCroppingState } from '../../utils/getVolumeCroppingToolGroup';
 
-type CroppingState = { cropping: boolean; handles: boolean; rotatePlanes: boolean };
+type CroppingState = { handles: boolean; rotatePlanes: boolean };
 
 /**
- * Viewport corner menu for the VolumeCropping tool of a volume3d viewport: shows the crop
- * box, its drag handles, and whether a plain drag rotates the crop planes.
+ * Viewport corner menu for the VolumeCropping tool of a volume3d viewport, shown while
+ * the crop box is on: the drag handles, and whether a plain drag rotates the crop planes.
+ * The VolumeCropping toolbar button turns the crop box on and off.
  */
 function VolumeCroppingMenu({
   viewportId,
@@ -36,11 +39,7 @@ function VolumeCroppingMenu({
   const { servicesManager, commandsManager } = useSystem();
   const { toolGroupService, toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
-  const [state, setState] = useState<CroppingState>({
-    cropping: false,
-    handles: false,
-    rotatePlanes: false,
-  });
+  const [state, setState] = useState<CroppingState>({ handles: false, rotatePlanes: false });
 
   // The tool owns this state, and hotkeys or other code can change it, so read it on open.
   const readState = () => {
@@ -48,7 +47,6 @@ function VolumeCroppingMenu({
       .getToolGroupForViewport(viewportId)
       ?.getToolInstance(toolNames.VolumeCropping);
     setState({
-      cropping: !!tool?.getClippingPlanesVisible(),
       handles: !!tool?.getHandlesVisible(),
       rotatePlanes: !!tool?.getRotatePlanesOnDrag(),
     });
@@ -68,28 +66,29 @@ function VolumeCroppingMenu({
     }
   };
 
+  // Toolbar state is evaluated for the active viewport only, so check this viewport too.
+  const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+  if (
+    !toolGroup?.hasTool(toolNames.VolumeCropping) ||
+    getVolumeCroppingState(toolGroup) === Enums.ToolModes.Disabled
+  ) {
+    return null;
+  }
+
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
   const Icon = <Icons.Crop className={iconClassName} />;
 
   const rows = [
     {
-      label: 'Crop volume',
-      tooltip: 'Show the crop box. Drag a handle to crop; SHIFT-drag rotates the crop planes.',
-      checked: state.cropping,
-      onChange: (visible: boolean) => run('toggleCropping', { visible }),
-    },
-    {
       label: 'Show handles',
       tooltip: 'Show the drag handles of the crop box.',
       checked: state.handles,
-      disabled: !state.cropping,
       onChange: (visible: boolean) => run('toggle3Dhandles', { visible }),
     },
     {
       label: 'Rotate planes on drag',
-      tooltip: 'A plain drag rotates the crop planes, not the camera.',
+      tooltip: 'While the crop tool is active, a drag rotates the crop planes, not the camera.',
       checked: state.rotatePlanes,
-      disabled: !state.cropping,
       onChange: (enabled: boolean) => run('togglePlaneRotation', { enabled }),
     },
   ];
@@ -138,7 +137,6 @@ function VolumeCroppingMenu({
             {row.label}
             <Switch
               checked={row.checked}
-              disabled={row.disabled}
               onCheckedChange={row.onChange}
             />
           </label>

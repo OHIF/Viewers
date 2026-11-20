@@ -6,6 +6,9 @@ import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlay
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import VolumeCroppingMenu from './components/VolumeCroppingMenu/VolumeCroppingMenu';
 import { toolNames } from './initCornerstoneTools';
+import getVolumeCroppingToolGroup, {
+  getVolumeCroppingState,
+} from './utils/getVolumeCroppingToolGroup';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
 import { VOIManualControlMenuWrapper } from './components/VOIManualControlMenu';
 import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
@@ -233,16 +236,35 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       defaultComponent: VolumeCroppingMenu,
     },
     {
+      // The corner menu shows only on a volume3d viewport while the crop box is on.
       name: 'evaluate.volumeCroppingMenu',
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        const hasCropping = toolGroupService
-          .getToolGroupForViewport(viewportId)
-          ?.hasTool(toolNames.VolumeCropping);
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        const isOn =
+          toolGroup?.hasTool(toolNames.VolumeCropping) &&
+          getVolumeCroppingState(toolGroup) !== Enums.ToolModes.Disabled;
         return {
-          disabled:
-            !viewport || !hasCropping || getViewportAdapter(viewport).getShape() !== 'volume3d',
+          disabled: !viewport || !isOn || getViewportAdapter(viewport).getShape() !== 'volume3d',
         };
+      },
+    },
+    {
+      // Three states of the crop button: Active (highlighted), Passive (toggled), off.
+      name: 'evaluate.volumeCropping',
+      evaluate: ({ viewportId, disabledText }) => {
+        const toolGroup = getVolumeCroppingToolGroup(toolGroupService, viewportId);
+        if (!toolGroup) {
+          return getDisabledState(disabledText);
+        }
+        const mode = getVolumeCroppingState(toolGroup);
+        return mode === Enums.ToolModes.Active
+          ? { disabled: false, isActive: true }
+          : {
+              disabled: false,
+              isActive: false,
+              className: utils.getToggledClassName(mode === Enums.ToolModes.Passive),
+            };
       },
     },
     {
