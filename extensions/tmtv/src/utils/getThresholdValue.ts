@@ -1,43 +1,40 @@
-import { cache } from '@cornerstonejs/core';
-import * as csTools from '@cornerstonejs/tools';
+import { utilities as csUtils } from '@cornerstonejs/core';
+import type { Types } from '@cornerstonejs/core';
+import { forEachVoxelInRegions, type ROIThresholdRegion } from './roiThresholdRegions';
 
-function getRoiStats(displaySet, annotations) {
-  const { imageIds } = displaySet;
+/**
+ * The highest PT value in the regions, over the labelmap voxels that `isFree` accepts,
+ * so a voxel that another segment owns does not set the threshold.
+ */
+function getRegionMax(
+  regions: ROIThresholdRegion[],
+  labelmapVolume: Types.IImageVolume,
+  isFree: (index: number) => boolean,
+  ptVolume: Types.IImageVolume
+): number {
+  const { imageData, voxelManager } = ptVolume;
+  let max = -Infinity;
 
-  const ptVolumeInfo = cache.getVolumeContainingImageId(imageIds[0]);
-
-  if (!ptVolumeInfo) {
-    throw new Error('No volume found for display set');
-  }
-
-  const { volume } = ptVolumeInfo;
-  const { voxelManager } = volume;
-
-  // Todo: add support for other strategies
-  const { fn, baseValue } = _getStrategyFn('max');
-  let value = baseValue;
-
-  const boundsIJK = csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
-    annotations,
-    volume
-  );
-
-  // Use the voxelManager's forEach method to iterate over the bounds
-  voxelManager.forEach(
-    ({ value: voxelValue }) => {
-      value = fn(voxelValue, value);
-    },
-    {
-      boundsIJK,
+  forEachVoxelInRegions(regions, labelmapVolume, (index, _ijk, pointLPS) => {
+    if (!isFree(index)) {
+      return;
     }
-  );
+    const value = voxelManager.getAtIJKPoint(
+      csUtils.transformWorldToIndex(imageData, pointLPS) as Types.Point3
+    ) as number;
+    if (value > max) {
+      max = value;
+    }
+  });
 
-  return value;
+  return max;
 }
 
 function getThresholdValues(
-  annotationUIDs,
-  ptDisplaySet,
+  regions: ROIThresholdRegion[],
+  labelmapVolume: Types.IImageVolume,
+  isFree: (index: number) => boolean,
+  ptVolume: Types.IImageVolume,
   config
 ): { ptLower: number; ptUpper: number; ctLower: number; ctUpper: number } {
   if (config.strategy === 'range') {
@@ -49,33 +46,14 @@ function getThresholdValues(
     };
   }
 
-  const { weight } = config;
-  const annotations = annotationUIDs.map(annotationUID =>
-    csTools.annotation.state.getAnnotation(annotationUID)
-  );
-
-  const ptValue = getRoiStats(ptDisplaySet, annotations);
+  const ptValue = getRegionMax(regions, labelmapVolume, isFree, ptVolume);
 
   return {
     ctLower: -Infinity,
     ctUpper: +Infinity,
-    ptLower: weight * ptValue,
+    ptLower: config.weight * ptValue,
     ptUpper: +Infinity,
   };
-}
-
-function _getStrategyFn(statistic): {
-  fn: (a: number, b: number) => number;
-  baseValue: number;
-} {
-  const baseValue = -Infinity;
-  const fn = (number, maxValue) => {
-    if (number > maxValue) {
-      maxValue = number;
-    }
-    return maxValue;
-  };
-  return { fn, baseValue };
 }
 
 export default getThresholdValues;
