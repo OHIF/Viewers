@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import type { TestOptions } from './tests/utils/fixture';
 
-export default defineConfig({
+export default defineConfig<TestOptions>({
   testDir: './tests',
   globalSetup: './tests/globalSetup.ts',
   fullyParallel: !!process.env.CI,
@@ -29,7 +30,9 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
+      // TEMPORARY, revert before merge: `useNextViewports` runs the suite on the new
+      // viewports only, against the existing screenshots.
+      use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1, useNextViewports: true },
     },
     // TODO: Fix firefox tests
     // {
