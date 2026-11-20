@@ -388,10 +388,16 @@ export class RightPanelPageObject {
   }
 
   private get addSegmentationButton() {
-    const button = this.page.getByTestId('addSegmentation');
+    const page = this.page;
+    const button = page.getByTestId('addSegmentation');
     return {
       button,
       click: async () => {
+        // "Add segmentation" silently does nothing until the active viewport has a display set.
+        await page.waitForFunction(() => {
+          const state = (window as any).services?.viewportGridService?.getState();
+          return !!state?.viewports.get(state.activeViewportId)?.displaySetInstanceUIDs?.length;
+        });
         await button.click();
       },
     };
