@@ -284,8 +284,7 @@ const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneView
       instanceNumber = _getInstanceNumberFromVolume(
         viewportData,
         viewportId,
-        cornerstoneViewportService,
-        imageIndex
+        cornerstoneViewportService
       );
       break;
   }
@@ -316,12 +315,7 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 // Since volume viewports can be in any view direction, they can render
 // a reconstructed image which don't have imageIds; therefore, no instance and instanceNumber
 // Here we check if viewport is in the acquisition direction and if so, we get the instanceNumber
-function _getInstanceNumberFromVolume(
-  viewportData,
-  viewportId,
-  cornerstoneViewportService,
-  imageIndex
-) {
+function _getInstanceNumberFromVolume(viewportData, viewportId, cornerstoneViewportService) {
   const volumes = viewportData.data;
 
   if (!volumes) {
@@ -335,7 +329,7 @@ function _getInstanceNumberFromVolume(
     return;
   }
 
-  const { direction, imageIds } = volume;
+  const { direction } = volume;
 
   const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
@@ -357,7 +351,13 @@ function _getInstanceNumberFromVolume(
   const isAcquisitionPlane = vec3.length(cross) < EPSILON;
 
   if (isAcquisitionPlane) {
-    const imageId = imageIds[imageIndex];
+    /**
+     * Take the image at the camera position. imageIndex counts along the view
+     * direction, which can run opposite to the order of volume.imageIds (e.g. the
+     * MPR axial view of a series stored the other way), so indexing imageIds
+     * with it showed the instance number of the mirrored slice.
+     */
+    const imageId = cornerstoneViewport.getCurrentImageId();
 
     if (!imageId) {
       // No image at this index (e.g. a single-image volume scrolled out of
