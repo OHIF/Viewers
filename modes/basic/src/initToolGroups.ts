@@ -271,6 +271,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         toolName: toolNames.AdvancedMagnify,
       },
       { toolName: toolNames.ReferenceLines },
+      { toolName: toolNames.VolumeCroppingControl },
     ],
   };
 
@@ -296,6 +297,26 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       {
         toolName: toolNames.Pan,
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }, { numTouchPoints: 3 }],
+      },
+    ],
+    // Activated by the toggleCropping command
+    disabled: [
+      {
+        toolName: toolNames.VolumeCropping,
+        configuration: {
+          showHandles: false,
+          showClippingPlanes: false,
+          sphereRadius: 8,
+          sphereColors: {
+            SAGITTAL: [1, 1, 0],
+            CORONAL: [0, 1, 0],
+            AXIAL: [1, 0, 0],
+            corners: [0, 0, 1],
+          },
+          showCornerSpheres: true,
+          initialCropFactor: 0.08,
+          rotateClippingPlanesIncrementDegrees: 30,
+        },
       },
     ],
   };

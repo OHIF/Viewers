@@ -8,6 +8,7 @@ import Code from './Sources/Code';
 import ColorChange from './Sources/ColorChange';
 import Controls from './Sources/Controls';
 import Copy from './Sources/Copy';
+import Crop from './Sources/Crop';
 import Delete from './Sources/Delete';
 import DicomTagBrowser from './Sources/DicomTagBrowser';
 import DisplayFillAndOutline from './Sources/DisplayFillAndOutline';
@@ -489,6 +490,7 @@ export const Icons = {
   Code,
   ColorChange,
   Controls,
+  Crop,
   Copy,
   Delete,
   DicomTagBrowser,
