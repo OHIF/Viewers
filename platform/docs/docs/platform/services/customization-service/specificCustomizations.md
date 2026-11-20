@@ -365,6 +365,11 @@ phase applies, and both phases run before a mode opens a viewport.
 No preset tests the device. A preset is a set of values, and a real device may hold more or less
 than the preset states. A later pull request will add an automatic mode that probes the device.
 
+End users can also pick `low-tablet`, `low`, `medium`, or `high` from **User Preferences → GPU
+settings**. OHIF stores that choice in `localStorage` and, when present, overrides deployer,
+config, or `?customization=gpu/...` values so the preference sticks after reload. Choosing
+**Default** clears the stored preference so the bootstrap / URL value applies again.
+
 ```jsonc
 // platform/app/public/customizations/gpu/low-tablet.jsonc  ->  ?customization=gpu/low-tablet
 {
