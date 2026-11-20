@@ -1,0 +1,16 @@
+{
+  "Clear dates": "Εκκαθάριση ημερομηνιών",
+  "Close": "$t(Common:Close)",
+  "End Date": "Ημερομηνία λήξης",
+  "Last 7 days": "Τελευταίες 7 ημέρες",
+  "Last 30 days": "Τελευταίες 30 ημέρες",
+  "Start Date": "Ημερομηνία έναρξης",
+  "Start": "Από",
+  "End": "Έως",
+  "Input date format": "dd/MM/yyyy",
+  "Today": "Σήμερα",
+  "Previous Month": "Προηγούμενος μήνας",
+  "Next Month": "Επόμενος μήνας",
+  "Select Month": "Επιλογή μήνα",
+  "Select Year": "Επιλογή έτους"
+}

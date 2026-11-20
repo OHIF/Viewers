@@ -21,6 +21,7 @@
  */
 import * as React from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../../lib/utils';
 import { Icons } from '../../Icons/Icons';
 import { Button } from '../../Button';
@@ -61,11 +62,12 @@ function Root({ data: dataProp, className, children }: RootProps) {
 }
 
 function Patient({ className }: { className?: string } = {}) {
+  const { t } = useTranslation('StudyList');
   const { data } = useSummaryContext();
   const patientName = data?.patientName;
   const mrn = data?.mrn;
 
-  const nameContent = patientName ?? 'Select a study';
+  const nameContent = patientName ?? t('Select a study');
   const nameTitle =
     typeof patientName === 'string' || typeof patientName === 'number'
       ? String(patientName)
@@ -113,6 +115,7 @@ function Patient({ className }: { className?: string } = {}) {
  *   remaining applicable workflows as buttons below.
  */
 function Workflows({ className }: { className?: string } = {}) {
+  const { t } = useTranslation('StudyList');
   const { data: studyRow } = useSummaryContext();
   const { workflows, getWorkflowsForStudy, getDefaultWorkflowForStudy, setDefaultWorkflowId } =
     useWorkflows();
@@ -147,7 +150,9 @@ function Workflows({ className }: { className?: string } = {}) {
       )}
     >
       <div className="flex w-full items-center justify-between">
-        <span className="text-foreground text-base font-medium leading-tight">Launch workflow</span>
+        <span className="text-foreground text-base font-medium leading-tight">
+          {t('Launch workflow')}
+        </span>
         <span
           className="text-primary shrink-0 -translate-y-0.5"
           aria-hidden
@@ -176,7 +181,7 @@ function Workflows({ className }: { className?: string } = {}) {
             type="button"
             variant="ghost"
             size="icon"
-            aria-label="Clear default mode"
+            aria-label={t('Clear default workflow')}
             className="text-primary focus-visible:ring-ring focus-visible:ring-offset-background ml-1.5 mb-1 opacity-70 transition hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2"
             onClick={handleClearDefault}
           >
@@ -184,13 +189,13 @@ function Workflows({ className }: { className?: string } = {}) {
               className="text-primary h-3.5 w-3.5"
               aria-hidden
             />
-            <span className="sr-only">Clear default mode</span>
+            <span className="sr-only">{t('Clear default workflow')}</span>
           </Button>
         </div>
       )}
 
       {defaultWorkflow && studyRow && otherWorkflows.length > 0 && (
-        <div className="text-muted-foreground mt-2 text-sm">Other Available Workflows</div>
+        <div className="text-muted-foreground mt-2 text-sm">{t('Other available workflows')}</div>
       )}
 
       {studyRow && otherWorkflows.length > 0 && (

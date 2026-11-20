@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '@state';
 import type { RunInput } from '@ohif/core/src/classes/CommandsManager';
@@ -38,6 +39,7 @@ export default function WorkList({
   extensionManager,
   commandsManager,
 }: Props) {
+  const { t } = useTranslation('StudyList');
   const [appConfig] = useAppConfig();
   // Customizations are read through useCustomization — it subscribes to the
   // customization service, so late registrations and runtime changes propagate
@@ -97,12 +99,28 @@ export default function WorkList({
     // serializable source) cannot carry render functions, so an entry that has
     // an `id` but no `accessorFn`/`cell` is turned into a display-only text
     // column that reads `row[id]` — matching `StudyList.textColumn`.
-    return resolved.map((col: any) =>
-      col && typeof col === 'object' && col.id && !col.accessorFn && !col.cell
-        ? StudyList.textColumn(col.id, col.meta?.label ?? col.id, col.meta)
-        : col
-    );
-  }, [customizedColumns]);
+    const translationKeys: Record<string, string> = {
+      patient: 'PatientName',
+      mrn: 'MRN',
+      studyDateTime: 'StudyDate',
+      modalities: 'Modality',
+      description: 'Description',
+      accession: 'AccessionNumber',
+      instances: 'Instances',
+    };
+
+    return resolved.map((col: any) => {
+      const normalized =
+        col && typeof col === 'object' && col.id && !col.accessorFn && !col.cell
+          ? StudyList.textColumn(col.id, col.meta?.label ?? col.id, col.meta)
+          : col;
+      const translationKey = normalized?.id && translationKeys[normalized.id];
+
+      return translationKey
+        ? { ...normalized, meta: { ...normalized.meta, label: t(translationKey) } }
+        : normalized;
+    });
+  }, [customizedColumns, t]);
 
   const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
     <Icons.OHIFLogoHorizontal
@@ -166,7 +184,7 @@ export default function WorkList({
                   <div className="h-8 w-8" />
                 )
               }
-              title={'Study List'}
+              title={t('StudyList')}
               onStudyDoubleClick={studyDoubleClickCommand ? onStudyDoubleClick : undefined}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}

@@ -1,0 +1,10 @@
+{
+  "No results.": "Δεν υπάρχουν αποτελέσματα.",
+  "Not enough room to display this column": "Δεν υπάρχει αρκετός χώρος για την εμφάνιση αυτής της στήλης",
+  "Next page": "Επόμενη σελίδα",
+  "per page": "ανά σελίδα",
+  "Previous page": "Προηγούμενη σελίδα",
+  "Range of total": "{{start}}-{{end}} από {{total}}",
+  "Rows per page": "Γραμμές ανά σελίδα",
+  "View": "Προβολή"
+}

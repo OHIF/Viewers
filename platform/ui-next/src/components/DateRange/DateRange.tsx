@@ -25,33 +25,43 @@ export function DatePickerWithRange({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & DatePickerWithRangeProps) {
   const { t } = useTranslation('DatePicker');
+  const inputDateFormat = t('Input date format', 'yyyy-MM-dd');
+  const parseInputDate = (value: string) => parse(value, inputDateFormat, new Date());
+  const formatInputDate = (dicomDate: string) => {
+    const parsed = parse(dicomDate, 'yyyyMMdd', new Date());
+    return isValid(parsed) ? format(parsed, inputDateFormat) : '';
+  };
+  const toDicomDate = (value: string) => {
+    const parsed = parseInputDate(value);
+    return isValid(parsed) ? format(parsed, 'yyyyMMdd') : '';
+  };
   const [start, setStart] = React.useState<string>(
-    startDate ? format(parse(startDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : ''
+    startDate ? formatInputDate(startDate) : ''
   );
   const [end, setEnd] = React.useState<string>(
-    endDate ? format(parse(endDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : ''
+    endDate ? formatInputDate(endDate) : ''
   );
   const [openEnd, setOpenEnd] = React.useState(false);
 
   const handleStartSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      const formattedDate = format(selectedDate, inputDateFormat);
       setStart(formattedDate);
       setOpenEnd(true);
       onChange({
         startDate: format(selectedDate, 'yyyyMMdd'),
-        endDate: end.replace(/-/g, ''),
+        endDate: toDicomDate(end),
       });
     }
   };
 
   const handleEndSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      const formattedDate = format(selectedDate, inputDateFormat);
       setEnd(formattedDate);
       setOpenEnd(false);
       onChange({
-        startDate: start.replace(/-/g, ''),
+        startDate: toDicomDate(start),
         endDate: format(selectedDate, 'yyyyMMdd'),
       });
     }
@@ -59,7 +69,7 @@ export function DatePickerWithRange({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'start' | 'end') => {
     const value = e.target.value;
-    const date = parse(value, 'yyyy-MM-dd', new Date());
+    const date = parseInputDate(value);
     if (type === 'start') {
       setStart(value);
       if (isValid(date)) {
@@ -74,9 +84,9 @@ export function DatePickerWithRange({
   };
 
   React.useEffect(() => {
-    setStart(startDate ? format(parse(startDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : '');
-    setEnd(endDate ? format(parse(endDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : '');
-  }, [startDate, endDate]);
+    setStart(startDate ? formatInputDate(startDate) : '');
+    setEnd(endDate ? formatInputDate(endDate) : '');
+  }, [startDate, endDate, inputDateFormat]);
 
   return (
     <div className={cn('flex gap-2', className)}>
@@ -108,8 +118,8 @@ export function DatePickerWithRange({
             autoFocus
             mode="single"
             captionLayout="dropdown"
-            defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
-            selected={start ? parse(start, 'yyyy-MM-dd', new Date()) : undefined}
+            defaultMonth={start ? parseInputDate(start) : new Date()}
+            selected={start ? parseInputDate(start) : undefined}
             onSelect={handleStartSelect}
             startMonth={new Date(1900, 0)}
             endMonth={new Date(new Date().getFullYear() + 1, 11)}
@@ -149,8 +159,8 @@ export function DatePickerWithRange({
             autoFocus
             mode="single"
             captionLayout="dropdown"
-            defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
-            selected={end ? parse(end, 'yyyy-MM-dd', new Date()) : undefined}
+            defaultMonth={end ? parseInputDate(end) : new Date()}
+            selected={end ? parseInputDate(end) : undefined}
             onSelect={handleEndSelect}
             startMonth={new Date(1900, 0)}
             endMonth={new Date(new Date().getFullYear() + 1, 11)}

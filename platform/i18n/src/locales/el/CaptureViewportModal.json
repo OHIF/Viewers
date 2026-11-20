@@ -1,0 +1,13 @@
+{
+  "Copy to Clipboard": "Αντιγραφή εικόνας",
+  "File name": "Όνομα αρχείου",
+  "Image size": "Μέγεθος εικόνας",
+  "Image size in pixels": "Μέγεθος εικόνας σε εικονοστοιχεία",
+  "Include annotations": "Συμπερίληψη σημάνσεων",
+  "Include warning message": "Συμπερίληψη προειδοποιητικού μηνύματος",
+  "Width": "Πλάτος",
+  "Height": "Ύψος",
+  "Save Image": "Αποθήκευση εικόνας",
+  "Image copied to clipboard": "Η εικόνα αντιγράφηκε στο πρόχειρο",
+  "Failed to copy image to clipboard": "Αποτυχία αντιγραφής της εικόνας στο πρόχειρο"
+}

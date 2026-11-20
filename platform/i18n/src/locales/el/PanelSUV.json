@@ -1,0 +1,10 @@
+{
+  "Patient Information": "Πληροφορίες ασθενούς",
+  "Patient Sex": "Φύλο ασθενούς",
+  "Weight": "Βάρος",
+  "Total Dose": "Συνολική δόση",
+  "Half Life": "Χρόνος ημιζωής",
+  "Injection Time": "Ώρα έγχυσης",
+  "Acquisition Time": "Ώρα λήψης",
+  "Reload Data": "Επαναφόρτωση δεδομένων"
+}

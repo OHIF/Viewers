@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "Το πεδίο δεν μπορεί να είναι κενό",
+  "Hotkey is already in use": "Η ενέργεια \"{{action}}\" χρησιμοποιεί ήδη τη συντόμευση \"{{pressedKeys}}\".",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "Δεν είναι δυνατό να οριστούν μόνο πλήκτρα τροποποίησης (Ctrl, Alt και Shift) ως συντόμευση",
+  "Shortcut combination is not allowed": "Ο συνδυασμός συντόμευσης {{pressedKeys}} δεν επιτρέπεται"
+}
