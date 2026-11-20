@@ -298,6 +298,17 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }, { numTouchPoints: 3 }],
       },
     ],
+    enabled: [
+      {
+        toolName: toolNames.OrientationController,
+        configuration: {
+          colorScheme: 'gray',
+          keepOrientationUp: true,
+          letterColorScheme: 'white',
+          size: 0.028,
+        },
+      },
+    ],
   };
 
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);

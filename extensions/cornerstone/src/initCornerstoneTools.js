@@ -45,6 +45,7 @@ import {
   SculptorTool,
   SplineContourSegmentationTool,
   LabelMapEditWithContourTool,
+  OrientationControllerTool,
 } from '@cornerstonejs/tools';
 import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
@@ -108,6 +109,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SplineROITool);
   addTool(LivewireContourTool);
   addTool(OrientationMarkerTool);
+  addTool(OrientationControllerTool);
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(SegmentSelectTool);
@@ -171,6 +173,7 @@ const toolNames = {
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
   OrientationMarker: OrientationMarkerTool.toolName,
+  OrientationController: OrientationControllerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   SegmentBidirectional: SegmentBidirectionalTool.toolName,
