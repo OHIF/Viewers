@@ -12,6 +12,29 @@
 .overlay-top {
   top: 2.15rem;
 }
+/* Flush with ViewportActionCorners topLeft (top-[4px]) for fidelity. */
+.overlay-top-left {
+  top: 4px;
+}
+/*
+ * After orientationMenu + dataOverlayMenu: pl-[4px] + 2× ToolButton size="tiny" (w-6).
+ * Absolute so the reserved slot does not push StudyDate below the historic overlay-top band.
+ * left is 52px from the viewport edge, minus left-viewport (0.5rem) on this overlay.
+ * Slot stays mounted when idle/null so metadata margin stays stable.
+ */
+.overlay-top-left .ohif-fidelity-slot {
+  position: absolute;
+  top: 0;
+  left: calc(52px - 0.5rem);
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+/* Keep StudyDate / SeriesDescription at the historic overlay-top band. */
+.overlay-top-left > div:has(.ohif-fidelity-slot) + div,
+.overlay-top-left > div:first-child:not(:has(.ohif-fidelity-slot)) {
+  margin-top: calc(2.15rem - 4px);
+}
 .overlay-bottom {
   bottom: 2.15rem;
 }

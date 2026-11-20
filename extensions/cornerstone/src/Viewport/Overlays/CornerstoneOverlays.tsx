@@ -42,39 +42,41 @@ function CornerstoneOverlays(props: withAppTypes) {
     return null;
   }
 
-  if (viewportData) {
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-
-    if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
-      return null;
-    }
-  }
+  // Volume3D HPs set hideOverlays to drop DICOM chrome (scrollbar, markers,
+  // StudyDate, etc.). Still mount CustomizableViewportOverlay in fidelity-only
+  // mode so the always-visible fidelity indicator can show (VF-VIS / #6256).
+  const hideOverlays = Boolean(
+    viewportData &&
+      cornerstoneViewportService.getViewportInfo(viewportId)?.viewportOptions?.customViewportProps
+        ?.hideOverlays
+  );
 
   const viewportScrollbarVariant = customizationService.getCustomization('viewportScrollbar.variant');
   const useProgressScrollbar = viewportScrollbarVariant !== 'legacy';
 
   return (
     <div className="noselect">
-      {useProgressScrollbar ? (
-        <ViewportSliceProgressScrollbar
-          viewportId={viewportId}
-          viewportData={viewportData}
-          element={element}
-          imageSliceData={imageSliceData}
-          setImageSliceData={setImageSliceData}
-          servicesManager={servicesManager}
-        />
-      ) : (
-        <ViewportImageScrollbar
-          viewportId={viewportId}
-          viewportData={viewportData}
-          element={element}
-          imageSliceData={imageSliceData}
-          setImageSliceData={setImageSliceData}
-          scrollbarHeight={scrollbarHeight}
-          servicesManager={servicesManager}
-        />
-      )}
+      {!hideOverlays &&
+        (useProgressScrollbar ? (
+          <ViewportSliceProgressScrollbar
+            viewportId={viewportId}
+            viewportData={viewportData}
+            element={element}
+            imageSliceData={imageSliceData}
+            setImageSliceData={setImageSliceData}
+            servicesManager={servicesManager}
+          />
+        ) : (
+          <ViewportImageScrollbar
+            viewportId={viewportId}
+            viewportData={viewportData}
+            element={element}
+            imageSliceData={imageSliceData}
+            setImageSliceData={setImageSliceData}
+            scrollbarHeight={scrollbarHeight}
+            servicesManager={servicesManager}
+          />
+        ))}
 
       <CustomizableViewportOverlay
         imageSliceData={imageSliceData}
@@ -82,20 +84,25 @@ function CornerstoneOverlays(props: withAppTypes) {
         viewportId={viewportId}
         servicesManager={servicesManager}
         element={element}
+        fidelityOnly={hideOverlays}
       />
 
-      <ViewportImageSliceLoadingIndicator
-        viewportData={viewportData}
-        element={element}
-      />
+      {!hideOverlays && (
+        <ViewportImageSliceLoadingIndicator
+          viewportData={viewportData}
+          element={element}
+        />
+      )}
 
-      <ViewportOrientationMarkers
-        imageSliceData={imageSliceData}
-        element={element}
-        viewportData={viewportData}
-        servicesManager={servicesManager}
-        viewportId={viewportId}
-      />
+      {!hideOverlays && (
+        <ViewportOrientationMarkers
+          imageSliceData={imageSliceData}
+          element={element}
+          viewportData={viewportData}
+          servicesManager={servicesManager}
+          viewportId={viewportId}
+        />
+      )}
     </div>
   );
 }

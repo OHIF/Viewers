@@ -1,0 +1,15 @@
+{
+  "LowFidelity": "Low Fidelity",
+  "TransientLowFidelity": "Transient Low Fidelity",
+  "FullFidelity": "Full Fidelity",
+  "AriaTransient": "Image fidelity: temporarily reduced",
+  "AriaStanding": "Image fidelity: reduced",
+  "AriaRecovered": "Image fidelity: full resolution",
+  "AriaIdle": "Image fidelity",
+  "CauseDeviceLimit": "Reduced to fit this device",
+  "CauseMemoryBudget": "Reduced to fit available memory",
+  "CausePerformance": "Temporarily reduced during interaction",
+  "CauseIncompleteLoad": "Still loading higher detail",
+  "CauseLossyDecode": "Decoded at reduced quality",
+  "CauseUnknown": "Displayed at reduced fidelity"
+}
