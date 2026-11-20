@@ -163,14 +163,15 @@ The viewer loads a module only when the URL asks for it, for example
 | `split/optional/singleImageSeriesStack` | One stack for each CR, DX or MG series. CR and DX only up to 9 images. |
 | `split/optional/volumePositionOrder` | The instances of `volume3d`, with the slices in position order. The file changes only the `sortBy` of `volume3d`, so the rule keeps its id. |
 | `split/optional/byAcquisition` | One display set for each `AcquisitionNumber` of a CT, MR, PT or NM series. The file changes only the `groupBy` and the `attributes` of `volume3d`. |
+| `split/optional/usTimeClusters` | One display set for each ultrasound sweep. |
+| `split/optional/regularVolume` | The regular slices of a series with some irregular images become one volume. |
+| `split/optional/derivedObjectVersions` | One display set for each SR or SEG version, with `isLatestVersion`. |
+| `split/optional/dtiByDirection` | One display set for each b-value and gradient direction of a single-frame DTI series, for tests. A series of 33 directions gives 34 display sets. Needs a `@cornerstonejs/metadata` version with the file. |
 
 `volumePositionOrder` and `byAcquisition` change different fields of
 `volume3d`, so a site can load both, in either order: one volume for each
 acquisition, with the slices in position order. The earlier name of
 `byAcquisition` is `byAcquisitionTime`.
-| `split/optional/usTimeClusters` | One display set for each ultrasound sweep. |
-| `split/optional/regularVolume` | The regular slices of a series with some irregular images become one volume. |
-| `split/optional/derivedObjectVersions` | One display set for each SR or SEG version, with `isLatestVersion`. |
 
 A `@cornerstonejs/metadata` version without the files gives no
 `split/optional/` modules, and the build does not fail.
