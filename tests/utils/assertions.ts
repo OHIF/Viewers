@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 import { expect } from 'playwright-test-coverage';
 
-import { DOMOverlayPageObject } from '../pages';
+import { DOMOverlayPageObject, type MainToolbarPageObject } from '../pages';
 import type { SegmentationSelect } from '../pages/RightPanelPageObject';
 
 /**
@@ -77,6 +77,20 @@ export async function expectRowUnlocked(rowObject: { lockIcon: Locator }) {
 
 export async function expectRowNotSelected(rowObject) {
   await expect(rowObject.locator).not.toContainClass('bg-popover');
+}
+
+// Asserts which of the header Undo and Redo buttons are enabled.
+export async function expectUndoRedoState({
+  mainToolbarPageObject,
+  undo,
+  redo,
+}: {
+  mainToolbarPageObject: MainToolbarPageObject;
+  undo: boolean;
+  redo: boolean;
+}) {
+  await expect(mainToolbarPageObject.undo.button).toBeEnabled({ enabled: undo });
+  await expect(mainToolbarPageObject.redo.button).toBeEnabled({ enabled: redo });
 }
 
 // Opens the segmentation selector, asserts its options match `labels`, then closes it.

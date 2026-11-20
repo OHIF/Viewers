@@ -29,6 +29,7 @@ import {
 } from './expectAnnotationText';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { drawFreehandContour } from './drawFreehandContour';
+import { livewireContourClicks } from './livewireContourClicks';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
@@ -49,6 +50,8 @@ import {
   waitForPaintToSettle,
 } from './waitForViewportsRendered';
 import { waitForViewportNotBlank } from './waitForViewportNotBlank';
+import { waitForAnnotationCompleted } from './waitForAnnotationCompleted';
+import { readWhenSettled } from './readWhenSettled';
 
 export {
   visitStudy,
@@ -80,6 +83,7 @@ export {
   measurementTextFormatters,
   clearAllAnnotations,
   drawFreehandContour,
+  livewireContourClicks,
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
@@ -96,6 +100,8 @@ export {
   waitForRenderCycleForAction,
   waitForPaintToSettle,
   waitForViewportNotBlank,
+  waitForAnnotationCompleted,
+  readWhenSettled,
   press,
   withKeyHeld,
   test,
