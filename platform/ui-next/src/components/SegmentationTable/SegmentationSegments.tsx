@@ -163,7 +163,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
 
             return hasStats ? (
               <HoverCard
-                key={`hover-${segmentIndex}`}
+                key={`hover-${segmentation.segmentationId}-${segmentIndex}`}
                 openDelay={300}
               >
                 <HoverCardTrigger asChild>
