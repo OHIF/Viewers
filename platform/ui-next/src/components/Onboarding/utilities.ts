@@ -29,6 +29,25 @@ const markTourAsShown = (tourId: string) => {
 };
 
 /**
+ * Where Onboarding records that a tour was shown. Both functions may return a
+ * promise, so the record can live on a server (shown once per user across
+ * browsers and devices). Provide one through the `ohif.tourPersistence`
+ * customization; the default is the browser's localStorage.
+ */
+type TourPersistence = {
+  /** Whether the tour was already shown; the tour starts only when false. */
+  hasBeenShown: (tourId: string) => boolean | Promise<boolean>;
+  /** Called once, when the tour's first step is displayed. */
+  markShown: (tourId: string) => void | Promise<void>;
+};
+
+/** The default persistence: the `shownTours` list in localStorage. */
+const localStorageTourPersistence: TourPersistence = {
+  hasBeenShown: hasTourBeenShown,
+  markShown: markTourAsShown,
+};
+
+/**
  * Default handler for the 'show' event in Shepherd steps.
  * Adds a progress indicator to the footer of the current step.
  *
@@ -88,4 +107,11 @@ const customMiddleware = {
 
 const middleware = [offset(15), shift(), flip(), customMiddleware];
 
-export { hasTourBeenShown, markTourAsShown, middleware, defaultShowHandler };
+export {
+  hasTourBeenShown,
+  markTourAsShown,
+  localStorageTourPersistence,
+  middleware,
+  defaultShowHandler,
+};
+export type { TourPersistence };
