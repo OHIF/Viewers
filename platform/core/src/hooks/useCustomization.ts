@@ -17,14 +17,17 @@ import { useSystem } from '../contextProviders/SystemProvider';
  * may itself be a function.
  */
 export function useCustomization<T = unknown>(customizationId: string): T {
-  const { servicesManager } = useSystem();
-  const { customizationService } = servicesManager.services;
+  // No SystemProvider (for example the docs site): no service, the value is undefined.
+  const customizationService = useSystem()?.servicesManager.services.customizationService;
 
   const [value, setValue] = useState<T>(
-    () => customizationService.getCustomization(customizationId) as T
+    () => customizationService?.getCustomization(customizationId) as T
   );
 
   useEffect(() => {
+    if (!customizationService) {
+      return;
+    }
     const update = () => {
       // getCustomization caches the transformed value in
       // `transformedCustomizations`, so as long as nothing has invalidated that

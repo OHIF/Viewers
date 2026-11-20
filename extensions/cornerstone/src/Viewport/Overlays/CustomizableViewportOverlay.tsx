@@ -9,7 +9,7 @@ import { vec3 } from 'gl-matrix';
 import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
-import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
+import { Replaceable, ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
@@ -59,19 +59,14 @@ const OverlayItemComponents = {
 /**
  * Customizable Viewport Overlay
  */
-function CustomizableViewportOverlay({
-  element,
-  viewportData,
-  imageSliceData,
-  viewportId,
-  servicesManager,
-}: {
+function CustomizableViewportOverlay(props: {
   element: HTMLElement;
   viewportData: ViewportData;
   imageSliceData: ImageSliceData;
   viewportId: string;
   servicesManager: AppTypes.ServicesManager;
 }) {
+  const { element, viewportData, imageSliceData, viewportId, servicesManager } = props;
   const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
   const [scale, setScale] = useState(1);
@@ -245,14 +240,24 @@ function CustomizableViewportOverlay({
   );
 
   return (
-    <ViewportOverlay
-      topLeft={getContent(topLeftCustomization, 'topLeftOverlayItem')}
-      topRight={getContent(topRightCustomization, 'topRightOverlayItem')}
-      bottomLeft={getContent(bottomLeftCustomization, 'bottomLeftOverlayItem')}
-      bottomRight={getContent(bottomRightCustomization, 'bottomRightOverlayItem')}
-      color={isLight ? 'text-neutral-dark' : 'text-neutral-light'}
-      shadowClass={isLight ? 'shadow-light' : 'shadow-dark'}
-    />
+    <Replaceable
+      id="viewportOverlay"
+      props={props}
+      displaySetProps={displaySetProps}
+      instanceNumber={instanceNumber}
+      voi={voi}
+      scale={scale}
+      isLight={isLight}
+    >
+      <ViewportOverlay
+        topLeft={getContent(topLeftCustomization, 'topLeftOverlayItem')}
+        topRight={getContent(topRightCustomization, 'topRightOverlayItem')}
+        bottomLeft={getContent(bottomLeftCustomization, 'bottomLeftOverlayItem')}
+        bottomRight={getContent(bottomRightCustomization, 'bottomRightOverlayItem')}
+        color={isLight ? 'text-neutral-dark' : 'text-neutral-light'}
+        shadowClass={isLight ? 'shadow-light' : 'shadow-dark'}
+      />
+    </Replaceable>
   );
 }
 
@@ -461,8 +466,6 @@ function InstanceNumberOverlayItem({
     </div>
   );
 }
-
-
 
 export default CustomizableViewportOverlay;
 

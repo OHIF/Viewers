@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { useCine } from '@ohif/ui-next';
+import { Replaceable, useCine } from '@ohif/ui-next';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { useAppConfig } from '@state';
 
-function WrappedCinePlayer({
-  enabledVPElement,
-  viewportId,
-  servicesManager,
-}: withAppTypes<{
-  enabledVPElement: HTMLElement;
-  viewportId: string;
-}>) {
+function WrappedCinePlayer(
+  props: withAppTypes<{
+    enabledVPElement: HTMLElement;
+    viewportId: string;
+    /** Replaceable id of this instance (experiment E9); default `cinePlayer`. */
+    componentId?: string;
+  }>
+) {
+  const { enabledVPElement, viewportId, servicesManager, componentId } = props;
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [newStackFrameRate, setNewStackFrameRate] = useState(24);
@@ -133,32 +134,54 @@ function WrappedCinePlayer({
     };
   }, [cines, viewportId, cineService, enabledVPElement, cineHandler]);
 
-  if (!isCineEnabled) {
-    return null;
-  }
+  const isPlaying = cines?.[viewportId]?.isPlaying || false;
 
-  const cine = cines[viewportId];
-  const isPlaying = cine?.isPlaying || false;
+  const onClose = () => {
+    // also stop the clip
+    cineService.setCine({ id: viewportId, isPlaying: false });
+    cineService.setIsCineEnabled(false);
+    cineService.setViewportCineClosed(viewportId);
+  };
+  const onPlayPauseChange = isPlaying => cineService.setCine({ id: viewportId, isPlaying });
+  const onFrameRateChange = frameRate => cineService.setCine({ id: viewportId, frameRate });
 
   return (
-    <RenderCinePlayer
-      viewportId={viewportId}
-      cineService={cineService}
-      newStackFrameRate={newStackFrameRate}
+    <Replaceable
+      id={componentId ?? 'cinePlayer'}
+      props={props}
+      isCineEnabled={isCineEnabled}
       isPlaying={isPlaying}
+      frameRate={newStackFrameRate}
+      cineFrameRate={cines?.[viewportId]?.frameRate}
       dynamicInfo={dynamicInfo}
-      customizationService={customizationService}
-    />
+      cineService={cineService}
+      onClose={onClose}
+      onPlayPauseChange={onPlayPauseChange}
+      onFrameRateChange={onFrameRateChange}
+    >
+      {isCineEnabled && (
+        <RenderCinePlayer
+          newStackFrameRate={newStackFrameRate}
+          isPlaying={isPlaying}
+          dynamicInfo={dynamicInfo}
+          customizationService={customizationService}
+          onClose={onClose}
+          onPlayPauseChange={onPlayPauseChange}
+          onFrameRateChange={onFrameRateChange}
+        />
+      )}
+    </Replaceable>
   );
 }
 
 function RenderCinePlayer({
-  viewportId,
-  cineService,
   newStackFrameRate,
   isPlaying,
   dynamicInfo: dynamicInfoProp,
   customizationService,
+  onClose,
+  onPlayPauseChange,
+  onFrameRateChange,
 }) {
   const CinePlayerComponent = customizationService.getCustomization('cinePlayer');
 
@@ -217,27 +240,9 @@ function RenderCinePlayer({
       className="absolute left-1/2 bottom-3 -translate-x-1/2"
       frameRate={newStackFrameRate}
       isPlaying={isPlaying}
-      onClose={() => {
-        // also stop the clip
-        cineService.setCine({
-          id: viewportId,
-          isPlaying: false,
-        });
-        cineService.setIsCineEnabled(false);
-        cineService.setViewportCineClosed(viewportId);
-      }}
-      onPlayPauseChange={isPlaying => {
-        cineService.setCine({
-          id: viewportId,
-          isPlaying,
-        });
-      }}
-      onFrameRateChange={frameRate =>
-        cineService.setCine({
-          id: viewportId,
-          frameRate,
-        })
-      }
+      onClose={onClose}
+      onPlayPauseChange={onPlayPauseChange}
+      onFrameRateChange={onFrameRateChange}
       dynamicInfo={dynamicInfo}
       updateDynamicInfo={updateDynamicInfo}
     />
