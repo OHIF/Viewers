@@ -12,7 +12,14 @@ export const DEFAULT_E2E_OHIF_CUSTOMIZATIONS: Record<string, unknown> = {
   'viewportScrollbar.showLoadedEndpoints': false,
 };
 
+// What each page has been given so far. A later call replaces the `window.config` setter
+// of an earlier one, so each call applies the earlier config again with its own.
+const configurationByPage = new WeakMap<Page, Record<string, unknown>>();
+
 export async function addOHIFConfiguration(page: Page, configToAdd: Record<string, unknown>) {
+  const configForPage = { ...configurationByPage.get(page), ...configToAdd };
+  configurationByPage.set(page, configForPage);
+
   const customizationSetters = Object.fromEntries(
     Object.entries(DEFAULT_E2E_OHIF_CUSTOMIZATIONS || {}).map(([key, value]) => [
       key,
@@ -23,7 +30,7 @@ export async function addOHIFConfiguration(page: Page, configToAdd: Record<strin
   const baselinePlusConfigToAdd = {
     ...DEFAULT_E2E_OHIF_CONFIGURATION,
     customizationService: [customizationSetters],
-    ...configToAdd,
+    ...configForPage,
   };
 
   await page.addInitScript(config => {
