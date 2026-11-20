@@ -121,6 +121,16 @@ export function WorkflowsProvider({
         }
 
         const modalitiesToCheck = String(studyRow.modalities ?? '').replaceAll('/', '\\');
+
+        /**
+         * Some DICOMweb servers (e.g. Google Healthcare) do not return
+         * ModalitiesInStudy, so the row has no modalities to check. Treat
+         * that as unknown rather than not applicable, so the study can
+         * still be launched.
+         */
+        if (!modalitiesToCheck.trim()) {
+          return true;
+        }
         const result = mode.isValidMode({
           modalities: modalitiesToCheck,
           study: studyRow,
