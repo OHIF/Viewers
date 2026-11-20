@@ -3,6 +3,7 @@ import { metaData } from '@cornerstonejs/core';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getRenderableData from './getRenderableData';
+import getLabelForSRMeasurement from './getLabelForSRMeasurement';
 import toolNames from '../tools/toolNames';
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
@@ -105,7 +106,7 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
   const SRAnnotation: Types.Annotation = {
     annotationUID: TrackingUniqueIdentifier,
     highlighted: false,
-    isLocked: false,
+    isLocked: true,
     isPreview: toolName === toolNames.DICOMSRDisplay,
     invalidated: false,
     metadata: {
@@ -118,7 +119,7 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
     },
     data: {
-      label: measurement.labels?.[0]?.value || undefined,
+      label: getLabelForSRMeasurement(measurement),
       displayText: measurement.displayText || undefined,
       handles: {
         textBox: measurement.textBox ?? {},
@@ -140,4 +141,11 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
    * @param {Types.Annotation} SRAnnotation - The annotation to add
    */
   annotation.state.addAnnotation(SRAnnotation);
+
+  /**
+   * The preview is read-only until the SR is hydrated. Both locks are needed: handle and move
+   * filtering reads isLocked, while the tools read the global set, which setAnnotationLocked fills.
+   * That call does nothing for a UID still in the set from an earlier load, so isLocked is set above.
+   */
+  annotation.locking.setAnnotationLocked(TrackingUniqueIdentifier, true);
 }

@@ -1,5 +1,3 @@
-import { toolNames as SRToolNames } from '@ohif/extension-cornerstone-dicom-sr';
-
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -16,6 +14,11 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
+
+  const SRUtilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
+  );
+  const SRToolNames = SRUtilityModule?.exports?.toolNames;
 
   const { toolNames, Enums } = utilityModule.exports;
 
@@ -84,6 +87,10 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
+      /** SR sub-types, see SRPointTool */
+      ...(SRToolNames
+        ? [{ toolName: SRToolNames.SRPoint }, { toolName: SRToolNames.SRRectangleROI }]
+        : []),
     ],
     enabled: [
       { toolName: toolNames.ImageOverlayViewer },
@@ -153,6 +160,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
+      { toolName: SRToolNames.SRPoint },
       { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
@@ -171,6 +179,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
+
+  const SRUtilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
+  );
+  const SRToolNames = SRUtilityModule?.exports?.toolNames;
 
   const serviceManager = extensionManager._servicesManager;
   const { cornerstoneViewportService } = serviceManager.services;
@@ -235,6 +248,10 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           displayOnePointAsCrosshairs: true,
         },
       },
+      /** SR sub-types, see SRPointTool */
+      ...(SRToolNames
+        ? [{ toolName: SRToolNames.SRPoint }, { toolName: SRToolNames.SRRectangleROI }]
+        : []),
     ],
     disabled: [
       {

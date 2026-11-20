@@ -6,17 +6,20 @@ import type { StyleSpecifier } from '@cornerstonejs/tools';
 import type { ProbeAnnotation } from '@cornerstonejs/tools';
 
 import { getSRPointTextLines } from '../utils/srToolGetTextLines';
+import drawCross, { CROSS_SIZE } from './drawCross';
 
-const { drawPath, drawTextBox } = drawing;
+const { drawTextBox } = drawing;
 const { getAnnotations } = annotation.state;
 const { isAnnotationVisible } = annotation.visibility;
-
-const CROSS_SIZE = 6;
 
 /**
  * SRPoint: sub-type of Probe for hydrated DICOM SR SCOORD/SCOORD3D points.
  * Renders a cross (plus) marker per medical imaging convention;
  * shows label only, no intensity/coordinates.
+ *
+ * The SR sub-types (SRPoint, SRRectangleROI) are used when an onBeforeSRHydration hook remaps a
+ * hydrated Probe or RectangleROI to them, so that the annotation shows its finding label instead of
+ * statistics. Modes that use such a hook must add both tools to their tool groups.
  */
 class SRPointTool extends ProbeTool {
   static toolName = 'SRPoint';
@@ -38,7 +41,7 @@ class SRPointTool extends ProbeTool {
     svgDrawingHelper: SVGDrawingHelper
   ): boolean => {
     let renderStatus = false;
-    const { viewport } = enabledElement;
+    const { viewport, renderingEngine } = enabledElement;
     const { element } = viewport;
 
     const annotations = getAnnotations(this.getToolName(), element) as ProbeAnnotation[];
@@ -66,6 +69,23 @@ class SRPointTool extends ProbeTool {
       const point = data.handles.points[0];
       const [canvasX, canvasY] = viewport.worldToCanvas(point);
 
+      /**
+       * Keep the Probe statistics update, which records a moved point and triggers
+       * ANNOTATION_MODIFIED for the measurement service.
+       */
+      const targetId = this.getTargetId(viewport, data);
+      data.cachedStats ??= {};
+      if (!data.cachedStats[targetId] || data.cachedStats[targetId].value === null) {
+        /**
+         * The Probe calculation only fills the targets that already have an entry, and leaves the
+         * value null until the image is available, so the calculation runs again until then.
+         */
+        data.cachedStats[targetId] ??= { Modality: null, index: null, value: null };
+        this._calculateCachedStats(annotation, renderingEngine, enabledElement);
+      } else if (annotation.invalidated) {
+        this._calculateCachedStats(annotation, renderingEngine, enabledElement);
+      }
+
       if (!isAnnotationVisible(annotationUID)) {
         continue;
       }
@@ -79,13 +99,9 @@ class SRPointTool extends ProbeTool {
       const size = Number(this.configuration?.handleRadius) || CROSS_SIZE;
       const cx = Number(canvasX);
       const cy = Number(canvasY);
-      const crossPaths: [number, number][][] = [
-        [[cx, cy - size], [cx, cy + size]],
-        [[cx - size, cy], [cx + size, cy]],
-      ];
-      drawPath(svgDrawingHelper, annotationUID, 'cross', crossPaths, {
+      drawCross(svgDrawingHelper, annotationUID, 'cross', [cx, cy], size, {
         color,
-        lineWidth: lineWidth || 2,
+        lineWidth,
         lineDash,
       });
 
@@ -93,7 +109,6 @@ class SRPointTool extends ProbeTool {
 
       const options = this.getLinkedTextBoxStyle(styleSpecifier, annotation);
       if (options?.visibility !== false) {
-        const targetId = this.getTargetId(viewport, data);
         const textLines = this.configuration.getTextLines(data, targetId);
         if (textLines?.length) {
           const textCanvasCoordinates = [
