@@ -284,7 +284,7 @@ based on the proximity to the current series/display set. This can be useful to 
   studyPrefetcher: {
     /* Enable/disable study prefetching service (default: false) */
     enabled: true,
-    /* Number of displaysets to be prefetched  (default: 2)*/
+    /* Number of display sets to be prefetched (default: 1) */
     displaySetsCount: 2,
     /**
      * Max number of concurrent prefetch requests (default: 10)
@@ -297,7 +297,7 @@ based on the proximity to the current series/display set. This can be useful to 
      * (need to add support for `AbortController` on Cornerstone)
      * */
     maxNumPrefetchRequests: 10,
-    /* Display sets loading order (closest (deafult), downward or upward) */
+    /* Display sets loading order: closest, downward (default) or upward */
     order: 'closest',
   },
 
