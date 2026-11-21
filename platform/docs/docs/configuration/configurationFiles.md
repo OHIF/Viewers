@@ -196,6 +196,20 @@ if auth headers are used, a preflight request is required.
   These options are not fully safe on every device. A texture that is too large can lose the WebGL context, and then the user must reload the page. `config/dev.js`, `config/netlify.js`, `config/e2e.js` and `config/customization.js` set `lossyDownsampling: { final: true }`. `config/dev.js`, `config/netlify.js` and `config/e2e.js` also select the `medium` preset, and a `?customization=gpu/<preset>` URL can select a different preset. The other bundled configs keep the defaults. `config/default.js` and the `config/docker-nginx-*.js` recipes show the setting in a comment.
 - `useSharedArrayBuffer` (default to 'TRUE', options: 'AUTO', 'FALSE', 'TRUE', note that these are strings), for volume loading we use sharedArrayBuffer to be able to
   load the volume progressively as the data arrives (each webworker has the shared buffer and can write to it). However, there might be certain environments that do not support sharedArrayBuffer. In that case, you can set this flag to false and the viewer will use the regular arrayBuffer which might be slower for large volume loading.
+- `qidoStudySearchParamsTransform`: optional function on a DICOMweb data source configuration. It receives the final study-search QIDO parameters after wildcarding and a context containing `searchParams` (the original filters), and must return the parameters to send. It does not affect series, instance or metadata queries. For example, with dcm4chee and `supportsWildcard: true`:
+
+  ```js
+  qidoStudySearchParamsTransform: params => {
+    const result = { ...params };
+    for (const key of ['PatientName', 'StudyDescription']) {
+      if (typeof result[key] === 'string') {
+        result[key] = result[key].toUpperCase().replace(/\s+/g, '*');
+      }
+    }
+    return result;
+  },
+  ```
+
 - `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
 - `allowMultiSelectExport`: (default to false), if set to true, the user will be able to select the datasource to export the report to.
 - `activateViewportBeforeInteraction`: (default to true), if set to false, tools can be used directly without the need to click and activate the viewport.

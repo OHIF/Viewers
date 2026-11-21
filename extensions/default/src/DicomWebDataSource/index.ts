@@ -77,6 +77,11 @@ export type DicomWebConfig = {
   supportsFuzzyMatching?: boolean;
   /** Whether the server supports wildcard matching */
   supportsWildcard?: boolean;
+  /** Transform final study-search QIDO parameters before sending them. */
+  qidoStudySearchParamsTransform?: (
+    params: Record<string, unknown>,
+    context: { searchParams: unknown }
+  ) => Record<string, unknown>;
   /** Whether the server supports the native DICOM model */
   supportsNativeDICOMModel?: boolean;
   /** Whether to enable request tag */
@@ -283,7 +288,12 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
               supportsWildcard: dicomWebConfig.supportsWildcard,
             }) || {};
 
-          const results = await qidoSearch(dicomWebClient, undefined, undefined, mappedParams);
+          const queryParams = dicomWebConfig.qidoStudySearchParamsTransform
+            ? dicomWebConfig.qidoStudySearchParamsTransform(mappedParams, {
+                searchParams: origParams,
+              })
+            : mappedParams;
+          const results = await qidoSearch(dicomWebClient, undefined, undefined, queryParams);
 
           return processResults(results);
         },
