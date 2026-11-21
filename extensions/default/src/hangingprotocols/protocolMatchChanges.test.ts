@@ -1,9 +1,45 @@
 import { HPMatcher } from '@ohif/core/src/services/HangingProtocolService/HPMatcher';
-import { RMLO } from './utils/mammoDisplaySetSelector';
+import { LCC, RCC, LMLO, RMLO } from './utils/mammoDisplaySetSelector';
 import { seriesViewable, seriesWithImages } from './utils/seriesSelectors';
 import { studyWithImages } from './utils/studySelectors';
+import viewCode from './utils/viewCode';
 
 const match = (displaySet, rules) => HPMatcher.match(displaySet, rules, {}, {});
+
+describe('mammography view code matching', () => {
+  const codedView = (CodingSchemeDesignator, CodeValue) => ({
+    instance: { ViewCodeSequence: [{ CodingSchemeDesignator, CodeValue }] },
+  });
+  const matchView = (displaySet, selector) =>
+    HPMatcher.match(
+      displaySet,
+      selector.seriesMatchingRules,
+      { ViewCode: { callback: viewCode } },
+      {}
+    );
+
+  it.each(['SRT', 'SNM3'])('scores %s view codes the same as their SCT equivalents', scheme => {
+    const cc = codedView(scheme, 'R-10242');
+    const mlo = codedView(scheme, 'R-10226');
+    for (const selector of [RCC, LCC]) {
+      expect(matchView(cc, selector).score).toBe(
+        matchView(codedView('SCT', '399162004'), selector).score
+      );
+      expect(matchView(cc, selector).score).toBeGreaterThan(matchView(mlo, selector).score);
+    }
+    for (const selector of [RMLO, LMLO]) {
+      expect(matchView(mlo, selector).score).toBe(
+        matchView(codedView('SCT', '399368009'), selector).score
+      );
+      expect(matchView(cc, selector).requiredFailed).toBe(true);
+    }
+  });
+
+  it('does not interpret another coding scheme or a partial code as CC', () => {
+    expect(matchView(codedView('LOCAL', 'R-10242'), LCC).score).toBe(0);
+    expect(matchView(codedView('SCT', '3991620040'), LCC).score).toBe(0);
+  });
+});
 
 // A stack display set has SeriesDescription '' when the instance has none, and no
 // PatientOrientation, so the rules read PatientOrientation from the first instance.
