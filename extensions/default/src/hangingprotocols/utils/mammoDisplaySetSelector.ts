@@ -1,3 +1,8 @@
+// CID 4014 lists legacy SNOMED-RT IDs for these views. Mammography images
+// can use either SRT or SNM3 for the legacy codes.
+const ccViewCodes = ['SCT:399162004', 'SRT:R-10242', 'SNM3:R-10242'];
+const mloViewCodes = ['SCT:399368009', 'SRT:R-10226', 'SNM3:R-10226'];
+
 const priorStudyMatchingRules = [
   {
     // The priorInstance is a study counter that indicates what position this study is in
@@ -29,7 +34,7 @@ const LCCSeriesMatchingRules = [
     weight: 10,
     attribute: 'ViewCode',
     constraint: {
-      contains: 'SCT:399162004',
+      includes: ccViewCodes,
     },
   },
   {
@@ -53,7 +58,7 @@ const RCCSeriesMatchingRules = [
     weight: 10,
     attribute: 'ViewCode',
     constraint: {
-      contains: 'SCT:399162004',
+      includes: ccViewCodes,
     },
   },
   {
@@ -84,14 +89,14 @@ const LMLOSeriesMatchingRules = [
     weight: 10,
     attribute: 'ViewCode',
     constraint: {
-      contains: 'SCT:399368009',
+      includes: mloViewCodes,
     },
   },
   {
     weight: 0,
     attribute: 'ViewCode',
     constraint: {
-      doesNotEqual: 'SCT:399162004',
+      doesNotInclude: ccViewCodes,
     },
     required: true,
   },
@@ -116,13 +121,13 @@ const RMLOSeriesMatchingRules = [
     weight: 10,
     attribute: 'ViewCode',
     constraint: {
-      contains: 'SCT:399368009',
+      includes: mloViewCodes,
     },
   },
   {
     attribute: 'ViewCode',
     constraint: {
-      doesNotEqual: 'SCT:399162004',
+      doesNotInclude: ccViewCodes,
     },
     required: true,
   },
