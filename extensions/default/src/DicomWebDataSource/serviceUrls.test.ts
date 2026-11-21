@@ -140,4 +140,49 @@ describe('DicomWebDataSource service URLs', () => {
       'https://server.com/wadors/org1/studies/1.2.3/series/4.5.6/metadata'
     );
   });
+  it('transforms only study-search parameters after wildcarding', async () => {
+    const transform = jest.fn((params, context) => {
+      expect(context.searchParams.patientName).toBe('righi halima');
+      return Object.fromEntries(
+        Object.entries(params).map(([key, value]) => [
+          key,
+          ['PatientName', 'StudyDescription'].includes(key) && typeof value === 'string'
+            ? value.toUpperCase().replace(/\s+/g, '*')
+            : value,
+        ])
+      );
+    });
+    const { dataSource, client } = initDataSource({
+      qidoRoot: 'https://server.com/qidors',
+      supportsWildcard: true,
+      qidoStudySearchParamsTransform: transform,
+    });
+    client.searchForStudies = jest.fn().mockResolvedValue([]);
+    client.searchForSeries = jest.fn().mockResolvedValue([]);
+    await dataSource.query.studies.search({
+      patientName: 'righi halima',
+      studyDescription: 'chest xray',
+    });
+    expect(client.searchForStudies.mock.calls[0][0].queryParams).toMatchObject({
+      PatientName: '*RIGHI*HALIMA*',
+      StudyDescription: '*CHEST*XRAY*',
+    });
+    await dataSource.query.series.search('1.2.3');
+    expect(transform).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the default study-search parameters unchanged', async () => {
+    const { dataSource, client } = initDataSource({
+      qidoRoot: 'https://server.com/qidors',
+      supportsWildcard: true,
+    });
+    client.searchForStudies = jest.fn().mockResolvedValue([]);
+    await dataSource.query.studies.search({ patientName: 'halima' });
+    expect(client.searchForStudies.mock.calls[0][0].queryParams).toMatchObject({
+      PatientName: '*halima*',
+      fuzzymatching: false,
+      limit: 101,
+      offset: 0,
+    });
+  });
 });
