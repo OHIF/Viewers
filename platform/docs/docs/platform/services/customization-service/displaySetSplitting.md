@@ -146,7 +146,7 @@ spec over `{ displaySetRules, displaySetRuleOrder }`, the same keys as the
 `useMetadataDisplaySet` customization. The build copies each file to
 `customizations/split/optional/<id>.jsonc`, and wraps it in a module that
 requires `split/enableNewSplit` and applies the file to `useMetadataDisplaySet`
-(`platform/app/.webpack/optionalSplitRulesCopyPattern.js`):
+(`platform/app/.rspack/optionalSplitRulesCopyPattern.js`):
 
 ```jsonc
 { "requires": ["split/enableNewSplit"], "global": { "useMetadataDisplaySet": <the file> } }

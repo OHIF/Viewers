@@ -1,6 +1,7 @@
 {
   "name": "@ohif/extension-ultrasound-pleura-bline",
-  "version": "3.14.0-beta.90",
+  "version": "3.14.0-beta.102",
+  "private": true,
   "description": "",
   "author": "Rodrigo Basilio",
   "license": "MIT",
@@ -19,9 +20,9 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development rspack build --config .webpack/webpack.dev.js --watch",
+    "dev": "cross-env NODE_ENV=development rspack build --config .rspack/rspack.dev.js --watch",
     "dev:my-extension": "pnpm run dev",
-    "build": "cross-env NODE_ENV=production rspack build --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package": "pnpm run build",
     "start": "pnpm run dev"
   },
@@ -35,8 +36,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@cornerstonejs/core": "5.18.0",
-    "@cornerstonejs/tools": "5.18.0",
+    "@cornerstonejs/core": "5.18.3",
+    "@cornerstonejs/tools": "5.18.3",
     "@ohif/core": "workspace:*",
     "@ohif/extension-cornerstone": "workspace:*",
     "@ohif/extension-default": "workspace:*",
