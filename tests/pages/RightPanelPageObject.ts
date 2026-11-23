@@ -1,5 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 
+import { waitForActiveViewportDisplaySet } from '../utils/waitForActiveViewportDisplaySet';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
 /** The segmentation selector (dropdown) returned by the segmentation panels. */
@@ -394,10 +395,7 @@ export class RightPanelPageObject {
       button,
       click: async () => {
         // "Add segmentation" silently does nothing until the active viewport has a display set.
-        await page.waitForFunction(() => {
-          const state = (window as any).services?.viewportGridService?.getState();
-          return !!state?.viewports.get(state.activeViewportId)?.displaySetInstanceUIDs?.length;
-        });
+        await waitForActiveViewportDisplaySet(page);
         await button.click();
       },
     };

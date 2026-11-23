@@ -49,6 +49,7 @@ import {
   waitForPaintToSettle,
 } from './waitForViewportsRendered';
 import { waitForViewportNotBlank } from './waitForViewportNotBlank';
+import { waitForActiveViewportDisplaySet } from './waitForActiveViewportDisplaySet';
 
 export {
   visitStudy,
@@ -96,6 +97,7 @@ export {
   waitForRenderCycleForAction,
   waitForPaintToSettle,
   waitForViewportNotBlank,
+  waitForActiveViewportDisplaySet,
   press,
   withKeyHeld,
   test,
