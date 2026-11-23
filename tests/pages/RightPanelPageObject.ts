@@ -1,6 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
+import { ViewportPageObject } from './ViewportPageObject';
 
 /** The segmentation selector (dropdown) returned by the segmentation panels. */
 export type SegmentationSelect = {
@@ -388,10 +389,13 @@ export class RightPanelPageObject {
   }
 
   private get addSegmentationButton() {
-    const button = this.page.getByTestId('addSegmentation');
+    const page = this.page;
+    const button = page.getByTestId('addSegmentation');
     return {
       button,
       click: async () => {
+        // "Add segmentation" silently does nothing until the active viewport has a display set.
+        await new ViewportPageObject(page).waitForActiveDisplaySet();
         await button.click();
       },
     };
