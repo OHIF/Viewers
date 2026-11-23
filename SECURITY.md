@@ -38,8 +38,8 @@ To help us act quickly, please include:
 
 ## What to expect
 
-- **Acknowledgement within 5 business days.** A member of the security team will reply inside the private advisory to confirm we have received your report.
-- **Assessment.** We will tell you whether we consider the report a security vulnerability in OHIF, and we may ask questions. All discussion stays in the private advisory.
+- **Acknowledgement within 5 business days.** A member of the security team will reply to confirm we have received your report, inside the private advisory or by email if that is how you reported.
+- **Assessment.** We will tell you whether we consider the report a security vulnerability in OHIF, and we may ask questions. All discussion stays private, in the advisory or over email.
 - **Coordinated disclosure.** Once a fix has been released, we publish a GitHub security advisory with a CVE identifier. We ask that you do not disclose the vulnerability publicly before then. We do not commit to a fixed disclosure deadline, but we will keep you informed of progress.
 - **Credit.** We credit reporters in the published advisory and the CVE record, unless you tell us you prefer not to be named.
 - **No bug bounty.** OHIF is an open-source project and does not offer payment for vulnerability reports.
