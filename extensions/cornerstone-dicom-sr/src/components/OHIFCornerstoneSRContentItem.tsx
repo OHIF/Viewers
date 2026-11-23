@@ -7,7 +7,9 @@ const EMPTY_TAG_VALUE = '[empty]';
 function OHIFCornerstoneSRContentItem(props) {
   const { contentItem, nodeIndexesTree, continuityOfContent } = props;
   const { ConceptNameCodeSequence } = contentItem;
-  const { CodeValue, CodeMeaning } = ConceptNameCodeSequence;
+  // Concept Name is optional on some content items (e.g. IMAGE items with a
+  // CONTAINS relationship, as written by ultrasound devices), so it may be absent.
+  const { CodeValue, CodeMeaning } = ConceptNameCodeSequence ?? {};
   const isChildFirstNode = nodeIndexesTree[nodeIndexesTree.length - 1] === 0;
   const formattedValue = formatContentItemValue(contentItem) ?? EMPTY_TAG_VALUE;
   const startWithAlphaNumCharRegEx = /^[a-zA-Z0-9]/;
@@ -42,7 +44,7 @@ function OHIFCornerstoneSRContentItem(props) {
   return (
     <>
       <div className="mb-2">
-        <span className="font-bold">{CodeMeaning}: </span>
+        {CodeMeaning && <span className="font-bold">{CodeMeaning}: </span>}
         {isFinding ? (
           <pre>{formattedValue}</pre>
         ) : (
