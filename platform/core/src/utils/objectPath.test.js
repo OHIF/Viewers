@@ -96,4 +96,29 @@ describe('objectPath', () => {
     const output = objectPath.set(searchObject, path, newValue);
     expect(output).toEqual(false);
   });
+
+  describe('set with a path that reaches a prototype', () => {
+    class Series {}
+
+    afterEach(() => {
+      delete Object.prototype.polluted;
+      delete Array.prototype.polluted;
+      delete Series.prototype.polluted;
+    });
+
+    // Each row: the target, the path, and a check that the target and the prototypes did not change.
+    test.each([
+      [{ list: [] }, 'list.__proto__.polluted', () => expect([].polluted).toBeUndefined()],
+      [new Series(), '__proto__.polluted', () => expect(new Series().polluted).toBeUndefined()],
+      [{}, '__proto__', o => expect(Object.getPrototypeOf(o)).toBe(Object.prototype)],
+      [{}, 'constructor', o => expect(o.constructor).toBe(Object)],
+      [{}, 'missing.__proto__.polluted', o => expect(o).toEqual({})],
+      [{}, 'missing.constructor', o => expect(o).toEqual({})],
+      [{}, '__proto__.polluted', () => expect({}.polluted).toBeUndefined()],
+      [{}, 'constructor.prototype.polluted', () => expect({}.polluted).toBeUndefined()],
+    ])('should return false and change nothing for %o with path %s', (target, path, check) => {
+      expect(objectPath.set(target, path, { polluted: 'MOCK_VALUE' })).toBe(false);
+      check(target);
+    });
+  });
 });

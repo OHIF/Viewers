@@ -10,7 +10,10 @@ services:
       context: ./../../../../
       # Relative to context
       dockerfile: ./platform/app/.recipes/Nginx-Orthanc/dockerfile
-    image: webapp:latest
+    # A recipe-specific tag. The other recipes share the generic webapp:latest,
+    # so a stale build from one of them would otherwise be reused here
+    # (docker compose up does not rebuild an image that already exists).
+    image: ohif-nginx-orthanc:local
     container_name: ohif_orthanc
     volumes:
       # Nginx config

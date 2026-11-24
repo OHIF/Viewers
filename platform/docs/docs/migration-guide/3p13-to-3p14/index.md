@@ -113,4 +113,26 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `extendDisplaySet`, and a rule names it. Otherwise its series shows as an unsupported display
   set.
 
+- **[Build tooling](./build-tooling.md)** — the `.webpack/` config directories
+  are renamed `.rspack/`, and the app's production build and every dev server run
+  through one root `rsbuild.config.ts`. `webpack.pwa.js`, `rspack serve` and
+  `build:legacy` are gone; `dev:fast` is now an alias of `dev`.
+
+- **[OHIF CLI removal](./cli-removal.md)** — `platform/cli` and the root `cli`
+  script are gone. Each CLI command maps to a replacement: `pnpm create ohif` to
+  scaffold, `pnpm run plugin` or `platform/app/pluginConfig.json` to add, link or
+  remove plugins, and `create-ohif migrate` to port a CLI-era package.
+
+- **[Published packages](./published-packages.md)** — npm releases narrow to
+  `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default`,
+  `@ohif/extension-cornerstone`, `create-ohif` and `@ohif/app`. The
+  other extensions and modes, and `@ohif/ui`, are no longer published; their
+  3.13.x releases stay on npm.
+
+- **[Dynamic config URLs](./dynamic-config.md)** — `dangerouslyUseDynamicConfig`
+  now requires an `origins` list or a `regex` that starts with `^`, and checks
+  the absolute URL the browser will fetch. A deployment with `regex: /.*/` or
+  `regex: /hospital\.com/` has its `configUrl` refused after the upgrade, and the
+  viewer starts with its built-in configuration.
+
 <DocCardList />
