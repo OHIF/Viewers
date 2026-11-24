@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 import { useCustomization } from '@ohif/core';
@@ -66,7 +67,8 @@ function normalizeDisplay(value: unknown): FidelityIndicatorDisplay {
  * Consumes Cornerstone3D `VIEWPORT_FIDELITY_CHANGED` / `getFidelityState()`.
  * Glyph is a fixed yellow warning triangle; transient vs standing is carried by
  * label / aria / tooltip. `cornerstone.fidelityIndicator.display`:
- * `icon` | `text` | `both` (default `icon`).
+ * `icon` | `text` | `both` (default `icon`). The mode is also a class on the
+ * button (`ohif-fidelity--icon` etc.); FidelityIndicator.css uses it for placement.
  */
 function FidelityIndicator({
   viewportId,
@@ -107,7 +109,9 @@ function FidelityIndicator({
         <button
           type="button"
           data-cy="fidelity-indicator"
-          className={`ohif-fidelity${isIdle ? ' ohif-fidelity--idle' : ''}`}
+          className={classNames('ohif-fidelity', `ohif-fidelity--${display}`, {
+            'ohif-fidelity--idle': isIdle,
+          })}
           aria-label={t(ariaKeyOf(ariaPresentation))}
           onMouseEnter={revealRecovered}
           onMouseLeave={hideRecoveredReveal}

@@ -43,11 +43,14 @@ function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCo
           />
         </ViewportActionCorners.TopMiddle>
         <ViewportActionCorners.TopRight>
-          <Toolbar
-            buttonSection="viewportActionMenu.topRight"
-            viewportId={viewportId}
-            location={ButtonLocation.TopRight}
-          />
+          {/* Named so FidelityIndicator.css can move this row aside while the indicator shows. */}
+          <div className="ohif-action-corner-top-right flex items-center">
+            <Toolbar
+              buttonSection="viewportActionMenu.topRight"
+              viewportId={viewportId}
+              location={ButtonLocation.TopRight}
+            />
+          </div>
         </ViewportActionCorners.TopRight>
         <ViewportActionCorners.LeftMiddle>
           <Toolbar

@@ -352,9 +352,10 @@ clinician label, or both (key: `cornerstone.fidelityIndicator.display`).
 | `both` | Glyph and OHIF label |
 
 To remove the indicator entirely, clear or override the FidelityIndicator entry on
-`viewportOverlay.topLeft` rather than this key — that removes disclosure of substituted
-pixels (`VF-CFG`). Default placement is top-left, after the orientation and data-overlay
-action icons.
+`viewportOverlay.topRight` rather than this key — that removes disclosure of substituted
+pixels (`VF-CFG`). Default placement is the top-right corner. With `icon`, the glyph sits
+level with the viewport action corners, and the top-right action items move aside while
+it shows. With `text` or `both`, the indicator is a line of the top-right overlay text.
 
 ```js
 window.config = {

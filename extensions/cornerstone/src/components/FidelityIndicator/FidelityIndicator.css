@@ -53,3 +53,46 @@
 .ohif-fidelity--idle .ohif-fidelity__label {
   display: none;
 }
+
+/*
+ * Placement (viewportOverlay.topRight).
+ *
+ * Icon mode: the indicator sits in the top-right corner, level with the
+ * viewport action corners (top 4px). The top-right overlay starts at the
+ * overlay text band (2.15rem), so the slot is lifted by the difference. It is
+ * absolute, so it adds no line to the overlay text.
+ *
+ * Text and both modes: the indicator is a line of overlay text. The slot stays
+ * in the flow of the top-right overlay and needs no rule here.
+ */
+.viewport-overlay .ohif-fidelity-slot:has(.ohif-fidelity--icon) {
+  position: absolute;
+  top: calc(4px - 2.15rem);
+  right: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * The indicator takes space only while it shows. The viewport action corners
+ * are drawn over the overlay and are anchored to the same corner, so while the
+ * icon shows, the top-right action row moves aside by the width of the icon.
+ * The idle state (recovered, withdrawn) takes no space, so the row closes up
+ * again after the recovered hold. Nothing moves when the row has no items.
+ */
+div:has(> .ohif-action-corner-top-right) {
+  transition: margin-right 160ms ease;
+}
+
+.viewport-wrapper:has(.ohif-fidelity--icon:not(.ohif-fidelity--idle))
+  ~ *
+  div:has(> .ohif-action-corner-top-right) {
+  margin-right: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  div:has(> .ohif-action-corner-top-right) {
+    transition: none;
+  }
+}

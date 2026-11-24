@@ -7,7 +7,7 @@
  *
  * Aria-label and tooltip always carry the words. Removing the indicator
  * entirely is done by clearing or overriding the FidelityIndicator entry on
- * `viewportOverlay.topLeft` (VF-CFG-1), not with this key.
+ * `viewportOverlay.topRight` (VF-CFG-1), not with this key.
  */
 export type FidelityIndicatorDisplay = 'icon' | 'text' | 'both';
 
