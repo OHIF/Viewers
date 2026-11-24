@@ -528,8 +528,20 @@ export class ViewportPageObject {
   }
 
   /**
-   * Waits until the active viewport has a display set with image ids. The grid gets the
-   * display set UID before the viewport load sets `displaySet.imageIds`.
+   * Waits until the active viewport has a display set with image ids.
+   *
+   * A display set does not get `imageIds` when it is made: `makeImageSetDisplaySet`
+   * computes the ids but does not store them. `CornerstoneCacheService` sets
+   * `displaySet.imageIds` only when the viewport component mounts and builds its
+   * viewport data. The order is:
+   *
+   * 1. The hanging protocol puts the display set UID in the viewport grid state.
+   * 2. The viewport component mounts and calls `createViewportData` (async).
+   * 3. `CornerstoneCacheService` sets `displaySet.imageIds`.
+   *
+   * Between steps 1 and 3, "Add segmentation" throws in `createAndCacheDerivedImages`,
+   * because `_createSegmentationForDisplaySet` reads the undefined `imageIds`. A wait on
+   * the UID alone stops at step 1, so this wait also checks `imageIds`.
    */
   async waitForActiveDisplaySet(): Promise<void> {
     await this.page.waitForFunction(() => {
