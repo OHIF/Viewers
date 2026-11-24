@@ -527,11 +527,16 @@ export class ViewportPageObject {
     return this.viewportPageObjectFactory(viewport);
   }
 
-  /** Waits until the active viewport in the viewport grid has at least one display set. */
+  /**
+   * Waits until the active viewport has a display set with image ids. The grid gets the
+   * display set UID before the viewport load sets `displaySet.imageIds`.
+   */
   async waitForActiveDisplaySet(): Promise<void> {
     await this.page.waitForFunction(() => {
-      const state = (window as any).services?.viewportGridService?.getState();
-      return !!state?.viewports.get(state.activeViewportId)?.displaySetInstanceUIDs?.length;
+      const services = (window as any).services;
+      const state = services?.viewportGridService?.getState();
+      const uid = state?.viewports.get(state.activeViewportId)?.displaySetInstanceUIDs?.[0];
+      return !!uid && !!services.displaySetService.getDisplaySetByUID(uid)?.imageIds?.length;
     });
   }
 
