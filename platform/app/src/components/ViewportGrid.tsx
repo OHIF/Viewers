@@ -202,7 +202,8 @@ function ViewerViewportGrid(props: withAppTypes) {
       const { component: ViewportComponent } = _getViewportComponent(
         displaySets,
         viewportComponents,
-        uiNotificationService
+        uiNotificationService,
+        customizationService
       );
 
       // look inside displaySets to see if they need reRendering
@@ -316,9 +317,19 @@ function ViewerViewportGrid(props: withAppTypes) {
   );
 }
 
-function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
+function _getViewportComponent(
+  displaySets,
+  viewportComponents,
+  uiNotificationService,
+  customizationService
+) {
   if (!displaySets || !displaySets.length) {
-    return { component: EmptyViewport, isReferenceViewable: () => false };
+    // An extension can render viewports that have no display set, e.g. to prompt for a series
+    const CustomEmptyViewport = customizationService.getCustomization('viewportGrid.emptyViewport');
+    return {
+      component: CustomEmptyViewport || EmptyViewport,
+      isReferenceViewable: () => false,
+    };
   }
 
   // Todo: Do we have a viewport that has two different SOPClassHandlerIds?
