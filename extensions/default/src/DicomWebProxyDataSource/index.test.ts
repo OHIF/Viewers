@@ -12,7 +12,7 @@ jest.mock('../utils/secureConfigFetch', () => ({
 }));
 
 describe('DicomWebProxyDataSource retrieve', () => {
-  it('forwards prefetchInstanceFrames, so a multiframe SEG loads as one Part 10 instance', async () => {
+  it('forwards the retrieve methods that loaders call to the delegate', async () => {
     (fetchConfigJson as jest.Mock).mockResolvedValue({
       servers: {
         dicomWeb: [{ name: 'fetched', qidoRoot: '/dicomweb', wadoRoot: '/dicomweb' }],
@@ -27,5 +27,8 @@ describe('DicomWebProxyDataSource retrieve', () => {
 
     // The delegate answers a request it cannot serve with its no-op result.
     await expect(prefetch.done).resolves.toBe(false);
+    // RT and SR loaders call bulkDataURI; the microscopy handler needs the client.
+    expect(proxy.retrieve.bulkDataURI).toEqual(expect.any(Function));
+    expect(proxy.retrieve.getWadoDicomWebClient()).toBeDefined();
   });
 });

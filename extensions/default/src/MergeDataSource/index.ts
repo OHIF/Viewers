@@ -142,7 +142,12 @@ export const callForDefaultDataSource = ({
 };
 
 /**
- * Calls the data source specified by the RetrieveAETitle of the given display set.
+ * Calls the data source specified by the RetrieveAETitle of the series that the
+ * first argument belongs to. The first argument is either a display set, or an
+ * object with an `instance` (as for `getImageIdsForInstance` and
+ * `retrieve.prefetchInstanceFrames`). A series with no RetrieveAETitle uses the
+ * default data source. A data source that does not implement `path` returns
+ * `undefined`.
  * @typedef {Object} CallByRetrieveAETitleOptions
  * @property {string} path - The path of the method to call on the data source.
  * @property {any[]} args - The arguments to pass to the method.
@@ -155,15 +160,14 @@ export const callByRetrieveAETitle = ({
   defaultDataSourceName,
   extensionManager,
 }: CallByRetrieveAETitleOptions) => {
-  const [displaySet] = args;
-  const seriesMetadata = DicomMetadataStore.getSeries(
-    displaySet.StudyInstanceUID,
-    displaySet.SeriesInstanceUID
-  );
+  type SeriesRef = { StudyInstanceUID?: string; SeriesInstanceUID?: string };
+  const [arg] = args as [(SeriesRef & { instance?: SeriesRef }) | undefined];
+  const { StudyInstanceUID, SeriesInstanceUID } = arg?.instance ?? arg ?? {};
+  const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
   const [dataSource] = extensionManager.getDataSources(
-    seriesMetadata.RetrieveAETitle || defaultDataSourceName
+    seriesMetadata?.RetrieveAETitle || defaultDataSourceName
   );
-  return dataSource[path](...args);
+  return get(dataSource, path)?.apply(dataSource, args);
 };
 
 function createMergeDataSourceApi(
@@ -227,13 +231,11 @@ function createMergeDataSourceApi(
           extensionManager,
         }),
       bulkDataURI: (...args: unknown[]) =>
-        callForAllDataSourcesAsync({
-          mergeMap,
+        callByRetrieveAETitle({
           path: 'retrieve.bulkDataURI',
           args,
-          extensionManager,
-          dataSourceNames,
           defaultDataSourceName,
+          extensionManager,
         }),
       directURL: (...args: unknown[]) =>
         callForDefaultDataSource({
@@ -260,6 +262,20 @@ function createMergeDataSourceApi(
           url: (url as string | undefined | null) || null,
         }));
       },
+      getWadoDicomWebClient: (...args: unknown[]) =>
+        callForDefaultDataSource({
+          path: 'retrieve.getWadoDicomWebClient',
+          args,
+          defaultDataSourceName,
+          extensionManager,
+        }),
+      prefetchInstanceFrames: (...args: unknown[]) =>
+        callByRetrieveAETitle({
+          path: 'retrieve.prefetchInstanceFrames',
+          args,
+          defaultDataSourceName,
+          extensionManager,
+        }),
       series: {
         metadata: (...args: unknown[]) =>
           callForAllDataSourcesAsync({
@@ -298,7 +314,7 @@ function createMergeDataSourceApi(
       }),
     getImageIdsForInstance: (...args: unknown[]) =>
       callByRetrieveAETitle({
-        path: 'getImageIdsForDisplaySet',
+        path: 'getImageIdsForInstance',
         args,
         defaultDataSourceName,
         extensionManager,
