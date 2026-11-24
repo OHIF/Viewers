@@ -69,6 +69,7 @@
     "i18next": "19.9.2",
     "i18next-browser-languagedetector": "3.1.1",
     "lodash.isequal": "4.5.0",
+    "loglevel": "1.9.2",
     "oidc-client": "1.11.5",
     "oidc-client-ts": "3.3.0",
     "query-string": "10.0.0",

@@ -1635,6 +1635,9 @@ importers:
       lodash.isequal:
         specifier: 4.5.0
         version: 4.5.0
+      loglevel:
+        specifier: 1.9.2
+        version: 1.9.2
       oidc-client:
         specifier: 1.11.5
         version: 1.11.5
