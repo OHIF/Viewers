@@ -130,4 +130,11 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `regex: /hospital\.com/` has its `configUrl` refused after the upgrade, and the
   viewer starts with its built-in configuration.
 
+- **[VOI LUT Function](./voi-lut-function.md)** — the window level overlay shows
+  `Exact`, `Sigmoid` or `VOI LUT` before `W:` for a non-linear function or a VOI
+  LUT Sequence. A LINEAR_EXACT window of W 400 / L 40 now reads W 400 / L 40, not
+  W 401 / L 41. Code that converts between a range and a window must pass the VOI
+  LUT Function as the third parameter of `toWindowLevel` and `toLowHighRange`.
+  `useViewportRendering` returns `VOILUTFunction` and `voiLUTSequenceApplied`.
+
 <DocCardList />
