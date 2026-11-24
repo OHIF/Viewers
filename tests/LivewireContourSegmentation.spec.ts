@@ -6,7 +6,6 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForViewportsRendered,
   withKeyHeld,
 } from './utils';
 
@@ -108,7 +107,6 @@ test('should keep a completed Livewire contour segmentation after navigating awa
 
   // Navigate away: the contour only renders on the slice it was drawn on.
   await activeViewport.sliceNavigation.toLastSlice();
-  await waitForViewportsRendered(page);
   await expect(paths, 'Expected no contour paths on the last slice').toHaveCount(0);
 
   // Clicking Segment 1 activates it and jumps the viewport back to its contour.

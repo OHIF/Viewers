@@ -1,0 +1,7 @@
+// GPU settings preset low: texture edge 256, 2 GB, for a weak integrated GPU.
+// Load it with `?customization=gpu/low`. See specificCustomizations.md.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "low"
+  }
+}

@@ -1,0 +1,119 @@
+---
+sidebar_position: 9
+sidebar_label: Extension Gallery
+title: OHIF Extension Gallery
+summary: A curated list of published OHIF extensions and modes, how to discover more on npm with the ohif-extension / ohif-mode keywords, and how to submit your own package by opening a pull request against the gallery data file.
+---
+
+# OHIF Extension Gallery
+
+This page lists published OHIF extensions and modes that follow the current
+plugin contract. Use it to discover packages you can install into a viewer, and
+as the entry point for listing your own.
+
+## What qualifies
+
+An entry in the gallery is a package published to npm that satisfies the plugin
+contract:
+
+- It ships a **contract v1 UMD build** whose default export is the extension or
+  mode object (see [Building with an Agent](./building-with-agents.md) for the
+  normative contract).
+- Its **id equals its package name** — the string it registers itself under is
+  identical to the `name` field in its `package.json`.
+- It carries the discovery keyword **`ohif-extension`** (for extensions) or
+  **`ohif-mode`** (for modes) in `package.json`.
+
+Listing here is **curation, not certification**. Inclusion means the entry met
+the review checklist below at submission time; it is not an endorsement, a
+compatibility guarantee, or a maintenance commitment by OHIF.
+
+## Curated list
+
+import gallery from '@site/src/data/extension-gallery.json';
+
+<table>
+  <thead><tr><th>Package</th><th>Type</th><th>Modules</th><th>Host range</th><th>Maintainer</th><th>Links</th></tr></thead>
+  <tbody>
+    {gallery.entries.map(e => (
+      <tr key={e.name}>
+        <td><a href={e.links.npm}><code>{e.name}</code></a></td>
+        <td>{e.type}</td>
+        <td>{e.modules.join(', ')}</td>
+        <td><code>{e.hostRange}</code></td>
+        <td><a href={e.maintainer.url}>{e.maintainer.name}</a></td>
+        <td><a href={e.links.repository}>repo</a></td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+The **Host range** column is the `@ohif/core` semver range the maintainer tested
+the package against. **Modules** lists the module types the package contributes.
+
+## Search npm yourself
+
+The gallery is curated and intentionally small. To find every package that
+declares the discovery keyword — including ones not listed here — query npm
+directly. This is the replacement for the removed `cli search` command, which
+queried the same npm keyword endpoints.
+
+From a terminal:
+
+```bash
+npm search ohif-extension
+npm search ohif-mode
+```
+
+Or browse the npm registry directly:
+
+- [npmjs.com/search?q=keywords:ohif-extension](https://www.npmjs.com/search?q=keywords:ohif-extension)
+- [npmjs.com/search?q=keywords:ohif-mode](https://www.npmjs.com/search?q=keywords:ohif-mode)
+
+If you already have packages installed in a Viewers workspace, `pnpm plugin
+doctor` reports any installed package that carries the `ohif-extension` /
+`ohif-mode` keyword but is not declared in your plugin configuration.
+
+## Submit your extension
+
+To add your package, open a pull request that edits
+[`platform/docs/src/data/extension-gallery.json`](https://github.com/OHIF/Viewers/blob/master/platform/docs/src/data/extension-gallery.json)
+**and nothing else**. Your entry must validate against the
+[published schema](https://docs.ohif.org/schemas/extension-gallery.schema.json);
+the docs build fails fast if it does not.
+
+An entry looks like this:
+
+```json
+{
+  "name": "@acme/extension-foo",
+  "type": "extension",
+  "description": "One sentence, 200 characters or fewer.",
+  "maintainer": { "name": "Acme Imaging", "url": "https://github.com/acme" },
+  "modules": ["panelModule", "commandsModule"],
+  "hostRange": "^3.13.0",
+  "links": {
+    "npm": "https://www.npmjs.com/package/@acme/extension-foo",
+    "repository": "https://github.com/acme/extension-foo"
+  }
+}
+```
+
+Reviewers check that:
+
+- The package is **public on npm**.
+- The **repository is public**.
+- `hostRange` is the **tested `@ohif/core` semver range** for the package.
+- The package carries the **`ohif-extension`** or **`ohif-mode`** keyword.
+- The **id equals the package name** (`name` here matches the registered id).
+
+Again: acceptance is curation, not certification.
+
+## Related
+
+- [Building with an Agent](./building-with-agents.md) — the normative plugin
+  contract every listed package must follow.
+- [CLI-era extensions → 2026 contract](../../migration-guide/cli-era-extensions.md)
+  — porting an older extension or mode to the current contract.
+- [Create an Extension or Mode](../../development/create-ohif.md) — scaffold a
+  new package that starts out gallery-ready.

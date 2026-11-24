@@ -1,5 +1,7 @@
 import { Locator } from 'playwright';
 
+import type { MouseButton } from './mouseUtils';
+
 /**
  * Simulates a continuous drag along a multi-point path on an element, using
  * coordinates normalized to the element's bounding box.
@@ -24,7 +26,7 @@ export async function simulateNormalizedPathDragOnElement({
 }: {
   locator: Locator;
   path: { x: number; y: number }[];
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   delay?: number;
   steps?: number;
   mouseUp?: boolean;
@@ -88,7 +90,7 @@ export async function simulateNormalizedDragOnElement({
   locator: Locator;
   start: { x: number; y: number };
   end: { x: number; y: number };
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   delay?: number;
   steps?: number;
   mouseUp?: boolean;

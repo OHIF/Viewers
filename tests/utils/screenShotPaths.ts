@@ -106,6 +106,7 @@ const screenShotPaths = {
     disjointContoursSeparate: 'disjointContoursSeparate.png',
     overlappingContoursMerged: 'overlappingContoursMerged.png',
     overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    contourWithHole: 'contourWithHole.png',
     overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
     overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
@@ -154,6 +155,14 @@ const screenShotPaths = {
     srPostHydration: 'srPostHydration.png',
     srPreHydration: 'srPreHydration.png',
     srJumpToMeasurement: 'srJumpToMeasurement.png',
+  },
+  segAcrossViewportTypes: {
+    stackBeforeMPR: 'segAcrossViewportTypes-stackBeforeMPR.png',
+    mprFromStack: 'segAcrossViewportTypes-mprFromStack.png',
+    oneUpAfterMPR: 'segAcrossViewportTypes-oneUpAfterMPR.png',
+    mprAfter3D: 'segAcrossViewportTypes-mprAfter3D.png',
+    stackAfterColorChange: 'segAcrossViewportTypes-stackAfterColorChange.png',
+    mprAfterColorChange: 'segAcrossViewportTypes-mprAfterColorChange.png',
   },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
@@ -256,6 +265,7 @@ const screenShotPaths = {
   },
   contourSmoothOperation: {
     smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+    removePointsBigSphereResult: 'removePointsBigSphereResult.png',
   },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',

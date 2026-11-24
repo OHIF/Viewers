@@ -1,0 +1,9 @@
+// GPU settings preset high-texture-4096: texture edge 4096, 32 GB. For testing only, not production.
+// It is the no-reduction control now, and the test case for large-texture devices once the
+// automatic preset is re-implemented.
+// Load it with `?customization=gpu/high-texture-4096`. See specificCustomizations.md.
+{
+  "bootstrap": {
+    "cornerstone.gpuSettingsPreset": "high-texture-4096"
+  }
+}
