@@ -173,6 +173,17 @@ declare global {
       useCPURendering?: boolean;
       strictZSpacingForVolumeViewport?: boolean;
       /**
+       * Which lossy downsampling Cornerstone3D may use. An absent kind keeps
+       * the Cornerstone3D default: `final` off, `interactive` and
+       * `interleavedLoading` on. The `cornerstone.gpuSettingsPreset`
+       * customization turns `final` on.
+       */
+      lossyDownsampling?: {
+        final?: boolean;
+        interactive?: boolean;
+        interleavedLoading?: boolean;
+      };
+      /**
        * Routes legacy cornerstone viewport types (STACK / ORTHOGRAPHIC / VOLUME_3D / etc.)
        * through the new GenericViewport-backed render paths while preserving the legacy
        * public API via compatibility adapters. Maps to cornerstone
@@ -255,7 +266,19 @@ declare global {
       httpErrorHandler?: (error: Error) => void;
       dangerouslyUseDynamicConfig?: {
         enabled: boolean;
-        regex: RegExp;
+        /**
+         * Origins allowed to serve the `?configUrl=` document, compared for
+         * equality against `new URL(configUrl).origin`. Preferred over `regex`.
+         */
+        origins?: string[];
+        /**
+         * Pattern matched against the RESOLVED absolute config URL. MUST be
+         * anchored (start with `^`) or the load is refused — matching is
+         * unanchored, so an unanchored pattern is also satisfied by a hostile
+         * URL's path or query string. Use `/^/` to knowingly accept every URL.
+         * At least one of `origins` / `regex` is required when `enabled`.
+         */
+        regex?: RegExp | string;
       };
       onConfiguration?: (
         dicomWebConfig: Record<string, unknown>,

@@ -1,0 +1,36 @@
+{
+  "name": "create-ohif",
+  "version": "3.14.0-beta.103",
+  "description": "Scaffold OHIF Viewer extensions and modes",
+  "type": "module",
+  "license": "MIT",
+  "author": "OHIF",
+  "repository": "OHIF/Viewers",
+  "keywords": [
+    "ohif",
+    "create",
+    "scaffold"
+  ],
+  "bin": {
+    "create-ohif": "bin/create-ohif.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "bin",
+    "templates",
+    "host-shared-majors.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\"",
+    "test:unit:ci": "node --test \"tests/*.test.mjs\""
+  },
+  "dependencies": {
+    "@clack/prompts": "0.11.0"
+  }
+}

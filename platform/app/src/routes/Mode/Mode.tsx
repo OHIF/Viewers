@@ -9,6 +9,10 @@ import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import loadModules from '../../pluginImports';
+import {
+  recordRegistrationError,
+  surfaceRuntimeExtensionFailures,
+} from '../../runtimeExtensionLoader';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
@@ -147,25 +151,37 @@ export default function ModeRoute({
 
   useEffect(() => {
     const loadExtensions = async () => {
-      const loadedExtensions = await loadModules(Object.keys(extensions));
-      for (const extension of loadedExtensions) {
-        const { id: extensionId } = extension;
-        if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
-          await extensionManager.registerExtension(extension);
+      try {
+        const loadedExtensions = await loadModules(Object.keys(extensions));
+        for (const extension of loadedExtensions) {
+          if (!extension) {
+            continue; // runtime load failure — already audited by the loader
+          }
+          const { id: extensionId } = extension;
+          if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
+            try {
+              await extensionManager.registerExtension(extension);
+            } catch (error) {
+              console.error(`OHIF: extension "${extensionId}" failed to register`, error);
+              recordRegistrationError(extensionId, error, 'extension');
+            }
+          }
         }
-      }
 
-      // Mode dependency extensions register their customization modules here,
-      // but `registerExtension` does not merge them into the customization
-      // service — that otherwise only happens later in
-      // `extensionManager.onModeEnter`. Merge them now so anything that runs
-      // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
-      // the defaults these extensions provide.
-      // `init` is idempotent — each extension module is merged at most once.
-      customizationService.init(extensionManager);
+        // Mode dependency extensions register their customization modules here,
+        // but `registerExtension` does not merge them into the customization
+        // service — that otherwise only happens later in
+        // `extensionManager.onModeEnter`. Merge them now so anything that runs
+        // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
+        // the defaults these extensions provide.
+        // `init` is idempotent — each extension module is merged at most once.
+        customizationService.init(extensionManager);
 
-      if (isMounted.current) {
-        setExtensionDependenciesLoaded(true);
+        if (isMounted.current) {
+          setExtensionDependenciesLoaded(true);
+        }
+      } finally {
+        surfaceRuntimeExtensionFailures(servicesManager.services.uiNotificationService);
       }
     };
 
@@ -379,14 +395,14 @@ export default function ModeRoute({
         : hangingProtocol;
 
       // Determine the index of the stageId if the hangingProtocolIdToUse is defined
-      const stageIndex = Array.isArray(hangingProtocolIdToUse)
-        ? -1
-        : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
-            stageId: runTimeStageId || undefined,
-          });
-      // Ensure that the stage index is never negative
-      // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
-      const stageIndexToUse = Math.max(0, stageIndex);
+      const stageIndex =
+        runTimeStageId && !Array.isArray(hangingProtocolIdToUse)
+          ? hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
+              stageId: runTimeStageId,
+            })
+          : -1;
+      // With no stage, or an unknown stage, the protocol opens its first applicable stage
+      const stageIndexToUse = stageIndex >= 0 ? stageIndex : undefined;
 
       // Sets the active hanging protocols - if hangingProtocol is undefined,
       // resets to default.  Done before the onModeEnter to allow the onModeEnter

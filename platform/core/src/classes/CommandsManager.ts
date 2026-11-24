@@ -1,4 +1,5 @@
 import log from '../log.js';
+import ObjectPath from '../utils/objectPath';
 import { Command, Commands, ComplexCommand } from '../types/Command';
 
 export type RunInput = Command | Commands | Command[] | string | undefined;
@@ -99,9 +100,7 @@ export class CommandsManager {
     }
 
     // Validate and restrict keys to prevent prototype pollution
-    const isSafeKey = key => {
-      return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
-    };
+    const isSafeKey = key => !ObjectPath.isPrototypeKey(key) && key !== 'prototype';
 
     if (!isSafeKey(contextName) || !isSafeKey(commandName)) {
       throw new Error('Invalid key name to prevent prototype pollution');
