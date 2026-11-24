@@ -136,7 +136,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   columns.push('AnnotationType');
   values.push('Cornerstone:Probe');
 
-  mappedAnnotations.forEach(annotation => {
+  mappedAnnotations?.forEach(annotation => {
     const { value, unit } = annotation;
     columns.push(`Probe (${unit})`);
     values.push(value);

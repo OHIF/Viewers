@@ -1,15 +1,21 @@
 import guid from './guid';
 
 describe('guid', () => {
-  Math.random = jest.fn(() => 0.4677647565236618);
+  const getRandomValues = jest
+    .spyOn(crypto, 'getRandomValues')
+    .mockImplementation(array => array.fill(0x77bf));
   const guidValue = guid();
+  getRandomValues.mockRestore();
 
-  afterAll(() => {
-    jest.clearAllMocks();
+  test('should return 77bf77bf-77bf-77bf-77bf-77bf77bf77bf when crypto.getRandomValues returns 0x77bf', () => {
+    expect(guidValue).toBe('77bf77bf-77bf-77bf-77bf-77bf77bf77bf');
   });
 
-  test('should return 77bf77bf-77bf-77bf-77bf-77bf77bf77bf when the random value is fixed on 0.4677647565236618', () => {
-    expect(guidValue).toBe('77bf77bf-77bf-77bf-77bf-77bf77bf77bf');
+  test('should pad each group of four to four hexadecimal digits', () => {
+    const spy = jest.spyOn(crypto, 'getRandomValues').mockImplementation(array => array.fill(0xa));
+    const value = guid();
+    spy.mockRestore();
+    expect(value).toBe('000a000a-000a-000a-000a-000a000a000a');
   });
 
   test('should always return a guid of size 36', () => {
