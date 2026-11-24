@@ -8,6 +8,7 @@ import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
 import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
 import { VolumeLightingParams } from '../types';
+import { getVOILUTFunction, getWindowLevelReadout } from '../utils/voiLUTFunction';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
 
 interface ViewportRenderingOptions {
@@ -27,6 +28,10 @@ interface WindowLevelHook {
   viewportDisplaySets: AppTypes.DisplaySet[] | undefined;
   voiRange: { lower: number; upper: number } | undefined;
   windowLevel: { windowWidth: number; windowCenter: number } | undefined;
+  /** The VOI LUT Function in effect (undefined converts as LINEAR). */
+  VOILUTFunction: string | undefined;
+  /** True when a VOI LUT Sequence, not the window, maps the display. */
+  voiLUTSequenceApplied: boolean;
 
   // Window level functions
   setWindowLevel: (preset: {
@@ -169,7 +174,11 @@ function readPresentation(viewport, activeDisplaySetInstanceUID) {
       voiRange = adapter.getDefaultVOIRange(dataId ?? activeDisplaySetInstanceUID);
     }
 
-    return { voiRange, colormap: properties.colormap };
+    return {
+      voiRange,
+      colormap: properties.colormap,
+      VOILUTFunction: getVOILUTFunction(viewport, dataId ?? activeDisplaySetInstanceUID),
+    };
   } catch (error) {
     console.error('Error initializing VOI range:', error);
     return null;
@@ -190,6 +199,8 @@ export function useViewportRendering(
   );
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
   const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>(undefined);
+  const [VOILUTFunction, setVOILUTFunction] = useState<string | undefined>();
+  const [voiLUTSequenceApplied, setVOILUTSequenceApplied] = useState(false);
   // Viewport from service; kept in state so we can subscribe to VIEWPORT_DATA_CHANGED when null and re-run effects when it becomes available
   const [viewport, setViewport] = useState<Types.IViewport | null>(() =>
     viewportId ? (cornerstoneViewportService.getCornerstoneViewport(viewportId) ?? null) : null
@@ -349,6 +360,7 @@ export function useViewportRendering(
       return;
     }
 
+    setVOILUTFunction(presentation.VOILUTFunction);
     if (presentation.voiRange) {
       setVoiRange(presentation.voiRange);
       voiRangeRef.current = presentation.voiRange;
@@ -397,11 +409,18 @@ export function useViewportRendering(
     const element = viewport.element;
 
     const updateVOI = eventDetail => {
-      const { range } = eventDetail.detail;
+      const { range, VOILUTFunction: eventVOILUTFunction, voiLUTSequenceApplied } =
+        eventDetail.detail;
 
       if (!range) {
         return;
       }
+
+      // Keep the previous function when the event does not carry one (CPU stack).
+      if (eventVOILUTFunction) {
+        setVOILUTFunction(eventVOILUTFunction);
+      }
+      setVOILUTSequenceApplied(!!voiLUTSequenceApplied);
 
       // Check if this update is coming from our own setVOIRange or setWindowLevel call
       // If so, we already updated our state and don't need to do it again
@@ -477,7 +496,8 @@ export function useViewportRendering(
       // Update voiRange as well, to ensure immediate UI updates
       const { lower, upper } = utilities.windowLevel.toLowHighRange(
         preset.windowWidth,
-        preset.windowCenter
+        preset.windowCenter,
+        VOILUTFunction
       );
 
       const newVoiRange = { lower, upper };
@@ -497,7 +517,7 @@ export function useViewportRendering(
         });
       }
     },
-    [commandsManager, viewportId, validateActiveDisplaySet]
+    [commandsManager, viewportId, validateActiveDisplaySet, VOILUTFunction]
   );
 
   const setVOIRange = useCallback(
@@ -512,7 +532,11 @@ export function useViewportRendering(
         voiRangeRef.current = params;
         setVoiRange(params);
 
-        const windowLevel = utilities.windowLevel.toWindowLevel(params.lower, params.upper);
+        const windowLevel = utilities.windowLevel.toWindowLevel(
+          params.lower,
+          params.upper,
+          VOILUTFunction
+        );
 
         // Set window level using the command manager directly to avoid circular calls
         const displaySetInstanceUID = validateActiveDisplaySet();
@@ -527,7 +551,7 @@ export function useViewportRendering(
         });
       }
     },
-    [viewportId, commandsManager, validateActiveDisplaySet]
+    [viewportId, commandsManager, validateActiveDisplaySet, VOILUTFunction]
   );
 
   const toggleColorbar = useCallback(
@@ -777,9 +801,9 @@ export function useViewportRendering(
     setWindowLevel,
     setVOIRange,
     voiRange,
-    windowLevel: voiRange
-      ? utilities.windowLevel.toWindowLevel(voiRange?.lower, voiRange?.upper)
-      : { windowCenter: null, windowWidth: null },
+    windowLevel: getWindowLevelReadout(voiRange, VOILUTFunction),
+    VOILUTFunction,
+    voiLUTSequenceApplied,
 
     // Colorbar functions
     hasColorbar,
