@@ -394,7 +394,7 @@ export class RightPanelPageObject {
     return {
       button,
       click: async () => {
-        // "Add segmentation" silently does nothing until the active viewport has a display set.
+        // "Add segmentation" fails until the active viewport has loaded its display set.
         await new ViewportPageObject(page).waitForActiveDisplaySet();
         await button.click();
       },
