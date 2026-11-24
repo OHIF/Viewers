@@ -42,7 +42,6 @@ COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile
 # Build here
 # After install it should hopefully be stable until the local directory changes
 ENV QUICK_BUILD true
-# ENV GENERATE_SOURCEMAP=false
 # recipe: the viewer config that points the data source at the /pacs/ proxy.
 ARG APP_CONFIG=config/docker-nginx-orthanc.js
 ARG PUBLIC_URL=/
@@ -63,6 +62,9 @@ RUN pnpm run build
 # config/nginx.conf listens on 80 as root and is mounted at runtime, so it
 # skips the unprivileged hardening the published ohif/app image carries.
 FROM nginx:1.30.7-alpine
+
+# The base image is not rebuilt for each Alpine fix, so take the fixes at build time.
+RUN apk upgrade --no-cache
 
 # Create directories for logs and html content if they don't already exist
 RUN mkdir -p /var/log/nginx /var/www/html

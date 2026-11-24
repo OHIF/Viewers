@@ -195,9 +195,10 @@ The path above is for the image that the root `Dockerfile` builds. The deploymen
 as Nginx-Orthanc, serve the viewer from `/var/www/html`, the `root` in their `nginx.conf`. With a
 recipe, mount the file at `/var/www/html/app-config.js`. The recipes do not run the `entrypoint.sh`
 of the root image, so the [Environment Variable](#environment-variable) method does not apply to
-them. The [Build Default](#build-default) method does not apply either: each recipe `dockerfile`
-sets `ENV APP_CONFIG` in its build stage, and `--build-arg APP_CONFIG` does not change it. To change
-the build default of a recipe, edit the `ENV APP_CONFIG` line in the `dockerfile` of the recipe.
+them. The [Build Default](#build-default) method does apply: each recipe `dockerfile` declares
+`ARG APP_CONFIG` with that recipe's config as the default, so you can override it with
+`docker compose build --build-arg APP_CONFIG={config-path}`, or with `build.args` in the recipe's
+`docker-compose.yml`.
 :::
 
 ---

@@ -15,6 +15,24 @@ This recipe no longer ships working credential values. Before `docker compose up
   credential - it both provisions the `keycloak` database role and is what
   Keycloak uses to connect (the compose file derives `KC_DB_PASSWORD` from it),
   so there is one database password to set, not two.
+- Replace the `cookie_secret` placeholder in `config/oauth2-proxy.cfg` with a
+  random value of exactly 16, 24 or 32 characters (for example the output of
+  `openssl rand -hex 16`). oauth2-proxy signs and encrypts its session cookie
+  with this secret. The placeholder is a valid value, so oauth2-proxy starts
+  with it without a warning, but it is public: anyone could forge a session
+  cookie for a deployment that keeps it. If yours still does, replace it and
+  restart the viewer container (this signs everyone out).
+
+## Default users
+
+`config/ohif-keycloak-realm.json` creates two users in the `ohif` realm, with
+their usernames as passwords: `viewer` (password `viewer`), who can use the
+viewer, and `pacsadmin` (password `pacsadmin`), who can also open the PACS admin
+UI. After the first start, change both passwords in the Keycloak admin console
+(realm `ohif` -> Users -> the user -> Credentials -> Reset password), or delete
+the users you don't need. Editing the passwords in the realm file only helps
+before the first start: Keycloak imports the file only while the realm does
+not exist yet.
 
 ## Rotate if you deployed from an earlier checkout
 
