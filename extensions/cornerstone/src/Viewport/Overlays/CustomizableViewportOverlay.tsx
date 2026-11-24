@@ -6,7 +6,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
-import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
+import { metaData, Enums, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
@@ -422,9 +422,9 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
     >
       {label ? <span className="mr-1 shrink-0 opacity-[0.70]">{label}</span> : null}
       <span className="mr-0.5 shrink-0 opacity-[0.70]">W:</span>
-      <span className="mr-2.5 shrink-0">{windowWidth.toFixed(0)}</span>
+      <span className="mr-2.5 shrink-0">{csUtils.roundNumber(windowWidth, 5)}</span>
       <span className="mr-0.5 shrink-0 opacity-[0.70]">L:</span>
-      <span className="shrink-0">{windowCenter.toFixed(0)}</span>
+      <span className="shrink-0">{csUtils.roundNumber(windowCenter, 5)}</span>
     </div>
   );
 }
