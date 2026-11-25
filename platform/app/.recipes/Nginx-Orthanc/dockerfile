@@ -6,7 +6,7 @@
 # every COPY below is relative to the root, and the root .dockerignore applies.
 #
 # STAGE 1 IS A VERBATIM COPY of the `builder` stage in the root Dockerfile,
-# except for the two lines marked "recipe:". Keep the two in sync: when the
+# except for the lines marked "recipe:". Keep the two in sync: when the
 # root build steps change (Node version, pnpm version, install layout), copy
 # them here again. This recipe fell three years behind once (Node 20 + yarn
 # after the repo had moved to pnpm) and silently served a stale image.
@@ -41,7 +41,9 @@ COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile
 
 # Build here
 # After install it should hopefully be stable until the local directory changes
-ENV QUICK_BUILD true
+# recipe: minify, because nginx compresses these files on each request (see
+# the compressDist.sh note below), and a smaller bundle loads faster.
+ENV QUICK_BUILD false
 # recipe: the viewer config that points the data source at the /pacs/ proxy.
 ARG APP_CONFIG=config/docker-nginx-orthanc.js
 ARG PUBLIC_URL=/
