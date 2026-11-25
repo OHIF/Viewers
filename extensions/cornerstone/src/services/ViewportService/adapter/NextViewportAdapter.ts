@@ -73,10 +73,9 @@ export class NextViewportAdapter implements IViewportAdapter {
     // A named orientation (axial on an axial CT) can be the acquisition plane, so test the geometry.
     const reference = this.viewport.getViewReference?.();
     const volume = reference?.volumeId ? cache.getVolume(reference.volumeId) : undefined;
-    const { isAcquisitionPlaneNormal } = csUtils;
 
-    if (volume && reference.viewPlaneNormal && typeof isAcquisitionPlaneNormal === 'function') {
-      return isAcquisitionPlaneNormal(volume, reference.viewPlaneNormal as CoreTypes.Point3);
+    if (volume && reference.viewPlaneNormal) {
+      return csUtils.isAcquisitionPlaneNormal(volume, reference.viewPlaneNormal as CoreTypes.Point3);
     }
 
     // orientation defaults to ACQUISITION when unset on the native view state.
