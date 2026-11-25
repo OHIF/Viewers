@@ -124,7 +124,7 @@ async function undoRedoNewContour(
 
   await tool.select(rightPanelPageObject);
   await drawContour(page, viewport, tool);
-  const drawnPathD = await settledPathD(paths.first());
+  const afterDraw = await settledPathD(paths.first());
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   await mainToolbarPageObject.undo.click();
@@ -134,7 +134,7 @@ async function undoRedoNewContour(
   await mainToolbarPageObject.redo.click();
   await expect(paths, 'Expected redo to restore the contour').toHaveCount(1);
   await expect(paths.first()).toBeVisible();
-  await pollPathNear(paths.first(), drawnPathD, 'Expected redo to restore the same path');
+  await pollPathNear(paths.first(), afterDraw, 'Expected redo to restore the same path');
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 }
 
@@ -189,19 +189,19 @@ test('should undo and redo a spline control point move', async ({
 
   await SPLINE_CONTOUR.select(rightPanelPageObject);
   await drawContour(page, viewport, SPLINE_CONTOUR);
-  const drawnPathD = await settledPathD(path);
+  const afterDraw = await settledPathD(path);
 
   await viewport.normalizedDragAt(SPLINE_POINT_MOVE);
-  await expect(path, 'Expected the move to reshape it').not.toHaveAttribute('d', drawnPathD);
-  const movedPathD = await settledPathD(path);
+  await expect(path, 'Expected the move to reshape it').not.toHaveAttribute('d', afterDraw);
+  const afterMove = await settledPathD(path);
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
   await mainToolbarPageObject.undo.click();
-  await pollPathNear(path, drawnPathD, 'Expected undo to restore the drawn shape');
+  await pollPathNear(path, afterDraw, 'Expected undo to restore the drawn shape');
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
   await mainToolbarPageObject.redo.click();
-  await pollPathNear(path, movedPathD, 'Expected redo to move the point again');
+  await pollPathNear(path, afterMove, 'Expected redo to move the point again');
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 });
 
@@ -217,7 +217,7 @@ test('should undo and redo a contour segment delete', async ({
 
   await FREEHAND_CONTOUR.select(rightPanelPageObject);
   await drawContour(page, viewport, FREEHAND_CONTOUR);
-  const drawnPathD = await settledPathD(paths.first());
+  const afterDraw = await settledPathD(paths.first());
   const segmentName = await panel.nthSegment(0).title.innerText();
 
   await panel.nthSegment(0).actions.delete();
@@ -230,7 +230,7 @@ test('should undo and redo a contour segment delete', async ({
   await expect(panel.nthSegment(0).title).toHaveText(segmentName);
   await expect(paths, 'Expected undo to restore the contour').toHaveCount(1);
   await expect(paths.first()).toBeVisible();
-  await pollPathNear(paths.first(), drawnPathD, 'Expected undo to restore the same path');
+  await pollPathNear(paths.first(), afterDraw, 'Expected undo to restore the same path');
   await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
   await mainToolbarPageObject.redo.click();

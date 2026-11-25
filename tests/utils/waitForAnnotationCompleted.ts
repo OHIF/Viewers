@@ -6,40 +6,22 @@ import type { Page } from '@playwright/test';
  * annotation's undo entry, so an undo right after takes back the finished annotation.
  *
  * @param page - The Playwright page.
- * @returns `wait(timeout)`, which resolves once the event has fired and removes the listener. It
- *   rejects if the event has not fired `timeout` ms after the call (default 10000).
+ * @returns `wait()`, which resolves once the event has fired, or fails after 10 seconds.
  */
 export async function waitForAnnotationCompleted(page: Page) {
-  const completed = await page.evaluateHandle(() => {
+  const state = await page.evaluateHandle(() => {
+    const state = { completed: false };
     const { eventTarget } = (window as any).cornerstone;
     const { ANNOTATION_COMPLETED } = (window as any).cornerstoneTools.Enums.Events;
-    let onCompleted = () => {};
-    const done = new Promise<void>(resolve => {
-      onCompleted = () => resolve();
-      eventTarget.addEventListener(ANNOTATION_COMPLETED, onCompleted);
+    eventTarget.addEventListenerOnce(ANNOTATION_COMPLETED, () => {
+      state.completed = true;
     });
-    const stop = () => eventTarget.removeEventListener(ANNOTATION_COMPLETED, onCompleted);
-    done.then(stop);
-    return { done, stop };
+    return state;
   });
 
   return {
-    wait: async (timeout = 10_000) => {
-      try {
-        await completed.evaluate(({ done }, timeout) => {
-          let timer: ReturnType<typeof setTimeout>;
-          const timedOut = new Promise<void>((_, reject) => {
-            timer = setTimeout(
-              () => reject(new Error(`ANNOTATION_COMPLETED did not fire within ${timeout}ms`)),
-              timeout
-            );
-          });
-          return Promise.race([done, timedOut]).finally(() => clearTimeout(timer));
-        }, timeout);
-      } finally {
-        await completed.evaluate(({ stop }) => stop());
-        await completed.dispose();
-      }
+    wait: async () => {
+      await page.waitForFunction(state => state.completed, state, { timeout: 10_000 });
     },
   };
 }
