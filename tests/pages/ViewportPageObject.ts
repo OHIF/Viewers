@@ -96,7 +96,10 @@ export interface IViewportPageObject {
     };
   };
   pane: Locator;
-  /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
+  /**
+   * What the viewport renders: 'stack' or 'volume3d' on both the current and the new viewports.
+   * An MPR pane is 'orthographic' on the current viewports and 'volume' on the new ones.
+   */
   getViewportType: () => Promise<string | undefined>;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
@@ -500,8 +503,13 @@ export class ViewportPageObject {
       getViewportType: async () => {
         const viewportId = await this.getViewportId(viewport);
         return this.page.evaluate(
-          ({ services, viewportId }) =>
-            (services as any).cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type,
+          ({ services, viewportId }) => {
+            const csViewport = (services as any).cornerstoneViewportService.getCornerstoneViewport(
+              viewportId
+            );
+            // The new viewports have one type for stacks and volumes, so ask what they render.
+            return csViewport?.getCurrentMode?.() ?? csViewport?.type;
+          },
           { viewportId, services: await this.page.evaluateHandle('window.services') }
         );
       },
