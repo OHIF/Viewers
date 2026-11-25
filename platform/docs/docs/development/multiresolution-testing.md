@@ -306,8 +306,9 @@ failure. A later pull request will add an automatic mode that probes the device.
   `dangerouslyDisableFidelityIndicator: true` so CS3D’s `.fi-root` (z-index 1000) cannot
   cover OHIF menus. OHIF shows fidelity on `viewportOverlay.topRight` instead (#6256),
   in the top-right corner, level with the viewport action corners; the action menus
-  stay hover-gated. The indicator takes space only while it shows: the top-right
-  action items move aside for it, and close up again after it withdraws. Its position
+  stay hover-gated. The indicator takes space only in a viewport that was lossy: the
+  top-right action items move aside for it, and stay aside after it withdraws, so that
+  the hover target that re-reveals the recovered state stays reachable. Its position
   does not depend on the items of any action corner. Volume3D layouts keep
   `hideOverlays` (no StudyDate / scrollbar chrome) but still mount the fidelity
   overlay item. Placement is covered by `FidelityIndicatorPlacement.spec.ts`

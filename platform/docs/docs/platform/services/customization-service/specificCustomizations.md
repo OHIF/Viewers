@@ -354,8 +354,11 @@ clinician label, or both (key: `cornerstone.fidelityIndicator.display`).
 To remove the indicator entirely, clear or override the FidelityIndicator entry on
 `viewportOverlay.topRight` rather than this key — that removes disclosure of substituted
 pixels (`VF-CFG`). Default placement is the top-right corner. With `icon`, the glyph sits
-level with the viewport action corners, and the top-right action items move aside while
-it shows. With `text` or `both`, the indicator is a line of the top-right overlay text.
+level with the viewport action corners. In a viewport that was lossy, the top-right action
+items move aside for it. With `text` or `both`, the indicator is a line of the top-right
+overlay text. If you move the item to another `viewportOverlay.*` list, it shows as a line of
+that overlay text. A customization that replaces `viewportOverlay.topRight` must include the
+`FidelityIndicator` item again to keep the indicator.
 
 ```js
 window.config = {

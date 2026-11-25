@@ -41,8 +41,10 @@
   opacity: 0.85;
 }
 
-/* Hover target after recovered withdrew (VF-VIS-1d). */
-.ohif-fidelity--idle {
+/* Hover target after recovered withdrew (VF-VIS-1d). :empty keeps the target while
+   revealed in icon mode (no glyph); without it the hover flickers. */
+.ohif-fidelity--idle,
+.ohif-fidelity:empty {
   width: 0.75rem;
   height: 0.75rem;
   min-width: 0.75rem;
@@ -55,17 +57,12 @@
 }
 
 /*
- * Placement (viewportOverlay.topRight).
- *
- * Icon mode: the indicator sits in the top-right corner, level with the
- * viewport action corners (top 4px). The top-right overlay starts at the
- * overlay text band (2.15rem), so the slot is lifted by the difference. It is
- * absolute, so it adds no line to the overlay text.
- *
- * Text and both modes: the indicator is a line of overlay text. The slot stays
- * in the flow of the top-right overlay and needs no rule here.
+ * Icon mode in viewportOverlay.topRight: lift the slot from the text band
+ * (2.15rem) to the action-corner row (4px). Other corners and the text/both
+ * modes keep the slot in the overlay text flow.
  */
-.viewport-overlay .ohif-fidelity-slot:has(.ohif-fidelity--icon) {
+.viewport-overlay.overlay-top.right-viewport-scrollbar
+  .ohif-fidelity-slot:has(.ohif-fidelity--icon) {
   position: absolute;
   top: calc(4px - 2.15rem);
   right: 0;
@@ -75,17 +72,15 @@
 }
 
 /*
- * The indicator takes space only while it shows. The viewport action corners
- * are drawn over the overlay and are anchored to the same corner, so while the
- * icon shows, the top-right action row moves aside by the width of the icon.
- * The idle state (recovered, withdrawn) takes no space, so the row closes up
- * again after the recovered hold. Nothing moves when the row has no items.
+ * The top-right action row moves aside while the icon is in that corner, also
+ * while idle so the recovered hover target stays reachable. The row renders only
+ * on the active or hovered viewport. 24px = .ohif-fidelity__glyph width.
  */
 div:has(> .ohif-action-corner-top-right) {
   transition: margin-right 160ms ease;
 }
 
-.viewport-wrapper:has(.ohif-fidelity--icon:not(.ohif-fidelity--idle))
+.viewport-wrapper:has(.overlay-top.right-viewport-scrollbar .ohif-fidelity--icon)
   ~ *
   div:has(> .ohif-action-corner-top-right) {
   margin-right: 24px;
