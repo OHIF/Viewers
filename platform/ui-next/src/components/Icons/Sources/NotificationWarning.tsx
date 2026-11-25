@@ -16,8 +16,8 @@ export const NotificationInfo = (props: IconProps) => (
       strokeLinejoin="round"
     >
       <path
-        fill="#F3DC43"
-        stroke="#F3DC43"
+        fill="currentColor"
+        stroke="currentColor"
         d="M1.217 5.076L5.54.751c.391-.39 1.024-.39 1.415 0l4.324 4.325c.391.39.391 1.024 0 1.414l-4.324 4.325c-.39.39-1.024.39-1.415 0L1.217 6.49c-.39-.39-.39-1.023 0-1.414z"
         transform="translate(0 1)"
       />

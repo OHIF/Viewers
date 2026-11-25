@@ -43,7 +43,7 @@ describe('progressTrackingUtils', () => {
       const promises = [Promise.resolve('A'), Promise.resolve('B'), Promise.resolve('C')];
       promises.forEach(promise => void utils.waitOn(list, promise));
       return Promise.all(promises).then(() => {
-        expect(observer).toBeCalledTimes(6);
+        expect(observer).toHaveBeenCalledTimes(6);
         [
           {
             failures: 0,
@@ -83,7 +83,7 @@ describe('progressTrackingUtils', () => {
           },
         ].forEach((item, i) => {
           const result = expect.objectContaining(item);
-          expect(observer).nthCalledWith(i + 1, result, list);
+          expect(observer).toHaveBeenNthCalledWith(i + 1, result, list);
         });
         expect(utils.getOverallProgress(list)).toStrictEqual({
           failures: 0,
@@ -102,11 +102,11 @@ describe('progressTrackingUtils', () => {
       download.deferred.resolve(fakeRequest(update));
       utils.waitOn(list, processing);
       return processing.then(() => {
-        expect(update).toBeCalledTimes(4);
+        expect(update).toHaveBeenCalledTimes(4);
         [0.25, 0.5, 0.75, 1.0].forEach(
-          (value, i) => void expect(update).nthCalledWith(i + 1, value)
+          (value, i) => void expect(update).toHaveBeenNthCalledWith(i + 1, value)
         );
-        expect(observer).toBeCalledTimes(7);
+        expect(observer).toHaveBeenCalledTimes(7);
         [
           {
             failures: 0,
@@ -152,7 +152,7 @@ describe('progressTrackingUtils', () => {
           },
         ].forEach((item, i) => {
           const result = expect.objectContaining(item);
-          expect(observer).nthCalledWith(i + 1, result, list);
+          expect(observer).toHaveBeenNthCalledWith(i + 1, result, list);
         });
       });
     });

@@ -306,7 +306,7 @@ module.exports = {
       full: '100%',
       viewport: '0.5rem',
       '1/2': '50%',
-      'viewport-scrollbar': '1.3rem',
+      'viewport-scrollbar': '1.5rem',
     }),
     letterSpacing: {
       tighter: '-0.05em',

@@ -1,10 +1,32 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
+
+const DraggableThumbnailContent = ({ dragData, children }: any) => {
+  const [, drag] = useDrag({
+    type: 'displayset',
+    item: { ...dragData },
+    canDrag: function () {
+      return Object.keys(dragData).length !== 0;
+    },
+  });
+
+  return (
+    <div
+      ref={drag}
+      className="h-full w-full"
+    >
+      {children}
+    </div>
+  );
+};
+
+const StaticThumbnailContent = ({ children }: any) => {
+  return <div className="h-full w-full">{children}</div>;
+};
 
 /**
  * Display a thumbnail for a display set.
@@ -12,11 +34,13 @@ import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 const Thumbnail = ({
   displaySetInstanceUID,
   className,
+  children,
   imageSrc,
   imageAltText,
   description,
   seriesNumber,
   numInstances,
+  details,
   loadingProgress,
   countIcon,
   messages,
@@ -30,22 +54,63 @@ const Thumbnail = ({
   isTracked = false,
   canReject = false,
   dragData = {},
+  isDraggable = true,
   onReject = () => {},
   onClickUntrack = () => {},
   ThumbnailMenuItems = () => {},
+  onImageLoadError = () => {},
 }: withAppTypes): React.ReactNode => {
-  // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
-  // this will still allow for "drag", even if there is no drop target for the
-  // specified item.
-  const [collectedProps, drag, dragPreview] = useDrag({
-    type: 'displayset',
-    item: { ...dragData },
-    canDrag: function (monitor) {
-      return Object.keys(dragData).length !== 0;
-    },
-  });
-
   const [lastTap, setLastTap] = useState(0);
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
+
+  useEffect(() => {
+    setImageLoadFailed(false);
+  }, [imageSrc]);
+
+  const shouldRenderThumbnailImage = Boolean(imageSrc && !imageLoadFailed);
+
+  /**
+   * The detail line under the description. `details` comes from the
+   * `studyBrowser.thumbnailDetails` customization, resolved by the panel; the
+   * series number and instance count below are the same two items the default
+   * customization declares, kept here so the component still stands alone.
+   */
+  const renderDetails = (textClass: string, firstItemClass?: string) => {
+    // `??`, not `|| `: an unset `details` means no customization was resolved
+    // for this thumbnail and the defaults below stand in, whereas an empty
+    // `details` is a customization that resolved to no items at all and is
+    // honoured as the empty line it asks for.
+    const items = details ?? [
+      { id: 'SeriesNumber', label: 'S:', value: seriesNumber },
+      { id: 'InstanceCount', iconName: countIcon || 'InfoSeries', value: numInstances },
+    ];
+
+    return (
+      <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
+        {items.map(({ id, label, title, value, iconName }, index) => (
+          <div
+            key={id ?? index}
+            className={classnames(
+              'text-muted-foreground',
+              textClass,
+              index === 0 && firstItemClass
+            )}
+            title={title || undefined}
+            data-cy={`thumbnail-detail-${id}`}
+          >
+            <div className="flex items-center gap-[4px]">
+              {iconName &&
+                React.createElement(Icons[iconName] || Icons.MissingIcon, { className: 'w-3' })}
+              <div>
+                {label}
+                {value}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const handleTouchEnd = e => {
     const currentTime = new Date().getTime();
@@ -67,16 +132,20 @@ const Thumbnail = ({
         )}
       >
         <div className="h-[114px] w-[128px]">
-          <div className="relative bg-black">
-            {imageSrc ? (
+          <div className="relative bg-background">
+            {shouldRenderThumbnailImage ? (
               <img
                 src={imageSrc}
                 alt={imageAltText}
                 className="h-[114px] w-[128px] rounded object-contain"
                 crossOrigin="anonymous"
+                onError={() => {
+                  setImageLoadFailed(true);
+                  onImageLoadError();
+                }}
               />
             ) : (
-              <div className="bg-background h-[114px] w-[128px] rounded"></div>
+              <div className="bg-background h-[114px] w-[128px] rounded">{children}</div>
             )}
 
             {/* bottom left */}
@@ -89,7 +158,7 @@ const Thumbnail = ({
                 )}
               ></div>
               <div
-                className="text-[11px] font-semibold text-white"
+                className="text-foreground text-[11px] font-semibold"
                 data-cy="series-modality-label"
               >
                 {modality}
@@ -106,9 +175,9 @@ const Thumbnail = ({
                 <Tooltip>
                   <TooltipTrigger>
                     <div className="group">
-                      <Icons.StatusTracking className="text-primary-light h-[15px] w-[15px] group-hover:hidden" />
+                      <Icons.StatusTracking className="text-highlight h-[15px] w-[15px] group-hover:hidden" />
                       <Icons.Cancel
-                        className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
+                        className="text-highlight hidden h-[15px] w-[15px] group-hover:block"
                         onClick={onClickUntrack}
                       />
                     </div>
@@ -120,7 +189,7 @@ const Thumbnail = ({
                       </div>
                       <div className="flex flex-1 flex-col">
                         <span>
-                          <span className="text-white">
+                          <span className="text-foreground">
                             {isTracked ? 'Series is tracked' : 'Series is untracked'}
                           </span>
                         </span>
@@ -145,26 +214,14 @@ const Thumbnail = ({
             <TooltipContent>{description}</TooltipContent>
             <TooltipTrigger>
               <div
-                className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white"
+                className="text-foreground min-h-[18px] w-[128px] overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4"
                 data-cy="series-description-label"
               >
                 {description}
               </div>
             </TooltipTrigger>
           </Tooltip>
-          <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-            <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
-            <div className="text-muted-foreground text-[11px]">
-              <div className="flex items-center gap-[4px]">
-                {countIcon ? (
-                  React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                ) : (
-                  <Icons.InfoSeries className="w-3" />
-                )}
-                <div>{numInstances}</div>
-              </div>
-            </div>
-          </div>
+          {renderDetails('text-[11px]', 'pl-1')}
         </div>
       </div>
     );
@@ -189,7 +246,7 @@ const Thumbnail = ({
           <div className="flex h-full w-[calc(100%-12px)] flex-col justify-start">
             <div className="flex items-center gap-[7px]">
               <div
-                className="text-[13px] font-semibold text-white"
+                className="text-foreground text-[13px] font-semibold"
                 data-cy="series-modality-label"
               >
                 {modality}
@@ -198,7 +255,7 @@ const Thumbnail = ({
                 <TooltipContent>{description}</TooltipContent>
                 <TooltipTrigger className="w-full overflow-hidden">
                   <div
-                    className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-normal text-white"
+                    className="text-foreground max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-normal"
                     data-cy="series-description-label"
                   >
                     {description}
@@ -207,20 +264,7 @@ const Thumbnail = ({
               </Tooltip>
             </div>
 
-            <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-              <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
-              <div className="text-muted-foreground text-[12px]">
-                <div className="flex items-center gap-[4px]">
-                  {' '}
-                  {countIcon ? (
-                    React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                  ) : (
-                    <Icons.InfoSeries className="w-3" />
-                  )}
-                  <div>{numInstances}</div>
-                </div>
-              </div>
-            </div>
+            {renderDetails('text-[12px]')}
           </div>
         </div>
         <div className="flex h-full items-center gap-[4px]">
@@ -232,9 +276,9 @@ const Thumbnail = ({
             <Tooltip>
               <TooltipTrigger>
                 <div className="group">
-                  <Icons.StatusTracking className="text-primary-light h-[20px] w-[15px] group-hover:hidden" />
+                  <Icons.StatusTracking className="text-highlight h-[20px] w-[15px] group-hover:hidden" />
                   <Icons.Cancel
-                    className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
+                    className="text-highlight hidden h-[15px] w-[15px] group-hover:block"
                     onClick={onClickUntrack}
                   />
                 </div>
@@ -246,7 +290,7 @@ const Thumbnail = ({
                   </div>
                   <div className="flex flex-1 flex-col">
                     <span>
-                      <span className="text-white">
+                      <span className="text-foreground">
                         {isTracked ? 'Series is tracked' : 'Series is untracked'}
                       </span>
                     </span>
@@ -269,7 +313,9 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
+        'bg-muted group flex select-none flex-col rounded outline-none',
+        isDraggable && 'hover:bg-primary/30 cursor-pointer',
+        !isDraggable && 'cursor-default',
         viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
         viewPreset === 'list' && 'h-[40px] w-full'
       )}
@@ -283,50 +329,23 @@ const Thumbnail = ({
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onTouchEnd={handleTouchEnd}
-      role="button"
+      role={isDraggable ? 'button' : undefined}
     >
-      <div
-        ref={drag}
-        className="h-full w-full"
-      >
-        {viewPreset === 'thumbnails' && renderThumbnailPreset()}
-        {viewPreset === 'list' && renderListPreset()}
-      </div>
+      {isDraggable ? (
+        <DraggableThumbnailContent dragData={dragData}>
+          {viewPreset === 'thumbnails' && renderThumbnailPreset()}
+          {viewPreset === 'list' && renderListPreset()}
+        </DraggableThumbnailContent>
+      ) : (
+        <StaticThumbnailContent>
+          {viewPreset === 'thumbnails' && renderThumbnailPreset()}
+          {viewPreset === 'list' && renderListPreset()}
+        </StaticThumbnailContent>
+      )}
     </div>
   );
 };
 
-Thumbnail.propTypes = {
-  displaySetInstanceUID: PropTypes.string.isRequired,
-  className: PropTypes.string,
-  imageSrc: PropTypes.string,
-  /**
-   * Data the thumbnail should expose to a receiving drop target. Use a matching
-   * `dragData.type` to identify which targets can receive this draggable item.
-   * If this is not set, drag-n-drop will be disabled for this thumbnail.
-   *
-   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-   */
-  dragData: PropTypes.shape({
-    /** Must match the "type" a dropTarget expects */
-    type: PropTypes.string.isRequired,
-  }),
-  imageAltText: PropTypes.string,
-  description: PropTypes.string.isRequired,
-  seriesNumber: PropTypes.any,
-  numInstances: PropTypes.number.isRequired,
-  loadingProgress: PropTypes.number,
-  messages: PropTypes.object,
-  isActive: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
-  onDoubleClick: PropTypes.func.isRequired,
-  viewPreset: PropTypes.string,
-  modality: PropTypes.string,
-  isHydratedForDerivedDisplaySet: PropTypes.bool,
-  isTracked: PropTypes.bool,
-  onClickUntrack: PropTypes.func,
-  countIcon: PropTypes.string,
-  thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
-};
+
 
 export { Thumbnail };

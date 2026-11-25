@@ -1,4 +1,15 @@
+import { Badge, badgeVariants } from './Badge';
 import { Button, buttonVariants } from './Button';
+import {
+  SmartScrollbar,
+  useSmartScrollbarLayoutContext,
+  useSmartScrollbarScrollContext,
+  SmartScrollbarTrack,
+  SmartScrollbarFill,
+  SmartScrollbarIndicator,
+  SmartScrollbarEndpoints,
+  useByteArray,
+} from './SmartScrollbar';
 import { ThemeWrapper } from './ThemeWrapper';
 import {
   Command,
@@ -37,6 +48,7 @@ import { Toggle, toggleVariants } from './Toggle';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 import { Input } from './Input';
 import { InputNumber } from './InputNumber';
+import { InputMultiSelect } from './InputMultiSelect';
 import { Label } from './Label';
 import { Switch } from './Switch';
 import { Checkbox } from './Checkbox';
@@ -57,7 +69,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tool
 import { ToolboxUI } from './OHIFToolbox';
 import Numeric from './Numeric';
 import { InputDialog, PresetDialog } from './OHIFDialogs';
-import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
+import { AboutModal, ImageModal, UserPreferencesModal, AppearanceModal } from './OHIFModals';
 import Modal from './Modal/Modal';
 import { FooterAction } from './FooterAction';
 import { InputFilter } from './InputFilter';
@@ -97,7 +109,18 @@ import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
+import { HoverCard, HoverCardTrigger, HoverCardContent } from './HoverCard';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from './Table';
 import {
   ViewportActionButton,
   PatientInfo,
@@ -120,6 +143,9 @@ import {
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
+import { ContextMenuViewport } from './ContextMenuViewport';
+export * from './DataTable';
+export * from './StudyList';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
 export * from './ColorCircle';
@@ -141,6 +167,8 @@ export {
 export {
   Numeric,
   ErrorBoundary,
+  Badge,
+  badgeVariants,
   Button,
   buttonVariants,
   ThemeWrapper,
@@ -176,6 +204,7 @@ export {
   DatePickerWithRange,
   Input,
   InputNumber,
+  InputMultiSelect,
   Label,
   Tabs,
   TabsContent,
@@ -191,6 +220,14 @@ export {
   ToggleGroup,
   ToggleGroupItem,
   ScrollBar,
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -236,6 +273,9 @@ export {
   SegmentationTable,
   StudySummary,
   Header,
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
   Card,
   CardHeader,
   CardFooter,
@@ -265,6 +305,7 @@ export {
   AboutModal,
   ImageModal,
   UserPreferencesModal,
+  AppearanceModal,
   FooterAction,
   ToolSettings,
   InputFilter,
@@ -277,4 +318,13 @@ export {
   ViewportDialog,
   CinePlayer,
   LayoutSelector,
+  ContextMenuViewport,
+  SmartScrollbar,
+  useSmartScrollbarLayoutContext,
+  useSmartScrollbarScrollContext,
+  SmartScrollbarTrack,
+  SmartScrollbarFill,
+  SmartScrollbarIndicator,
+  SmartScrollbarEndpoints,
+  useByteArray,
 };

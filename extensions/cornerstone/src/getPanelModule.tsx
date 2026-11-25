@@ -24,7 +24,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
         configuration={{
           ...props?.configuration,
         }}
-        segmentationRepresentationType={props?.segmentationRepresentationType}
+        segmentationRepresentationTypes={props?.segmentationRepresentationTypes}
       />
     );
   };
@@ -38,20 +38,20 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
         configuration={{
           ...props?.configuration,
         }}
-        segmentationRepresentationType={props?.segmentationRepresentationType}
+        segmentationRepresentationTypes={props?.segmentationRepresentationTypes}
       />
     );
   };
 
-  const wrappedPanelSegmentationWithTools = props => {
+  const PanelSegmentationWithTools = props => {
     const { t } = useTranslation('SegmentationPanel');
-    const tKey = `${props.segmentationRepresentationType ?? 'Segmentation'} tools`;
+    const tKey = `${props.segmentationRepresentationTypes?.[0] ?? 'Segmentation'} tools`;
     const tValue = t(tKey);
 
     return (
       <>
         <Toolbox
-          buttonSectionId={toolSectionMap[props.segmentationRepresentationType]}
+          buttonSectionId={toolSectionMap[props.segmentationRepresentationTypes?.[0]]}
           title={tValue}
         />
         <PanelSegmentation
@@ -61,7 +61,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
           configuration={{
             ...props?.configuration,
           }}
-          segmentationRepresentationType={props?.segmentationRepresentationType}
+          segmentationRepresentationTypes={props?.segmentationRepresentationTypes}
         />
       </>
     );
@@ -100,22 +100,27 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',
       label: i18n.t('SegmentationPanel:Labelmap'),
-      component: props =>
-        wrappedPanelSegmentationWithTools({
-          ...props,
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
-        }),
+      component: props => (
+        <PanelSegmentationWithTools
+          {...props}
+          segmentationRepresentationTypes={[
+            SegmentationRepresentations.Labelmap,
+            SegmentationRepresentations.Surface,
+          ]}
+        />
+      ),
     },
     {
       name: 'panelSegmentationWithToolsContour',
       iconName: 'tab-contours',
       iconLabel: 'Segmentation',
       label: i18n.t('SegmentationPanel:Contour'),
-      component: props =>
-        wrappedPanelSegmentationWithTools({
-          ...props,
-          segmentationRepresentationType: SegmentationRepresentations.Contour,
-        }),
+      component: props => (
+        <PanelSegmentationWithTools
+          {...props}
+          segmentationRepresentationTypes={[SegmentationRepresentations.Contour]}
+        />
+      ),
     },
   ];
 };

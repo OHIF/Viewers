@@ -16,7 +16,7 @@ export const StatusUntracked = (props: IconProps) => (
       <path d="M0 0h24v24H0z" />
       <rect
         stroke="currentColor"
-        fill="#0D0E24"
+        fill="transparent"
         x=".5"
         y=".5"
         width="23"

@@ -1,0 +1,19 @@
+// URL-loaded customization: segmentation/binary
+//
+// Stores exported/saved DICOM SEG objects as a BINARY Segmentation — SOP Class
+// 1.2.840.10008.5.1.4.1.1.66.4 (one frame per segment) — instead of the OHIF
+// default Label Map Segmentation 1.2.840.10008.5.1.4.1.1.66.7. Binary SEG is
+// broadly compatible with existing PACS/viewers; Label Map was only added to
+// DICOM in 2024 and many back ends reject it.
+//
+// Applied in the `global` phase so it overrides the default registered by the
+// cornerstone-dicom-seg extension. A data source may still override this per
+// back end via `configuration.segmentation.store.defaultMode`.
+//
+// Load it with `?customization=segmentation/binary` (combine with
+// `&customization=segmentation/uncompressed` to also drop RLE compression).
+{
+  "global": {
+    "segmentation.store.defaultMode": { "$set": "bitmap" }
+  }
+}

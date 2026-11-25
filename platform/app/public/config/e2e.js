@@ -20,19 +20,32 @@ window.config = {
   routerBasename: null,
   extensions: [],
   modes: ['@ohif/mode-test'],
+  // Allow the `default` prefix so e2e specs can exercise `?customization=` (e.g.
+  // Customization.spec.ts loads `?customization=veterinary/veterinaryOverlay`).
+  customizationUrlPrefixes: {
+    default: './customizations/',
+  },
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
   maxNumberOfWebWorkers: 3,
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
   strictZSpacingForVolumeViewport: true,
+  // Lossy downsampling for the tests and the deploy previews. `final` reduces
+  // a volume texture to fit the `cornerstone.gpuSettingsPreset` below.
+  // config/default.js keeps final downsampling off.
+  lossyDownsampling: { final: true },
   // filterQueryParam: false,
 
   // Add some customizations to the default e2e datasource
-  customizationService: [
-    '@ohif/extension-default.customizationModule.datasources',
-    '@ohif/extension-default.customizationModule.helloPage',
-  ],
+  customizationService: {
+    // A `?customization=gpu/<preset>` URL module applies after this block, so it wins.
+    bootstrap: { 'cornerstone.gpuSettingsPreset': 'medium' },
+    global: [
+      '@ohif/extension-default.customizationModule.datasources',
+      '@ohif/extension-default.customizationModule.helloPage',
+    ],
+  },
 
   defaultDataSourceName: 'e2e',
   investigationalUseDialog: {
@@ -111,9 +124,9 @@ window.config = {
         wadoUriRoot: '/viewer-testdata',
         qidoRoot: '/viewer-testdata',
         wadoRoot: '/viewer-testdata',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: true,
@@ -134,7 +147,6 @@ window.config = {
         name: 'DCM4CHEE',
         qidoRoot: 'http://localhost:5000/dicomweb',
         wadoRoot: 'http://localhost:5000/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: true,
         supportsStow: true,
         imageRendering: 'wadors',
@@ -158,7 +170,6 @@ window.config = {
         name: 'DCM4CHEE',
         qidoRoot: 'http://localhost:25080/dicomweb',
         wadoRoot: 'http://localhost:25080/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: true,
         supportsStow: true,
         imageRendering: 'wadors',
@@ -183,7 +194,6 @@ window.config = {
         wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -208,7 +218,6 @@ window.config = {
         wadoUriRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -236,7 +245,6 @@ window.config = {
         wadoUriRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
         qidoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
         wadoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -265,7 +273,6 @@ window.config = {
         wadoUriRoot: '/dicomweb',
         qidoRoot: '/dicomweb',
         wadoRoot: '/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -288,7 +295,6 @@ window.config = {
         wadoUriRoot: 'http://localhost/pacs/dicom-web',
         qidoRoot: 'http://localhost/pacs/dicom-web',
         wadoRoot: 'http://localhost/pacs/dicom-web',
-        qidoSupportsIncludeField: true,
         supportsReject: true,
         dicomUploadEnabled: true,
         imageRendering: 'wadors',

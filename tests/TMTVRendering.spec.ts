@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index.js';
+import { test, visitStudy, checkForScreenshot, screenShotPaths } from './utils';
 
 test.skip('should render TMTV correctly.', async ({ page }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';

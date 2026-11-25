@@ -2,6 +2,11 @@ import { cache, Types } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
 function _getVolumeFromViewport(viewport: Types.IBaseVolumeViewport) {
+  // Handle non-volume viewports that don't have getAllVolumeIds
+  if (!viewport?.getAllVolumeIds) {
+    return null;
+  }
+
   const volumeIds = viewport.getAllVolumeIds();
   const volumes = volumeIds.map(id => cache.getVolume(id));
   const dynamicVolume = volumes.find(volume => volume.isDynamicVolume());

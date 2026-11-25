@@ -17,7 +17,7 @@ function promptTrackNewStudy({ servicesManager, extensionManager }: withAppTypes
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    const appConfig = extensionManager._appConfig;
+    const appConfig = extensionManager.appConfig;
 
     const standardMode = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
     const simplifiedMode =

@@ -1,7 +1,8 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { expect } from 'playwright-test-coverage';
 
 import { DOMOverlayPageObject } from '../pages';
+import type { SegmentationSelect } from '../pages/RightPanelPageObject';
 
 /**
  * Asserts the number of Modality Load Badges present on the page.
@@ -17,4 +18,73 @@ export async function assertNumberOfModalityLoadBadges({
   const count = await domOverlayPageObject.viewport.getModalityLoadBadgeCount();
 
   expect(count).toBe(expectedCount);
+}
+
+/**
+ * Asserts that one bounding box is completely contained within another.
+ * Checks that all edges of the inner box are within the outer box boundaries.
+ */
+export async function assertBoundingBoxIsContainedWithin({
+  innerBox,
+  outerBox,
+  innerBoxLabel = 'inner element',
+  outerBoxLabel = 'outer element',
+}: {
+  innerBox: { x: number; y: number; width: number; height: number } | null;
+  outerBox: { x: number; y: number; width: number; height: number } | null;
+  innerBoxLabel?: string;
+  outerBoxLabel?: string;
+}) {
+  expect(innerBox).not.toBeNull();
+  expect(outerBox).not.toBeNull();
+
+  if (!outerBox || !innerBox) {
+    return;
+  }
+
+  expect(
+    innerBox.x,
+    `${innerBoxLabel} left edge should be within ${outerBoxLabel}`
+  ).toBeGreaterThanOrEqual(outerBox.x);
+
+  expect(
+    innerBox.y,
+    `${innerBoxLabel} top edge should be within ${outerBoxLabel}`
+  ).toBeGreaterThanOrEqual(outerBox.y);
+
+  expect(
+    innerBox.x + innerBox.width,
+    `${innerBoxLabel} right edge should be within ${outerBoxLabel}`
+  ).toBeLessThanOrEqual(outerBox.x + outerBox.width);
+
+  expect(
+    innerBox.y + innerBox.height,
+    `${innerBoxLabel} bottom edge should be within ${outerBoxLabel}`
+  ).toBeLessThanOrEqual(outerBox.y + outerBox.height);
+}
+
+export async function expectRowSelected(rowObject) {
+  await expect(rowObject.locator).toContainClass('bg-popover');
+}
+
+export async function expectRowLocked(rowObject: { lockIcon: Locator }) {
+  await expect(rowObject.lockIcon, 'Expected the row to show the lock icon').toHaveCount(1);
+}
+
+export async function expectRowUnlocked(rowObject: { lockIcon: Locator }) {
+  await expect(rowObject.lockIcon, 'Expected the row to not show the lock icon').toHaveCount(0);
+}
+
+export async function expectRowNotSelected(rowObject) {
+  await expect(rowObject.locator).not.toContainClass('bg-popover');
+}
+
+// Opens the segmentation selector, asserts its options match `labels`, then closes it.
+export async function expectSegmentationLabels(
+  segmentationSelect: SegmentationSelect,
+  labels: string[]
+) {
+  const options = await segmentationSelect.getSegmentationLabels();
+  await expect(options).toHaveText(labels);
+  await segmentationSelect.close();
 }

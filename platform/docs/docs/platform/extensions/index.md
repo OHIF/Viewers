@@ -177,10 +177,17 @@ the top level [`extensions/`][ext-source] directory.
 }
 ```
 
-:::note Important
-You SHOULD NOT directly register extensions in the `pluginConfig.json` file.
-Use the provided `cli` to add/remove/install/uninstall extensions. Read more [here](../../development/ohif-cli.md)
+:::note
+You can register extensions by editing the `pluginConfig.json` file directly,
+or with the `pnpm run plugin add/remove/link/unlink` helper. Scaffold a new
+extension with [`create-ohif`](../../development/create-ohif.md). The former
+OHIF CLI has been removed — see [OHIF CLI removal](../../migration-guide/3p13-to-3p14/cli-removal.md).
 :::
+
+For the full set of fields (`packageName`, `version`, `default`, `directory`,
+the `public` section) and the three ways a plugin can be located (in-tree,
+out-of-tree `directory`, or installed dependency), see the
+[pluginConfig.json reference](./pluginConfig.md).
 
 The final registration and import of the extensions happen inside a non-tracked file `pluginImport.js` (this file is also for internal use only).
 
@@ -188,6 +195,29 @@ After an extension gets registered within the `viewer`,
 each [module](#modules) defined by the extension becomes available to the modes
 via the `ExtensionManager` by requesting it via its id.
 [Read more about Extension Manager](#extension-manager)
+
+## Scaffolding
+
+Generate a new extension or mode with the `create-ohif` scaffolder:
+
+```bash
+pnpm create ohif my-extension
+```
+
+To scaffold directly into an OHIF Viewers checkout — landing the package in
+`extensions/<name>` or `modes/<name>` with `workspace:*` peer ranges — run the
+scaffolder from inside the checkout with `--in-tree`:
+
+```bash
+node platform/create-ohif/bin/create-ohif.mjs my-extension --template extension --in-tree
+```
+
+Afterwards, add the printed entry to `platform/app/pluginConfig.json` (or run
+`pnpm plugin add <packageName>`) and run `pnpm run install:update-lockfile` to
+register the new workspace package. See
+[`platform/create-ohif/README.md`](https://github.com/OHIF/Viewers/tree/master/platform/create-ohif)
+for the full argument grammar, the extension module table, and the dist-tag
+release policy.
 
 ## Lifecycle Hooks
 

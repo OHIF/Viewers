@@ -9,7 +9,7 @@ import { useSystem } from '@ohif/core';
 const excludedModalities = ['SM', 'OT', 'DOC', 'ECG'];
 
 function mapSegmentationToDisplay(segmentation, customizationService) {
-  const { label, segments } = segmentation;
+  const { label, segments, fallbackLabel } = segmentation;
 
   // Get the readable text mapping once
   const readableTextMap = customizationService.getCustomization('panelSegmentation.readableText');
@@ -76,6 +76,7 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
   return {
     ...segmentation,
     label,
+    fallbackLabel,
     segments: updatedSegments,
   };
 }
@@ -195,6 +196,17 @@ export function useViewportSegmentations({
       ),
       segmentationService.subscribe(
         segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
+        debouncedUpdate
+      ),
+      // What this hook reads is `getSegmentationRepresentations(viewportId)`, so a
+      // representation leaving the viewport changes its answer and has to re-run it.
+      // Without this, "Remove from Viewport" cleared the overlay from the image but
+      // left the segmentation listed in the panel: the data was already correct, the
+      // panel simply never asked again. Nothing else covers it — a hydrated
+      // segmentation is not a display set in the viewport, so removing it moves no
+      // grid state and fires no grid event either.
+      segmentationService.subscribe(
+        segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED,
         debouncedUpdate
       ),
       viewportGridService.subscribe(

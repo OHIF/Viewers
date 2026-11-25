@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui-next';
@@ -137,8 +136,9 @@ function TrackedMeasurementsContextProvider(
       });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
-        const StructuredReportDisplaySetInstanceUID = evt.data.createdDisplaySetInstanceUIDs[0];
+      const uids = evt.data?.createdDisplaySetInstanceUIDs;
+      if (uids?.length > 0) {
+        const StructuredReportDisplaySetInstanceUID = uids[0];
 
         viewportGridService.setDisplaySetsForViewport({
           viewportId: evt.data.viewportId,
@@ -158,7 +158,13 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      measurementService.clearMeasurements();
+      const trackingContext = evt.trackedStudy
+        ? { StudyInstanceUID: evt.trackedStudy, SeriesInstanceUIDs: [...(evt.trackedSeries || [])] }
+        : undefined;
+      measurementService.clearMeasurements(
+        undefined,
+        trackingContext ? { trackingContext } : undefined
+      );
       measurementService.setIsMeasurementDeletedIndividually(false);
     },
     clearDisplaySetHydratedState: (ctx, evt) => {
@@ -249,7 +255,7 @@ function TrackedMeasurementsContextProvider(
     simplifiedAndLoadSR: (ctx, evt, condMeta) => {
       return (
         appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
-        evt.data.isBackupSave === false
+        evt.data?.isBackupSave === false
       );
     },
     hasDirtyAndSimplified: (ctx, evt, condMeta) => {
@@ -368,10 +374,21 @@ function TrackedMeasurementsContextProvider(
   ]);
 
   useEffect(() => {
-    // The command needs to be bound to the context's sendTrackedMeasurementsEvent
-    // so the command has to be registered in a React component.
+    // These commands are bound to the context's sendTrackedMeasurementsEvent, so they have
+    // to be registered from inside this (React) component. Re-registration on each
+    // render is safe — registerCommand overwrites by key.
     commandsManager.registerCommand('DEFAULT', 'loadTrackedSRMeasurements', {
       commandFn: props => sendTrackedMeasurementsEvent('HYDRATE_SR', props),
+    });
+    commandsManager.registerCommand('DEFAULT', 'restoreTrackedSeries', {
+      commandFn: ({ StudyInstanceUID, SeriesInstanceUIDs }) =>
+        sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
+          StudyInstanceUID,
+          SeriesInstanceUIDs,
+        }),
+    });
+    commandsManager.registerCommand('DEFAULT', 'clearTrackedSeries', {
+      commandFn: () => sendTrackedMeasurementsEvent('CLEAR_TRACKING_CONTEXT'),
     });
   }, [commandsManager, sendTrackedMeasurementsEvent]);
 
@@ -384,9 +401,6 @@ function TrackedMeasurementsContextProvider(
   );
 }
 
-TrackedMeasurementsContextProvider.propTypes = {
-  children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  appConfig: PropTypes.object,
-};
+
 
 export { TrackedMeasurementsContext, TrackedMeasurementsContextProvider, useTrackedMeasurements };

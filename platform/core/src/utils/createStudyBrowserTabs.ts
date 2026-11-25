@@ -1,7 +1,4 @@
-import { useSystem } from '../contextProviders/SystemProvider';
 import i18n from 'i18next';
-import { seriesSortCriteria } from './sortStudy';
-
 
 /**
  * Tab properties that drive which tab group is used for thumbnail display.
@@ -29,6 +26,7 @@ export type TabsProps = TabProp[];
  * @param {number} studyDisplayList.numInstances
  * @param {object[]} displaySets
  * @param {number} recentTimeframe - The number of milliseconds to consider a study recent
+ * @param {object} displaySetService - Gives the display sets and the thumbnail tray order.
  * @returns {TabsProps} tabs - The prop object expected by the StudyBrowser component
  */
 
@@ -36,24 +34,19 @@ export function createStudyBrowserTabs(
   primaryStudyInstanceUIDs,
   studyDisplayList,
   displaySets,
-  recentTimeframeMS = 31536000000
+  recentTimeframeMS = 31536000000,
+  displaySetService
 ): TabsProps {
-  const { servicesManager } = useSystem();
-  const { displaySetService, customizationService } = servicesManager.services;
-
-  const shouldSortBySeriesUID = process.env.TEST_ENV === 'true';
   const primaryStudies = [];
   const allStudies = [];
+  // The thumbnail tray order: the sort picked in the study browser, or the default order.
+  const sortCriteria = displaySetService.getSortCriteria('thumbnailTray');
 
   studyDisplayList.forEach(study => {
     const displaySetsForStudy = displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    // sort them by seriesInstanceUID
-    const sortCriteria = shouldSortBySeriesUID
-      ? seriesSortCriteria.compareSeriesUID
-      : (customizationService.getCustomization('sortingCriteria') as (a, b) => number);
     const sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
       const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
       const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);

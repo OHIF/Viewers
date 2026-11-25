@@ -12,6 +12,9 @@ const { formatPN } = utils;
 interface OverlayItem {
   id: string;
   title: string;
+  /** Returns the item text. Has precedence over `value`. */
+  contentF?: (props: any) => string;
+  /** @deprecated Use `contentF`, the name that the other OHIF overlays use. */
   value?: (props: any) => string;
   condition?: (props: any) => boolean;
   contents?: (props: any) => { className: string; value: any };
@@ -37,10 +40,10 @@ export const generateFromConfig = ({ config, overlayData, ...props }) => {
     bottomLeft?: OverlayItem[];
     bottomRight?: OverlayItem[];
   } = overlayData ?? {};
-  const topLeftClass = 'top-viewport left-viewport text-primary-light';
-  const topRightClass = 'top-viewport right-viewport-scrollbar text-primary-light';
-  const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-primary-light';
-  const bottomLeftClass = 'bottom-viewport left-viewport text-primary-light';
+  const topLeftClass = 'top-viewport left-viewport text-highlight';
+  const topRightClass = 'top-viewport right-viewport-scrollbar text-highlight';
+  const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-highlight';
+  const bottomLeftClass = 'bottom-viewport left-viewport text-highlight';
   const overlay = 'absolute pointer-events-none microscopy-viewport-overlay';
 
   return (
@@ -89,7 +92,7 @@ export const generateFromConfig = ({ config, overlayData, ...props }) => {
 
 const itemGenerator = (props: any) => {
   const { item } = props;
-  const { title, value: valueFunc, condition, contents } = item;
+  const { title, value: valueFunc, contentF: contentFunc = valueFunc, condition, contents } = item;
   props.image = { ...props.image, ...props.metadata };
   props.formatDate = formatDICOMDate;
   props.formatTime = formatDICOMTime;
@@ -98,10 +101,10 @@ const itemGenerator = (props: any) => {
   if (condition && !condition(props)) {
     return null;
   }
-  if (!contents && !valueFunc) {
+  if (!contents && !contentFunc) {
     return null;
   }
-  const value = valueFunc && valueFunc(props);
+  const value = contentFunc && contentFunc(props);
   const contentsValue = (contents && contents(props)) || [
     { className: 'mr-1', value: title },
     { classname: 'mr-1 font-light', value },

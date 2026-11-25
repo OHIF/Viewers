@@ -69,7 +69,12 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       trackingUniqueIdentifiers.includes(annotation.data?.TrackingUniqueIdentifier)
     );
 
-    if (!viewport._actors?.size) {
+    const hasActors =
+      typeof viewport.getActors === 'function'
+        ? viewport.getActors().length > 0
+        : Boolean(viewport._actors?.size);
+
+    if (!hasActors) {
       return;
     }
 

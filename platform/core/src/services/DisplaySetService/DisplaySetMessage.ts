@@ -23,6 +23,7 @@ class DisplaySetMessage {
     UNSUPPORTED_DISPLAYSET: 13,
     UNSUPPORTED_SOP_CLASS_UID: 14,
     MISSING_SOP_CLASS_UID: 15,
+    MISSING_REPORT_CONTENT: 16,
   };
 
   constructor(id: number, args: Record<string, any> = {}) {

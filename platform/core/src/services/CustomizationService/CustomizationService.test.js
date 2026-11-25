@@ -197,6 +197,30 @@ describe('CustomizationService - Registration + API Operations', () => {
       expect(result).toEqual([1, 2, 99, 4]);
     });
 
+    it('applies $spliceById with an id as the position', () => {
+      customizationService.setCustomizations({
+        IdList: ['video', 'volume3d', { id: 'ecg' }, 'unsupported'],
+      });
+      customizationService.setCustomizations({
+        IdList: {
+          $spliceById: [
+            ['volume3d', 0, 'dwiByBValue'],
+            ['ecg', 1],
+            ['volume3d', 1, 'myVolume'],
+          ],
+        },
+      });
+      expect(customizationService.getCustomization('IdList')).toEqual([
+        'video',
+        'dwiByBValue',
+        'myVolume',
+        'unsupported',
+      ]);
+      expect(() =>
+        customizationService.setCustomizations({ IdList: { $spliceById: [['missing', 1]] } })
+      ).toThrow(/missing/);
+    });
+
     it('applies $push, $unshift, and $splice to default array', () => {
       // Update array using merge commands
       customizationService.setCustomizations({
@@ -492,6 +516,56 @@ describe('CustomizationService - Registration + API Operations', () => {
       expect(customization.additionalKey).toBe('transformedValue');
       expect(customization.label).toBe('Instance Number');
       expect(customization.title).toBe(undefined);
+    });
+  });
+
+  // Values can legitimately contain React elements (e.g. a column's
+  // `meta.headerContent`). React brands every element with `$$typeof`, which
+  // must NOT be mistaken for an immutability-helper command.
+  describe('React elements in values', () => {
+    const reactElement = {
+      $$typeof: Symbol.for('react.element'),
+      type: 'svg',
+      key: null,
+      ref: null,
+      props: {},
+    };
+
+    it('registers a default array containing a React element without throwing', () => {
+      const columns = [
+        { id: 'a', meta: { label: 'A' } },
+        { id: 'b', meta: { label: 'B', headerContent: reactElement } },
+      ];
+
+      expect(() =>
+        customizationService.addReferences(
+          { 'workList.columns': columns },
+          CustomizationScope.Default
+        )
+      ).not.toThrow();
+
+      const result = customizationService.getCustomization('workList.columns');
+      expect(result).toEqual(columns);
+      expect(result[1].meta.headerContent).toBe(reactElement);
+    });
+
+    it('still applies $ commands over a default array containing a React element', () => {
+      const columns = [
+        { id: 'a', meta: { label: 'A' } },
+        { id: 'b', meta: { label: 'B', headerContent: reactElement } },
+      ];
+      customizationService.addReferences(
+        { 'workList.columns': columns },
+        CustomizationScope.Default
+      );
+
+      customizationService.setCustomizations({
+        'workList.columns': { $push: [{ id: 'c', meta: { label: 'C' } }] },
+      });
+
+      const result = customizationService.getCustomization('workList.columns');
+      expect(result.map(c => c.id)).toEqual(['a', 'b', 'c']);
+      expect(result[1].meta.headerContent).toBe(reactElement);
     });
   });
 });

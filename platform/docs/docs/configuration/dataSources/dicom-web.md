@@ -35,7 +35,7 @@ in command prompt or terminal_
 
 > If you are using `Docker Toolbox` you need to change the _PROXY_DOMAIN_
 > parameter in _platform/app/package.json_ to http://192.168.99.100:8042 or
-> the ip docker-machine ip throws. This is the value [`WebPack`][webpack-proxy]
+> the ip docker-machine ip throws. This is the value the [development server][dev-server-proxy]
 > uses to proxy requests
 
 ## Open Source DICOM Image Archives
@@ -104,19 +104,24 @@ is running the `dev:orthanc` script in our project's `package.json` (inside
 `platform/app`). That script is:
 
 ```js
-cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker-nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
+cross-env NODE_ENV=development PROXY_TARGET=/pacs/dicom-web PROXY_DOMAIN=http://localhost:8042 PROXY_PATH_REWRITE_FROM=/pacs/dicom-web PROXY_PATH_REWRITE_TO=/dicom-web APP_CONFIG=config/docker-nginx-orthanc.js rsbuild dev --config ../../rsbuild.config.ts
 ```
 
-- `cross-env` sets three environment variables
-  - PROXY_TARGET: `/dicom-web`
+- `cross-env` sets the environment variables
+  - PROXY_TARGET: `/pacs/dicom-web`
   - PROXY_DOMAIN: `http://localhost:8042`
+  - PROXY_PATH_REWRITE_FROM: `/pacs/dicom-web`
+  - PROXY_PATH_REWRITE_TO: `/dicom-web`
   - APP_CONFIG: `config/docker-nginx-orthanc.js`
-- `webpack-dev-server` runs using the `.webpack/webpack.pwa.js` configuration
-  file. It will watch for changes and update as we develop.
+- `rsbuild dev` runs the app's dev server using the root `rsbuild.config.ts`
+  configuration file (the app builds and serves through Rsbuild). It watches for
+  changes and updates as we develop.
 
 `PROXY_TARGET` and `PROXY_DOMAIN` tell our development server to proxy requests
-to `Orthanc`. This allows us to bypass CORS issues that normally occur when
-requesting resources that live at a different domain.
+to `Orthanc`, and `PROXY_PATH_REWRITE_FROM`/`PROXY_PATH_REWRITE_TO` rewrite the
+`/pacs/dicom-web` request path to Orthanc's `/dicom-web` path. This allows us to
+bypass CORS issues that normally occur when requesting resources that live at a
+different domain.
 
 The `APP_CONFIG` value tells our app which file to load on to `window.config`.
 By default, our app uses the file at
@@ -139,7 +144,6 @@ window.config = {
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -179,6 +183,14 @@ customizationService: {
 ```
 
 
+#### `stowRoot`
+The base URL for STOW-RS requests, for deployments that expose storage on a
+different endpoint than retrieval. Optional — when omitted, STOW requests use
+`wadoRoot`.
+
+Note that `qidoRoot`, `wadoRoot` and `stowRoot` are independent absolute URLs and
+need not share a host or path prefix. Each service is routed to its own root.
+
 #### `singlepart`
 A comma delimited string specifying which payloads the data source responds with as single part. Those not listed are considered multipart. Values that can be included here are `pdf`, `video`, `bulkdata`, `thumbnail` and `image`.
 
@@ -187,6 +199,43 @@ For DICOM video and PDF it has been found that Orthanc delivers multipart, while
 To learn more about how you can configure the OHIF Viewer, check out our
 [Configuration Guide](../configurationFiles.md).
 
+#### `thumbnailRendering`
+
+Optional. Controls how thumbnail images are requested.
+
+| Value | Behavior |
+| ----- | -------- |
+| `wadors` (default) | Uses WADO-RS retrieval for thumbnail image content |
+| `thumbnailDirect` | Uses the thumbnail URL directly as the image source. Use this only when the archive serves that URL without auth headers |
+| `thumbnail` | Uses the WADO-RS `.../thumbnail` endpoint |
+| `rendered` | Uses the WADO-RS `.../rendered` endpoint |
+
+Use `thumbnail` or `rendered` when the archive supports dedicated thumbnail/rendered responses. If either is selected, `thumbnailRequestStrategy` controls how the image data is fetched.
+
+#### `thumbnailRequestStrategy`
+
+Optional. Controls how the app retrieves the data for various thumbnails (e.g. side study panel study browser and study list preview panel) when
+`thumbnailRendering` is `thumbnail` or `rendered`. It does not apply to `wadors` or `thumbnailDirect`.
+
+| Value | Behavior |
+| ----- | -------- |
+| `bulkDataRetrieve` (default) | Uses the DICOMweb client's bulk data retrieve API, consistent with other bulk data reads |
+| `fetch` | Performs an authenticated HTTP `GET` to the WADO-RS `.../thumbnail` or `.../rendered` URL and builds a blob URL from the JPEG response. Prefer this when the archive serves a plain image body and bulk data retrieve is incompatible or unreliable. |
+
+Example (Orthanc-style plain fetch for thumbnails):
+
+```js
+thumbnailRendering: 'rendered',
+thumbnailRequestStrategy: 'fetch',
+```
+
+#### `queryLimit`
+
+Optional. The maximum number of studies requested from the server for the study list, passed as the `limit` query parameter to data sources that honor it. Paging is handled in the OHIF client, so this value caps how many studies a single search returns. When not specified, it defaults to `101`.
+
+```js
+queryLimit: 101,
+```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
@@ -253,4 +302,4 @@ below:
 [config-files]:
   https://github.com/OHIF/Viewers/tree/master/platform/app/public/config
 [storescu]: http://support.dcmtk.org/docs/storescu.html
-[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
+[dev-server-proxy]: https://rsbuild.rs/config/server/proxy

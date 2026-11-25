@@ -15,7 +15,7 @@ export const Plus = (props: IconProps) => (
     >
       <path d="M0 0h21v21H0z" />
       <g
-        stroke="#348CFD"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.25"

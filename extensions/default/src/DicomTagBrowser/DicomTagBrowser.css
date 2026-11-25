@@ -12,8 +12,7 @@
 .dicom-tag-browser-table tr {
   padding-left: 10px;
   padding-right: 10px;
-  color: #ffffff;
-  border-top: 1px solid #ddd;
+  color: hsl(var(--foreground));
   white-space: nowrap;
 }
 
@@ -43,7 +42,6 @@
   padding-left: 10px;
   padding-right: 10px;
   text-align: center;
-  color: '#20A5D6';
 }
 
 .dicom-tag-browser-table th.dicom-tag-browser-table-left {

@@ -1,4 +1,15 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForGridScreenshot,
+  checkForViewportScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForPaintToSettle,
+  waitForViewportRenderCycle,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -43,7 +54,8 @@ test('should hydrate in MPR correctly', async ({
   await page.waitForTimeout(5000);
 
   await mainToolbarPageObject.measurementTools.bidirectional.click();
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 405, y: 277 },
     { x: 515, y: 339 },
   ]);
@@ -52,8 +64,40 @@ test('should hydrate in MPR correctly', async ({
 
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
+  // The jumps below target this single tracked bidirectional; pin its panel
+  // entry, SVG text, and cachedStats so a failed draw is caught here rather
+  // than as a pixel diff.
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
+
+  const expectedLength = '76.3';
+  const expectedWidth = '50.8';
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Bidirectional',
+    expectedPanelPrimaryLines: [
+      measurementTextFormatters.bidirectionalLengthLine(expectedLength),
+      measurementTextFormatters.bidirectionalWidthLine(expectedWidth),
+    ],
+    expectedSvgLines: [
+      measurementTextFormatters.bidirectionalLengthLine(expectedLength),
+      measurementTextFormatters.bidirectionalWidthLine(expectedWidth),
+    ],
+    assertStats: stats => {
+      expect(stats.unit).toBe('mm');
+      expect((stats.length as number).toFixed(1)).toBe(expectedLength);
+      expect((stats.width as number).toFixed(1)).toBe(expectedWidth);
+    },
+  });
+
   // scroll away
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.initialDraw,
+  });
 
   // Focus on the canvas first, then use mouse wheel to scroll away
   await page.evaluate(() => {
@@ -77,11 +121,19 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.scrollAway);
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.scrollAway,
+  });
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
+  await checkForViewportScreenshot({
+    page,
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack,
+  });
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
@@ -92,19 +144,35 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(3000);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpInMPR);
+  await checkForGridScreenshot({
+    page,
+    viewportPageObject,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.jumpInMPR,
+  });
+
+  const seriesChangeRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 30000 });
 
   await leftPanelPageObject.loadSeriesByDescription('Lung 3.0 CE');
 
-  await page.waitForTimeout(5000);
+  await seriesChangeRenderCycle;
+  // Series change unloads the old volume and progressively streams the new
+  // one; the wait helper resolves when loadStatus.loaded flips true, but the
+  // MPR mappers can still be sampling stale low-res frames for one tick.
+  // Give the streaming tail a chance to upload before screenshotting.
+  await page.waitForTimeout(2000);
+  await waitForPaintToSettle(page);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR);
+  await checkForGridScreenshot({
+    page,
+    viewportPageObject,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR,
+  });
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(
+  await checkForGridScreenshot({
     page,
-    page,
-    screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementAfterSeriesChange
-  );
+    viewportPageObject,
+    screenshotPath: screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementAfterSeriesChange,
+  });
 });

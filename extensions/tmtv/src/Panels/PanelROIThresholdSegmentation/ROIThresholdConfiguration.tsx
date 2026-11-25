@@ -36,7 +36,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
   };
 
   return (
-    <div className="bg-primary-dark flex flex-col space-y-4 p-px">
+    <div className="bg-muted flex flex-col space-y-4 p-px">
       <div className="flex items-end space-x-3">
         <div className="flex min-w-0 flex-1 flex-col">
           {/* The original panel design does not include "Strategy," but it was found in the code.

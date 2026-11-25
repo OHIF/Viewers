@@ -9,7 +9,8 @@ test('should restrict the percentage of max SUV to be between 0 and 1', async ({
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
-  await viewportPageObject.getById('ptAXIAL').normalizedClickAt([{ x: 0.5, y: 0.5 }]);
+  const viewport = await viewportPageObject.getById('ptAXIAL');
+  await viewport.normalizedClickAt([{ x: 0.5, y: 0.5 }]);
 
   await rightPanelPageObject.tmtvPanel.addSegmentationButton.click();
 

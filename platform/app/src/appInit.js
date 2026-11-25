@@ -25,10 +25,11 @@ import {
 } from '@ohif/core';
 
 import loadModules, { loadModule as peerImport } from './pluginImports';
+import { reconcileRuntimeRegistrations } from './runtimeExtensionLoader';
 import { publicUrl } from './utils/publicUrl';
 
 /**
- * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
+ * @param {object|function} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
 async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
@@ -86,22 +87,66 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     }
   };
 
+  // Stash the allowlist so the runtime extension loader can read it even when
+  // the app config is a function (loadDynamicConfig may also have replaced
+  // window.config by now).
+  if (Array.isArray(appConfig.runtimePluginOrigins)) {
+    window.__ohif = window.__ohif || {};
+    window.__ohif.runtimePluginOrigins = appConfig.runtimePluginOrigins;
+  }
+
   /**
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
-  await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
+  const loadedExtensions = await loadModules(
+    [...defaultExtensions, ...appConfig.extensions],
+    'extension'
+  );
 
-  // TODO: We no longer use `utils.addServer`
-  // TODO: We no longer init webWorkers at app level
-  // TODO: We no longer init the user Manager
+  const { customizationService } = servicesManager.services;
 
   if (!appConfig.modes) {
     throw new Error('No modes are defined! Check your app-config.js');
   }
 
-  const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
+  // Load the mode modules and register the customizations they carry (plain
+  // `customizationId -> value` maps on the mode definition) at Default scope
+  // BEFORE the bootstrap phase applies, so bootstrap / `?customization=`
+  // modules can modify a mode's registered values before anything reads them.
+  // The mode *instances* are only created after the global phase (below), so
+  // they too see any modifications.
+  const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes], 'mode');
+  for (const mode of loadedModes) {
+    if (mode?.customizations) {
+      customizationService.addReferences(mode.customizations, customizationService.Scope.Default);
+    }
+  }
+
+  // Resolve every customization module up front — from
+  // `appConfig.customizationService.requires` and the `?customization=` URL
+  // parameter — then apply the `bootstrap` phase BEFORE extensions register so
+  // it is in place while they initialize. Modules are only loaded when
+  // `appConfig.customizationUrlPrefixes` allows their prefix; the feature is
+  // off by default, and a value with an unconfigured prefix throws here
+  // (aborting startup) rather than being silently ignored.
+  await customizationService.loadAndApplyBootstrapCustomizations(extensionManager);
+
+  await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
+
+  // registerExtensions swallows per-extension errors internally, so diff the
+  // audit records against what actually registered.
+  reconcileRuntimeRegistrations(extensionManager, appConfig.extensions ?? []);
+
+  // Merge extension default/global modules, then layer on the `global` phase of
+  // the structured config + the URL modules resolved above (so `$apply`-style
+  // overrides see the extension-provided defaults they build on).
+  customizationService.init(extensionManager);
+  customizationService.applyGlobalCustomizations();
+
+  // TODO: We no longer use `utils.addServer`
+  // TODO: We no longer init webWorkers at app level
+  // TODO: We no longer init the user Manager
 
   // This is the name for the loaded instance object
   appConfig.loadedModes = [];
@@ -113,19 +158,39 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     }
     const { id } = mode;
 
-    if (mode.modeFactory) {
-      // If the appConfig contains configuration for this mode, use it.
-      const modeConfiguration =
-        appConfig.modesConfiguration && appConfig.modesConfiguration[id]
-          ? appConfig.modesConfiguration[id]
-          : {};
-
-      mode = await mode.modeFactory({ modeConfiguration, loadModules });
-    }
-
     if (modesById.has(id)) {
       continue;
     }
+
+    // If the appConfig contains configuration for this mode, use it.
+    const modeConfiguration =
+      appConfig.modesConfiguration && appConfig.modesConfiguration[id]
+        ? appConfig.modesConfiguration[id]
+        : {};
+
+    // Mirrors the extension commands path for modes, but registers before the
+    // mode is instantiated so the commands are usable on the worklist, ahead
+    // of any mode route being entered. Definitions land in the 'WORKLIST'
+    // context unless the module (or an individual command) declares its own.
+    if (typeof mode.getCommandsModule === 'function') {
+      extensionManager.registerCommandsModule(
+        mode.getCommandsModule({
+          appConfig,
+          commandsManager,
+          servicesManager,
+          serviceProvidersManager,
+          hotkeysManager,
+          extensionManager,
+          modeConfiguration,
+        }),
+        'WORKLIST'
+      );
+    }
+
+    if (mode.modeFactory) {
+      mode = await mode.modeFactory({ modeConfiguration, loadModules });
+    }
+
     // Prevent duplication
     modesById.add(id);
     if (!mode || typeof mode !== 'object') {

@@ -28,15 +28,9 @@ const dicomPDFExtension = {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  getViewportModule({ servicesManager, extensionManager }) {
+  getViewportModule() {
     const ExtendedOHIFCornerstonePdfViewport = props => {
-      return (
-        <OHIFCornerstonePdfViewport
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-          {...props}
-        />
-      );
+      return <OHIFCornerstonePdfViewport {...props} />;
     };
 
     return [{ name: 'dicom-pdf', component: ExtendedOHIFCornerstonePdfViewport }];

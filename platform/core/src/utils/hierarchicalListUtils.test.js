@@ -69,12 +69,12 @@ describe('hierarchicalListUtils', function () {
       const fn = jest.fn();
       forEach(sharedList, fn);
       expect(fn).toHaveBeenCalledTimes(6);
-      expect(fn).nthCalledWith(1, '1.2.3.1', '1.2.3.1.1');
-      expect(fn).nthCalledWith(2, '1.2.3.1', '1.2.3.1.2');
-      expect(fn).nthCalledWith(3, '1.2.3.2');
-      expect(fn).nthCalledWith(4, '1.2.3.3', '1.2.3.3.1');
-      expect(fn).nthCalledWith(5, '1.2.3.3', '1.2.3.3.2', '1.2.3.3.2.1');
-      expect(fn).nthCalledWith(6, '1.2.3.3', '1.2.3.3.2', '1.2.3.3.2.2');
+      expect(fn).toHaveBeenNthCalledWith(1, '1.2.3.1', '1.2.3.1.1');
+      expect(fn).toHaveBeenNthCalledWith(2, '1.2.3.1', '1.2.3.1.2');
+      expect(fn).toHaveBeenNthCalledWith(3, '1.2.3.2');
+      expect(fn).toHaveBeenNthCalledWith(4, '1.2.3.3', '1.2.3.3.1');
+      expect(fn).toHaveBeenNthCalledWith(5, '1.2.3.3', '1.2.3.3.2', '1.2.3.3.2.1');
+      expect(fn).toHaveBeenNthCalledWith(6, '1.2.3.3', '1.2.3.3.2', '1.2.3.3.2.2');
     });
   });
 

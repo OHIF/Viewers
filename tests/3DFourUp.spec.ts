@@ -1,10 +1,11 @@
 import {
   attemptAction,
-  checkForScreenshot,
+  checkForGridScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,17 +15,21 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up Test', async () => {
-  test('should render 3D four up correctly.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D four up correctly.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
-    await page.waitForTimeout(5000);
+    await waitForViewportsRendered(page);
 
-    await checkForScreenshot(
+    await checkForGridScreenshot({
       page,
-      page,
-      screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly
-    );
+      viewportPageObject,
+      screenshotPath: screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly,
+    });
   });
 });

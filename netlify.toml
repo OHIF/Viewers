@@ -1,0 +1,45 @@
+# Netlify Config
+#
+# TOML Reference:
+# https://www.netlify.com/docs/netlify-toml-reference/
+#
+# We use Netlify for deploy previews and for publishing docs (gh-pages branch).
+# https://viewer.ohif.org is created using a different process that is
+# managed by CircleCI and deployed to our Google Hosting
+
+[build]
+  base = ""
+  # A `CS3D_REF:` line in the PR body selects the CS3D build of a deploy
+  # preview, as it does for the Playwright workflow and CircleCI. Without the
+  # line, or on a build that is not a deploy preview, the script changes nothing.
+  # --after-build keeps a changed CS3D out of the Netlify build cache.
+  command = "bash .scripts/ci/cs3d-apply-ref.sh && pnpm run build:ci && bash .scripts/ci/cs3d-apply-ref.sh --after-build"
+  publish = "platform/app/dist"
+
+[build.environment]
+  # If 'production', `pnpm install` does not install devDependencies
+  NODE_ENV = "development"
+  NODE_VERSION = "24.22.2"
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+    # Report-only baseline CSP: observational only, enforces nothing.
+    # Violations against the demo PACS origin (connect-src) are expected on
+    # previews; the header exists to catch NEW script-src/worker-src
+    # regressions before they hit CSP-enabled Docker deployments.
+    # 'unsafe-inline' in script-src is an interim allowance for the two
+    # inline scripts in index.html (window.PUBLIC_URL and
+    # browserImportFunction); a hash-based replacement is the planned
+    # fast-follow.
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'"
+
+    cache-control = '''
+    max-age=0,
+    no-cache,
+    no-store,
+    must-revalidate'''

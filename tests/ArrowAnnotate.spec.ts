@@ -1,4 +1,13 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForViewportScreenshot,
+  expect,
+  expectAnnotationLabelText,
+  getAnnotationStats,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -17,7 +26,8 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await mainToolbarPageObject.measurementTools.arrowAnnotate.click();
 
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 164, y: 234 },
     { x: 344, y: 232 },
   ]);
@@ -26,41 +36,77 @@ test('should display the arrow tool and allow free-form text to be entered', asy
     'Ringo Starr was the drummer for The Beatles'
   );
 
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
+
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await page.waitForTimeout(2000);
+  await viewportRenderCycle;
 
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    maxDiffPixelRatio: 0.0075,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
   });
 
-  // Now edit the arrow text and the label should not change.
+  // Resolve the arrow annotation UID once; it remains stable across subsequent edits.
+  const arrows = await getAnnotationStats(page, {
+    toolName: 'ArrowAnnotate',
+    requireStats: false,
+  });
+  expect(arrows.length).toBeGreaterThan(0);
+  const annotationUID = arrows[0].annotationUID;
 
-  await viewportPageObject.active.doubleClickAt({ x: 164, y: 234 });
+  await expectAnnotationLabelText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'ArrowAnnotate',
+    annotationUID,
+    expectedText: 'Ringo Starr was the drummer for The Beatles',
+  });
+
+  // Double-clicking the arrow re-opens the text dialog. ArrowAnnotate stores its
+  // text on `data.label`, so the new text replaces it across the viewport SVG,
+  // the side panel and the annotation state.
+
+  await activeViewport.doubleClickAt({ x: 164, y: 234 });
 
   await DOMOverlayPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
 
-  await page.waitForTimeout(2000);
-
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    maxDiffPixelRatio: 0.0075,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
   });
 
-  // Now edit the label and the text should not change.
+  await expectAnnotationLabelText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'ArrowAnnotate',
+    annotationUID,
+    expectedText: 'Neil Peart was the drummer for Rush',
+  });
+
+  // Renaming from the side panel updates the same `data.label`, so the new text
+  // is reflected everywhere as well.
 
   await rightPanelPageObject.measurementsPanel.panel
     .nthMeasurement(0)
     .actions.rename('Drummer annotation arrow');
 
-  await page.waitForTimeout(2000);
-
-  await checkForScreenshot({
+  await checkForViewportScreenshot({
     page,
-    maxDiffPixelRatio: 0.0075,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
+  });
+
+  await expectAnnotationLabelText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'ArrowAnnotate',
+    annotationUID,
+    expectedText: 'Drummer annotation arrow',
   });
 });

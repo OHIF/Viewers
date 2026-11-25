@@ -236,6 +236,21 @@ When a customization is retrieved:
 As you have guessed the `.setCustomizations` accept a second argument which is the scope. By default it is set to `mode`.
 
 
+## Areas of Customization
+
+Use this introduction page for the core model (scope, priority, and syntax), then refer to focused pages for specific areas:
+
+- [Specific Customizations](./specificCustomizations.md): Built-in keys such as `ohif.preserveCustomizationKeys`, plus the `customizationUrlPrefixes` app-config allowlist that drives `?customization=` (off by default) and `requires` behavior, and how URL-loaded files interact with bootstrap and SPA navigation (intended one-time load per page).
+- [Custom Routes](./customRoutes.md): Route-level customization through `routes.customRoutes`.
+- [Context Menu](./contextMenu.md): Context menu structures and interaction customization.
+- [Study Browser](./StudyBrowser.md): Study browser-specific configuration values.
+- [Viewport Overlay](./viewportOverlay.md): Overlay item configuration and layout.
+- [Viewport Scrollbar](./ViewportScrollbar.md): Scrollbar behavior and display customizations.
+- [Measurements](./Measurements.md): Measurement-related customization surface.
+- [Segmentation](./Segmentation.md): Segmentation-specific customization options.
+- [Advanced Customization](./advanced.md): `inheritsFrom`, `$transform`, and compositional patterns.
+- [Typing Customizations](./typing.md): Declaring a customization id in `AppTypes.Customizations` so reads are typed, writes are checked, and call-site casts can be deleted.
+
 ## Customization Syntax
 
 
@@ -474,6 +489,8 @@ customizationService.setCustomizations({
 | `$filter`   | Find and update specific items in arrays     | Target nested structures             |
 | `$transform`| Apply a function to transform the customization | Apply a function to transform values |
 
+Extensions can register additional commands with `registerCustomUpdateCommand`. To have specs using them type-checked, declare them as described in [Typing Customizations](./typing.md#declaring-a-custom-update-command).
+
 ## Building Customizations Across Multiple Extensions
 
 Sometimes it is useful to build customizations across multiple extensions. For example, you may want to build a default list of tools inside a vieweport. But then each extension may want to add their own tools to the list.
@@ -542,5 +559,10 @@ needless to say if you opted to choose `name: default` in the `getCustomizationM
 ## Customizable Parts of OHIF
 
 Below we are providing the example configuration for global scenario (using the configuration file), however, you can also use the `setCustomizations` method to set the customizations.
+
+In addition to the parts listed in the table below, the
+[Appearance & Theming](./appearance-theming.md) system is delivered as a
+customization module (`@ohif/extension-default.customizationModule.theme`) that
+adds theme preset switching, custom CSS overrides, and URL-based theme selection.
 
 {TableGenerator(customizations)}

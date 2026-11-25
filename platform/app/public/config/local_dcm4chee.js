@@ -20,10 +20,11 @@ window.config = {
         wadoUriRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,
-        thumbnailRendering: 'wadors',
+        thumbnailRendering: 'thumbnail',
+        thumbnailRequestStrategy: 'fetch',
+        supportsWildcard: true,
         requestOptions: {
           auth: 'admin:admin',
         },

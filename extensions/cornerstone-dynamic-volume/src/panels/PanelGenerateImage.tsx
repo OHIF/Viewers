@@ -7,6 +7,22 @@ import DynamicVolumeControls from './DynamicVolumeControls';
 
 const SOPClassHandlerId = '@ohif/extension-default.sopClassHandlerModule.stack';
 
+/**
+ * Sets the displayed dimension group (time point) on a dynamic volume.
+ *
+ * Module scope on purpose: writing to a value the render produced - dynamicVolume
+ * is held in state - is a mutation the React Compiler cannot account for, and it
+ * refuses to optimize the whole component. Passing the volume to a named helper
+ * keeps the operation explicit and lets the compiler key the callback on the
+ * volume reference rather than on a dereferenced property of it.
+ */
+function setDimensionGroup(volume, dimensionGroupNumber) {
+  if (!volume) {
+    return;
+  }
+  volume.dimensionGroupNumber = dimensionGroupNumber;
+}
+
 export default function PanelGenerateImage({ servicesManager, commandsManager }: withAppTypes) {
   const { cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
@@ -24,9 +40,13 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const [displayingComputed, setDisplayingComputed] = useState(false);
 
   //
-  const uuidComputedVolume = useRef(csUtils.uuidv4());
+  // State, not a ref: this id is generated once and never changes, and it is read
+  // during render to build computedVolumeId. Reading ref.current in render is the
+  // thing refs are not for, and the compiler refuses it.
+  const [uuidComputedVolume] = useState(() => csUtils.uuidv4());
   const uuidDynamicVolume = useRef(null);
-  const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume.current}`;
+  const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume}`;
+
 
   useEffect(() => {
     const viewportDataChangedEvt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
@@ -153,12 +173,12 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
     if (!computedDisplaySet) {
       const displaySet = {
         volumeLoaderSchema: computedVolume.volumeId.split(':')[0],
-        displaySetInstanceUID: uuidComputedVolume.current,
+        displaySetInstanceUID: uuidComputedVolume,
         SOPClassHandlerId: SOPClassHandlerId,
         Modality: dynamicVolume.metadata.Modality,
         isMultiFrame: false,
         numImageFrames: 1,
-        uid: uuidComputedVolume.current,
+        uid: uuidComputedVolume,
         referenceDisplaySetUID: dynamicVolume.volumeId.split(':')[1],
         madeInClient: true,
         FrameOfReferenceUID: dynamicVolume.metadata.FrameOfReferenceUID,
@@ -215,7 +235,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       currentDimensionGroupNumber={dimensionGroupNumberRendered}
       numDimensionGroups={dynamicVolume?.numDimensionGroups || 1}
       onDimensionGroupChange={dimensionGroupNumber => {
-        dynamicVolume.dimensionGroupNumber = dimensionGroupNumber;
+        setDimensionGroup(dynamicVolume, dimensionGroupNumber);
       }}
       onGenerate={onGenerateImage}
       onDynamicClick={displayingComputed ? () => renderDynamicImage(computedDisplaySet) : null}

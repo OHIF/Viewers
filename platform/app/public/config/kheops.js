@@ -18,7 +18,7 @@ window.config = {
   groupEnabledModesFirst: true,
   maxNumRequests: {
     interaction: 100,
-    thumbnail: 75,
+    thumbnail: 5,
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
@@ -37,15 +37,15 @@ window.config = {
       hide: { $set: true },
     },
   },
-  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
+  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. At least one gate is required: `origins` (preferred — an exact origin comparison) and/or an ANCHORED `regex`. There is no default, and an unanchored regex is refused with a console error. */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
-  //   // regex will ensure valid configuration source and default is /.*/ which matches any character. To use this, setup your own regex to choose a specific source of configuration only.
-  //   // Example 1, to allow numbers and letters in an absolute or sub-path only.
-  //   // regex: /(0-9A-Za-z.]+)(\/[0-9A-Za-z.]+)*/
-  //   // Example 2, to restricts to either hosptial.com or othersite.com.
-  //   // regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/
-  //   regex: /.*/,
+  //   // Preferred: exact origin comparison against new URL(configUrl).origin.
+  //   origins: ['https://hospital.com', 'https://othersite.com'],
+  //   // A regex is matched against the RESOLVED absolute URL and must start
+  //   // with '^' — anchor every alternative, or a hostile URL can satisfy the
+  //   // pattern from its own path/query string.
+  //   // regex: /^https:\/\/hospital\.com\/configs\//
   // },
   dataSources: [
     {
@@ -57,7 +57,6 @@ window.config = {
         wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
@@ -82,7 +81,6 @@ window.config = {
         wadoUriRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
         qidoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
         wadoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -110,7 +108,6 @@ window.config = {
         name: 'DCM4CHEE',
         qidoRoot: 'http://localhost:5000/dicomweb',
         wadoRoot: 'http://localhost:5000/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: true,
         supportsStow: true,
         imageRendering: 'wadors',
@@ -135,7 +132,6 @@ window.config = {
         wadoUriRoot: '/dicomweb',
         qidoRoot: '/dicomweb',
         wadoRoot: '/dicomweb',
-        qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',

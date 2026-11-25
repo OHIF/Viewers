@@ -10,7 +10,7 @@ export const SegmentationHeader: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
   // Always call both hooks unconditionally at the top level
-  const expandedContext = useSegmentationExpanded('SegmentationHeader');
+  const expandedContext = useSegmentationExpanded();
   const tableContext = useSegmentationTableContext('SegmentationHeader');
 
   // Determine which segmentation to use

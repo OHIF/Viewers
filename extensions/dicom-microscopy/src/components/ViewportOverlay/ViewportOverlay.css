@@ -5,13 +5,13 @@
   pointer-events: none !important;
 }
 
-.DicomMicroscopyViewer .text-primary-light {
+.DicomMicroscopyViewer .text-highlight {
   font-size: 14px;
   color: yellow;
   font-weight: normal;
 }
 
-.DicomMicroscopyViewer .text-primary-light span {
+.DicomMicroscopyViewer .text-highlight span {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

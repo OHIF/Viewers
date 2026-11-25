@@ -1,3 +1,4 @@
 .chrome-picker {
-  background: #090c29 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }

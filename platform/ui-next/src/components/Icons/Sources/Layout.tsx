@@ -38,7 +38,7 @@ export const LayoutAdvanced3DFourUp = (props: IconProps) => (
         <path
           d="M13.8857143,0 L25,0 C26.1045695,-1.18396092e-15 27,0.8954305 27,2 L27,8.5 L27,8.5 L13.8857143,8.5 L13.8857143,0 Z"
           id="Rectangle"
-          fill="#263A71"
+          fill="hsl(var(--accent))"
         ></path>
         <path
           d="M0,8.48571429 L13.8857143,8.48571429 L13.8857143,14.2 C13.8857143,15.3045695 12.9902838,16.2 11.8857143,16.2 L0,16.2 L0,16.2 L0,8.48571429 Z"
@@ -94,7 +94,7 @@ export const LayoutAdvanced3DMain = (props: IconProps) => (
         <path
           d="M2,0 L25,0 C26.1045695,-2.02906125e-16 27,0.8954305 27,2 L27,8.48571429 L27,8.48571429 L0,8.48571429 L0,2 C-1.3527075e-16,0.8954305 0.8954305,1.3527075e-16 2,0 Z"
           id="Rectangle"
-          fill="#263A71"
+          fill="hsl(var(--accent))"
           transform="translate(13.5, 4.2429) scale(-1, 1) translate(-13.5, -4.2429)"
         ></path>
       </g>
@@ -121,11 +121,11 @@ export const LayoutAdvanced3DOnly = (props: IconProps) => (
       <g
         id="layout-advanced-3d-only"
         transform="translate(1, 1)"
-        fill="#263A71"
         stroke="currentColor"
       >
         <rect
           id="Rectangle"
+          fill="hsl(var(--accent))"
           x="0"
           y="0"
           width="27"
@@ -177,7 +177,7 @@ export const LayoutAdvanced3DPrimary = (props: IconProps) => (
         <path
           d="M0,0 L14.2,0 C15.3045695,-2.02906125e-16 16.2,0.8954305 16.2,2 L16.2,14.2 C16.2,15.3045695 15.3045695,16.2 14.2,16.2 L0,16.2 L0,16.2 L0,0 Z"
           id="Rectangle"
-          fill="#263A71"
+          fill="hsl(var(--accent))"
           transform="translate(8.1, 8.1) scale(-1, 1) translate(-8.1, -8.1)"
         ></path>
       </g>
