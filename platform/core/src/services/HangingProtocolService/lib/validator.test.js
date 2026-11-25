@@ -87,11 +87,10 @@ describe('validator', () => {
       expect(validate({ n: ['1', '2'] }, { n: { includes: 2 } }, [options])).toBeUndefined();
     });
     it.each([
-      [true, 1, true],
       [true, 'true', true],
-      [false, 0, true],
       [false, 'false', true],
-      [true, 0, false],
+      [true, 1, false],
+      [false, 0, false],
     ])('compares the boolean %j with %j: equal is %s', (flag, n, equal) => {
       expect(validate({ n }, { n: { equals: { value: flag } } }, [options]) === undefined).toBe(
         equal

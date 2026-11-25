@@ -16,10 +16,12 @@ import {
   simulateNormalizedPathDragOnElement,
 } from './simulateDragOnElement';
 import { reduce3DViewportSize } from './reduce3DviewportSize';
-import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
+import { getMousePosition, initializeMousePositionTracker, type MouseButton } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
+import { getSegmentStats } from './getSegmentStats';
+import { roundNumbers } from './roundNumbers';
 import {
   expectAnnotationLabelText,
   expectAnnotationStatsText,
@@ -43,8 +45,10 @@ import {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForRenderCycleForAction,
   waitForPaintToSettle,
 } from './waitForViewportsRendered';
+import { waitForViewportNotBlank } from './waitForViewportNotBlank';
 
 export {
   visitStudy,
@@ -65,9 +69,12 @@ export {
   reduce3DViewportSize,
   getMousePosition,
   initializeMousePositionTracker,
+  type MouseButton,
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
+  getSegmentStats,
+  roundNumbers,
   expectAnnotationLabelText,
   expectAnnotationStatsText,
   measurementTextFormatters,
@@ -86,7 +93,9 @@ export {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
+  waitForRenderCycleForAction,
   waitForPaintToSettle,
+  waitForViewportNotBlank,
   press,
   withKeyHeld,
   test,

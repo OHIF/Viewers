@@ -231,6 +231,19 @@ sooner than those loaded later.  The available strategies are:
 and end points, and then filling in progressively all along the image.  This results in partial
 image view very quickly.
 
+A protocol without `imageLoadStrategy` loads each volume with `volume.load()`. The cornerstone
+extension sets the volume retrieve configuration to the Cornerstone3D
+`coarseInterleavedRetrieveStages`. That configuration loads every 64th image first, at the offsets
+0, 21 and 42, and copies each image to the empty frames around it. A reformat then holds no gray
+line while the volume loads. The `mpr` protocol sets no strategy, so it uses this configuration. A
+strategy above does not copy images to empty frames.
+
+Earlier versions of the `mpr` protocol used the `nth` strategy. The change applies to all users, also
+with lossy downsampling off: the load order changes, and the first images show at a coarse depth
+resolution before they refine. The data source `volumeRetrieveOptions` selects other volume
+stages. See the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/multi-resolution-volumes.md)
+to get the 3.13 load back.
+
 ### protocolMatchingRules
 A list of criteria for the protocol along with the provided points for ranking.
 
@@ -253,7 +266,7 @@ A list of criteria for the protocol along with the provided points for ranking.
 
  | Rule | Single Value | Array Value | Example |
 |------|--------------|-------------|---------|
-| equals | Equal value (a number equals a numeric string; a boolean equals `1` / `0` and `'true'` / `'false'`) | All members are equal, in the same order | value &equals; ['abc', 'def', 'GHI']<br/>testValue &equals; 'abc' (Fail)<br/>&equals; ['abc'] (Fail)<br/>&equals; ['abc', 'def', 'GHI'] (Valid)<br/>&equals; ['abc', 'GHI', 'def'] (Fail)<br/>&equals; ['abc', 'def'] (Fail)<br/><br/>value &equals; 'Attenuation Corrected'<br/>testValue &equals; 'Attenuation Corrected' (Valid)<br/>&equals; 'Attenuation' (Fail)<br/><br/>value &equals; ['Attenuation Corrected']<br/>testValue &equals; ['Attenuation Corrected'] (Valid)<br/>&equals; 'Attenuation Corrected' (Valid)<br/>&equals; 'Attenuation' (Fail)<br/><br/>A single value is the same as an array of one value. A number equals a numeric string (`1` equals `'1'`). A boolean equals `1` or `0`, and `'true'` or `'false'`: `true` equals `1`, but not `'1'`. Use `includes` to test that a value is one of a list. |
+| equals | Equal value (a number equals a numeric string; a boolean equals `'true'` / `'false'`) | All members are equal, in the same order | value &equals; ['abc', 'def', 'GHI']<br/>testValue &equals; 'abc' (Fail)<br/>&equals; ['abc'] (Fail)<br/>&equals; ['abc', 'def', 'GHI'] (Valid)<br/>&equals; ['abc', 'GHI', 'def'] (Fail)<br/>&equals; ['abc', 'def'] (Fail)<br/><br/>value &equals; 'Attenuation Corrected'<br/>testValue &equals; 'Attenuation Corrected' (Valid)<br/>&equals; 'Attenuation' (Fail)<br/><br/>value &equals; ['Attenuation Corrected']<br/>testValue &equals; ['Attenuation Corrected'] (Valid)<br/>&equals; 'Attenuation Corrected' (Valid)<br/>&equals; 'Attenuation' (Fail)<br/><br/>A single value is the same as an array of one value. A number equals a numeric string (`1` equals `'1'`). A boolean equals the text `'true'` or `'false'` only: `true` does not equal `1` or `'1'`. Use `includes` to test that a value is one of a list. |
 | doesNotEqual | Not an equal value | Any member is not equal, in value, order or length | value &equals; ['abc', 'def', 'GHI']<br/>testValue &equals; 'abc' (Valid)<br/>&equals; ['abc'] (Valid)<br/>&equals; ['abc', 'def', 'GHI'] (Fail)<br/>&equals; ['abc', 'GHI', 'def'] (Valid)<br/>&equals; ['abc', 'def'] (Valid)<br/><br/>value &equals; 'Attenuation Corrected'<br/>testValue &equals; 'Attenuation Corrected' (Fail)<br/>&equals; 'Attenuation' (Valid)<br/><br/>value &equals; ['Attenuation Corrected']<br/>testValue &equals; ['Attenuation Corrected'] (Fail)<br/>&equals; 'Attenuation Corrected' (Fail)<br/>&equals; 'Attenuation' (Valid) |
 | includes | Same as an array of one value | Value is equal to one of the values of the array | value &equals; ['abc', 'def', 'GHI']<br/>testValue &equals; ['abc'] (Valid)<br/>&equals; 'abc' (Valid)<br/>&equals; 'dog' (Fail)<br/>&equals; ['att', 'abc'] (Valid)<br/>&equals; ['abc', 'def', 'dog'] (Valid)<br/>&equals; ['cat', 'dog'] (Fail)<br/><br/>value &equals; 'Attenuation Corrected'<br/>testValue &equals; ['Attenuation Corrected', 'Corrected'] (Valid)<br/>&equals; ['Attenuation', 'Corrected'] (Fail)<br/><br/>value &equals; ['Attenuation Corrected']<br/>testValue &equals; 'Attenuation Corrected' (Valid)<br/>&equals; ['Attenuation Corrected', 'Corrected'] (Valid)<br/>&equals; ['Attenuation', 'Corrected'] (Fail) |
 | doesNotInclude | Same as an array of one value | Value is not in one of the values of the array | value &equals; ['abc', 'def', 'GHI']<br/>testValue &equals; 'Corr' (Valid)<br/>&equals; 'abc' (Fail)<br/>&equals; ['att', 'cor'] (Valid)<br/>&equals; ['abc', 'def', 'dog'] (Fail)<br/><br/>value &equals; 'Attenuation Corrected'<br/>testValue &equals; ['Attenuation Corrected', 'Corrected'] (Fail)<br/>&equals; ['Attenuation', 'Corrected'] (Valid)<br/><br/>value &equals; ['Attenuation Corrected']<br/>testValue &equals; 'Attenuation' (Valid)<br/>&equals; 'Attenuation Corrected' (Fail)<br/>&equals; ['Attenuation Corrected', 'Corrected'] (Fail)<br/>&equals; ['Attenuation', 'Corrected'] (Valid) |
@@ -366,6 +379,24 @@ The ptDisplaySet will match against all the series that are PT and reconstructab
 
 As you see each selector is composed of an `id` as the key and a set of `seriesMatchingRules` (displaySetMatchingRules) which gives score to the displaySet
 based on the matching rules. The displaySet with the highest score will be used for the `id`.
+
+The viewer remembers the display set that the user puts in a viewport, under
+the selector `id` and the `matchedDisplaySetsIndex`, and reuses it when the
+stage changes. When two stages use different selectors for the same viewport,
+set `selectorMapId` on one selector to the `id` of the other. The two selectors
+then share the user's choice. The viewer does not check a reused display set
+against the rules of the selector, so a display set that the user put in a
+viewport stays when the stage changes. For example, `@ohif/mnGrid` uses
+`viewableDisplaySetId` (images, ECG, SM and PDF) in the 2x1 and 1x1 stages, and
+`defaultDisplaySetId` (images only) in the 2x2 and 3x1 stages:
+
+```js
+viewableDisplaySetId: {
+  allowUnmatchedView: true,
+  selectorMapId: 'defaultDisplaySetId',
+  seriesMatchingRules: seriesViewable,
+},
+```
 
 ### stages
 Each protocol can define one or more stages. Each stage defines a certain layout and viewport rules. Therefore, the `stages` property is an array of objects, each object being one stage.

@@ -590,47 +590,49 @@ export default class ToolbarService extends PubSubService {
 
     !buttonSection ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
-    const { id: buttonId, props: componentProps } = btn;
+    const { props: componentProps } = btn;
 
-    const createEnhancedOptions = (options: ButtonOptions[], itemId) => {
-      const optionsToUse = Array.isArray(options) ? options : [options];
-      const toolProps = this.getButtonProps(itemId);
+    /**
+     * Wraps each option of `owner` with an `onChange` handler. The caller writes
+     * the result back to `owner.options`, so the next refresh wraps these wrappers.
+     * The handler therefore closes over `owner` and the option id only, and finds
+     * the live option at call time. A handler that closed over the option object
+     * would retain the previous wrapper, and each refresh would add one link to a
+     * chain that `state.buttons` keeps alive.
+     */
+    const createEnhancedOptions = (owner: { options?: ButtonOptions | ButtonOptions[] }) => {
+      const optionsToUse = Array.isArray(owner.options) ? owner.options : [owner.options];
 
       return optionsToUse.map(option => {
         if (typeof option.optionComponent === 'function') {
           return option;
         }
+        const optionId = option.id;
 
         return {
           ...option,
           onChange: value => {
-            // Update the option's value for UI
-            option.value = value;
-
-            const cmds = Array.isArray(option.commands) ? option.commands : [option.commands];
-
-            // Find the parent button and update its options
-            if (toolProps && toolProps.options) {
-              // Find the option in the button's options array and update its value
-              const optionIndex = toolProps.options.findIndex(opt => opt.id === option.id);
-              if (optionIndex !== -1) {
-                toolProps.options[optionIndex].value = value;
-              }
+            const options = owner.options as ButtonOptions[];
+            const liveOption = options.find(opt => opt.id === optionId);
+            if (!liveOption) {
+              return;
             }
+            liveOption.value = value;
+
+            const cmds = Array.isArray(liveOption.commands)
+              ? liveOption.commands
+              : [liveOption.commands];
 
             cmds.forEach(command => {
-              const commandOptions = {
-                ...option,
+              this._commandsManager.run(command, {
+                ...liveOption,
                 value,
-                options: toolProps.options,
+                options,
                 servicesManager: this._servicesManager,
                 commandsManager: this._commandsManager,
-              };
-
-              this._commandsManager.run(command, commandOptions);
+              });
             });
 
-            // Notify that toolbar state has been modified
             this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
               buttons: this.state.buttons,
               buttonSections: this.state.buttonSections,
@@ -647,12 +649,11 @@ export default class ToolbarService extends PubSubService {
         if (!item.options) {
           return;
         }
-        item.options = createEnhancedOptions(item.options, item.id);
+        item.options = createEnhancedOptions(item);
       });
     } else if ((componentProps as ButtonProps).options?.length) {
       (componentProps as ButtonProps).options = createEnhancedOptions(
-        (componentProps as ButtonProps).options,
-        buttonId
+        componentProps as ButtonProps
       );
     } else if ((componentProps as ButtonProps).optionComponent) {
       (componentProps as ButtonProps).optionComponent = options.optionComponent;
@@ -718,7 +719,12 @@ export default class ToolbarService extends PubSubService {
         return evaluateFunction;
       });
 
-      const evaluateProps = props.evaluate;
+      // Merge the options of the object entries; name only selects the evaluator.
+      const { name: _name, ...evaluateProps } = Object.assign(
+        {},
+        ...evaluate.filter(evaluator => evaluator && typeof evaluator === 'object')
+      );
+
       props.evaluate = args => {
         const results = evaluators.map(evaluator => evaluator(args)).filter(Boolean);
 
