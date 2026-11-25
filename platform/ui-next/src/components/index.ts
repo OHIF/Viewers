@@ -328,3 +328,4 @@ export {
   SmartScrollbarEndpoints,
   useByteArray,
 };
+export { Replaceable, useReplaceableProps } from './Replaceable/Replaceable';

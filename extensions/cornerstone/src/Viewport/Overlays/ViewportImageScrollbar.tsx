@@ -6,21 +6,24 @@
 
 import React, { useEffect } from 'react';
 import { utilities as csUtils } from '@cornerstonejs/core';
-import { ImageScrollbar } from '@ohif/ui-next';
+import { ImageScrollbar, Replaceable } from '@ohif/ui-next';
 import { isVolume3DViewportType } from '../../utils/getLegacyViewportType';
 import { getSliceEventName, getViewportSliceCount } from '../../utils/viewportDataShape';
 
-function CornerstoneImageScrollbar({
-  viewportData,
-  viewportId,
-  element,
-  imageSliceData,
-  setImageSliceData,
-  scrollbarHeight,
-  servicesManager,
-}: withAppTypes<{
-  element: HTMLElement;
-}>) {
+function CornerstoneImageScrollbar(
+  props: withAppTypes<{
+    element: HTMLElement;
+  }>
+) {
+  const {
+    viewportData,
+    viewportId,
+    element,
+    imageSliceData,
+    setImageSliceData,
+    scrollbarHeight,
+    servicesManager,
+  } = props;
   const { cineService, cornerstoneViewportService } = servicesManager.services;
 
   const onImageScrollbarChange = (imageIndex, viewportId) => {
@@ -92,15 +95,20 @@ function CornerstoneImageScrollbar({
   }, [viewportData, element]);
 
   return (
-    <ImageScrollbar
-      onChange={evt => onImageScrollbarChange(evt, viewportId)}
-      max={imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0}
-      height={scrollbarHeight}
-      value={imageSliceData.imageIndex || 0}
-    />
+    <Replaceable
+      id="viewportScrollbar"
+      props={props}
+      variant="legacy"
+      onImageScrollbarChange={onImageScrollbarChange}
+    >
+      <ImageScrollbar
+        onChange={evt => onImageScrollbarChange(evt, viewportId)}
+        max={imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0}
+        height={scrollbarHeight}
+        value={imageSliceData.imageIndex || 0}
+      />
+    </Replaceable>
   );
 }
-
-
 
 export default CornerstoneImageScrollbar;

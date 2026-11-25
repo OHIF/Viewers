@@ -13,6 +13,7 @@ import NavigationComponent from './components/NavigationComponent/NavigationComp
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
 import ViewportColorbarsContainer from './components/ViewportColorbar';
 import AdvancedRenderingControls from './components/AdvancedRenderingControls';
+import { CineCornerDisplay } from './customizations/replaceableExperimentsCustomization';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -32,6 +33,8 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
   } = servicesManager.services;
 
   return [
+    // Replaceable experiment E4; no default button uses it.
+    { name: 'replaceable.cineCorner', defaultComponent: CineCornerDisplay },
     {
       name: 'ohif.advancedRenderingControls',
       defaultComponent: AdvancedRenderingControls,

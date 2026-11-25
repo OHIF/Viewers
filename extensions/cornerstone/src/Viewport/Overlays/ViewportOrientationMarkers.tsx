@@ -10,20 +10,22 @@ import classNames from 'classnames';
 import { metaData, Enums, getEnabledElement } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
+import { Replaceable } from '@ohif/ui-next';
 
 import './ViewportOrientationMarkers.css';
 import { useViewportRendering } from '../../hooks';
 import { getViewportDataShapeType } from '../../utils/viewportDataShape';
 const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
-function ViewportOrientationMarkers({
-  element,
-  viewportData,
-  imageSliceData,
-  viewportId,
-  servicesManager,
-  orientationMarkers = ['top', 'left'],
-}: withAppTypes) {
+function ViewportOrientationMarkers(props: withAppTypes) {
+  const {
+    element,
+    viewportData,
+    imageSliceData,
+    viewportId,
+    servicesManager,
+    orientationMarkers = ['top', 'left'],
+  } = props;
   const [cameraModifiedTime, setCameraModifiedTime] = useState(0);
   const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
   const { cornerstoneViewportService } = servicesManager.services;
@@ -106,7 +108,17 @@ function ViewportOrientationMarkers({
     ));
   }, [viewportData, imageSliceData, cameraModifiedTime, orientationMarkers, element, isLight]);
 
-  return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
+  return (
+    <Replaceable
+      id="viewportOrientationMarkers"
+      props={props}
+      isLight={isLight}
+      markers={markers}
+      orientationMarkers={orientationMarkers}
+    >
+      <div className="ViewportOrientationMarkers select-none">{markers}</div>
+    </Replaceable>
+  );
 }
 
 /**
