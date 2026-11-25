@@ -60,7 +60,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
   editableBy: {},
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
-  imageLoadStrategy: 'nth',
   callbacks: {},
   displaySetSelectors: {
     activeDisplaySet: {
