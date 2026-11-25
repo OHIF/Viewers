@@ -196,9 +196,10 @@ as Nginx-Orthanc, serve the viewer from `/var/www/html`, the `root` in their `ng
 recipe, mount the file at `/var/www/html/app-config.js`. The recipes do not run the `entrypoint.sh`
 of the root image, so the [Environment Variable](#environment-variable) method does not apply to
 them. The [Build Default](#build-default) method does apply: each recipe `dockerfile` declares
-`ARG APP_CONFIG` with that recipe's config as the default, so you can override it with
-`docker compose build --build-arg APP_CONFIG={config-path}`, or with `build.args` in the recipe's
-`docker-compose.yml`.
+`ARG APP_CONFIG` with that recipe's config as the default. To change it, set `APP_CONFIG` under
+`build.args` in the recipe's `docker-compose.yml`. A one-off
+`docker compose build --build-arg APP_CONFIG={config-path}` also works, but the next
+`docker compose up --build` builds with the default again.
 :::
 
 ---

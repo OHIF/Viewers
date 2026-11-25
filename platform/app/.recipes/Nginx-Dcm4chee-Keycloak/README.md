@@ -11,7 +11,10 @@ Before the first `docker compose up`:
 
 1. Set the secrets listed in [SECURITY-NOTES.md](SECURITY-NOTES.md): the
    `.env` passwords, the client secret and the cookie secret.
-2. Replace `YOUR_DOMAIN` in `docker-compose.yml`, `config/nginx.conf` and
+2. Change the passwords of the default `viewer` and `pacsadmin` users, or
+   remove those users. See "Default users" in
+   [SECURITY-NOTES.md](SECURITY-NOTES.md).
+3. Replace `YOUR_DOMAIN` in `docker-compose.yml`, `config/nginx.conf` and
    `config/oauth2-proxy.cfg`, and provide the TLS certificate that
    `config/nginx.conf` points at. nginx does not start without it. The guide
    walks through both.
@@ -30,11 +33,6 @@ last build, even if the code has changed since.
 
 The archive keeps its data under `~/dcm4chee-arc/` on the host, so studies
 survive `docker compose down`.
-
-## After the first start
-
-Change the passwords of the default `viewer` and `pacsadmin` users, or delete
-those users. See "Default users" in [SECURITY-NOTES.md](SECURITY-NOTES.md).
 
 ## Routes
 

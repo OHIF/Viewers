@@ -28,11 +28,15 @@ This recipe no longer ships working credential values. Before `docker compose up
 `config/ohif-keycloak-realm.json` creates two users in the `ohif` realm, with
 their usernames as passwords: `viewer` (password `viewer`), who can use the
 viewer, and `pacsadmin` (password `pacsadmin`), who can also open the PACS admin
-UI. After the first start, change both passwords in the Keycloak admin console
-(realm `ohif` -> Users -> the user -> Credentials -> Reset password), or delete
-the users you don't need. Editing the passwords in the realm file only helps
-before the first start: Keycloak imports the file only while the realm does
-not exist yet.
+UI. Before the first `docker compose up`, change their passwords in that file
+(each user's `credentials` -> `value`), or remove the users you don't need from
+its `users` list. Until you do, anyone who can reach the server can sign in
+with them.
+
+Keycloak imports the realm file only while the realm does not exist yet. After
+the first start, edits to the file have no effect: change the passwords in the
+Keycloak admin console instead (realm `ohif` -> Users -> the user ->
+Credentials -> Reset password), or delete the users there.
 
 ## Rotate if you deployed from an earlier checkout
 
