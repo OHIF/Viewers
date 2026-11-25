@@ -250,7 +250,7 @@ export class HotkeysManager {
       this._unbindHotkeys(commandName, existingHotkey.keys);
     }
 
-    this.hotkeyDefinitions[commandHash] = { ...hotkeyDefinition };
+    this.hotkeyDefinitions[commandHash] = { ...hotkeyDefinition, commandOptions };
     this._bindHotkeys(commandName, commandOptions, context, keys);
   }
 
