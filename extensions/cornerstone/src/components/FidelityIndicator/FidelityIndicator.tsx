@@ -50,7 +50,9 @@ function causeSummary(
     memoryBudget: t('CauseMemoryBudget'),
     performanceTarget: t('CausePerformance'),
     incompleteLoad: t('CauseIncompleteLoad'),
+    missingFrames: t('CauseMissingFrames'),
     lossyDecode: t('CauseLossyDecode'),
+    displayIssue: t('CauseDisplayIssue'),
   };
   return known[state.cause] ?? t('CauseUnknown');
 }
@@ -85,9 +87,10 @@ function FidelityIndicator({
   const idleRevealer = presentation === 'none' && wasLossy;
   const showIcon = display === 'icon' || display === 'both';
   const showText = display === 'text' || display === 'both';
-  // Yellow triangle only while lossy; recovered uses text (if enabled) then withdraws.
+  // Yellow triangle while lossy; green check for the recovered hold and its hover reveal.
   const showWarningGlyph =
     showIcon && (presentation === 'transient' || presentation === 'standing');
+  const showRecoveredGlyph = showIcon && presentation === 'recovered';
 
   if (presentation === 'none' && !idleRevealer) {
     return null;
@@ -124,6 +127,12 @@ function FidelityIndicator({
               aria-hidden="true"
             />
           ) : null}
+          {showRecoveredGlyph ? (
+            <Icons.StatusSuccess
+              className="ohif-fidelity__glyph text-green-500"
+              aria-hidden="true"
+            />
+          ) : null}
           {showText && labelKey ? (
             <span className="ohif-fidelity__label">{t(labelKey)}</span>
           ) : null}
@@ -135,6 +144,15 @@ function FidelityIndicator({
       >
         <div>{t(ariaKeyOf(ariaPresentation))}</div>
         {cause ? <div className="ohif-fidelity__cause">{cause}</div> : null}
+        {/* VF-INFO-11: Cornerstone3D gives the issue messages in English only. */}
+        {state?.issues?.map(issue => (
+          <div
+            key={issue.code}
+            className="ohif-fidelity__cause"
+          >
+            {issue.message}
+          </div>
+        ))}
       </TooltipContent>
     </Tooltip>
   );

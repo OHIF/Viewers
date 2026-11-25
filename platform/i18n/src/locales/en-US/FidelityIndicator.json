@@ -10,6 +10,8 @@
   "CauseMemoryBudget": "Reduced to fit available memory",
   "CausePerformance": "Temporarily reduced during interaction",
   "CauseIncompleteLoad": "Still loading higher detail",
+  "CauseMissingFrames": "Some images are missing",
   "CauseLossyDecode": "Decoded at reduced quality",
+  "CauseDisplayIssue": "The image does not show as its metadata specifies",
   "CauseUnknown": "Displayed at reduced fidelity"
 }

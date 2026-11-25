@@ -41,10 +41,8 @@
   opacity: 0.85;
 }
 
-/* Hover target after recovered withdrew (VF-VIS-1d). :empty keeps the target while
-   revealed in icon mode (no glyph); without it the hover flickers. */
-.ohif-fidelity--idle,
-.ohif-fidelity:empty {
+/* Hover target after recovered withdrew (VF-VIS-1d). */
+.ohif-fidelity--idle {
   width: 0.75rem;
   height: 0.75rem;
   min-width: 0.75rem;

@@ -1,7 +1,7 @@
 /**
  * How the viewport fidelity indicator presents itself on `viewportOverlay.*`.
  *
- * - `icon` — CS3D-style glyph only (default)
+ * - `icon` — glyph only (default): yellow warning while lossy, green check when recovered
  * - `text` — OHIF clinician label only
  * - `both` — glyph and OHIF label
  *
