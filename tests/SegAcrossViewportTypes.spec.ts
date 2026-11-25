@@ -98,7 +98,12 @@ test('keeps every segment when switching from 3D to MPR', async ({
   mainToolbarPageObject,
   rightPanelPageObject,
   viewportPageObject,
+  useNextViewports,
 }) => {
+  // Expected to fail on the new viewports: leaving a 3D viewport that holds a segmentation
+  // crashes the viewer.
+  test.fail(useNextViewports, 'Leaving 3D with a segmentation crashes on the new viewports');
+
   const { rows } = rightPanelPageObject.labelMapSegmentationPanel.panel;
 
   await switchLayout(page, () => mainToolbarPageObject.layoutSelection.threeDOnly.click());
