@@ -38,6 +38,12 @@ the first start, edits to the file have no effect: change the passwords in the
 Keycloak admin console instead (realm `ohif` -> Users -> the user ->
 Credentials -> Reset password), or delete the users there.
 
+If the server was reachable while the default passwords were still set,
+someone may already be signed in with them, and a password reset does not end
+existing sessions. Also sign out those users' sessions (realm `ohif` -> Users
+-> the user -> Sessions), and replace the `cookie_secret` and restart the
+viewer container, which ends every existing oauth2-proxy sign-in.
+
 ## Rotate if you deployed from an earlier checkout
 
 Earlier versions of this recipe committed a fixed client secret and default

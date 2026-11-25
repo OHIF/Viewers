@@ -16,8 +16,11 @@ Before the first `docker compose up`:
    [SECURITY-NOTES.md](SECURITY-NOTES.md).
 3. Replace `YOUR_DOMAIN` in `docker-compose.yml`, `config/nginx.conf` and
    `config/oauth2-proxy.cfg`, and provide the TLS certificate that
-   `config/nginx.conf` points at. nginx does not start without it. The guide
-   walks through both.
+   `config/nginx.conf` points at. nginx does not start without it. With TLS,
+   use `https://` URLs, including `redirect_url` in `config/oauth2-proxy.cfg`
+   and the `ohif_viewer` client's redirect URIs in Keycloak, so the sign-in
+   callback never travels over plain HTTP. The guide walks through these
+   steps.
 
 ## Run
 
