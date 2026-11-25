@@ -175,6 +175,19 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'projectionMenu',
+    uiType: 'ohif.projectionMenu',
+    props: {
+      icon: 'viewport-projection',
+      label: i18n.t('Buttons:Projection'),
+      tooltip: i18n.t('Buttons:Maximum intensity projection and slab thickness'),
+      evaluate: {
+        name: 'evaluate.projectionMenu',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'Colorbar',
     uiType: 'ohif.colorbar',
     props: {
@@ -729,6 +742,9 @@ export const toolbarSections = {
     'MoreTools',
   ],
 
+  // 'projectionMenu' (MIP and slab thickness) is registered above but kept out
+  // of the default corner menu: a deployment or mode adds it with the shipped
+  // 'tools/projectionMenu' customization module or its own section layout.
   [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.bottomMiddle]: ['AdvancedRenderingControls'],

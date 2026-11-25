@@ -49,6 +49,8 @@ import type { IViewportBackend } from './backends/IViewportBackend';
 import type { IViewportServiceInternals } from './backends/IViewportServiceInternals';
 import { LegacyViewportBackend } from './backends/LegacyViewportBackend';
 import { NextViewportBackend } from './backends/NextViewportBackend';
+import { getVolumeDiagonal } from '../../projection/projectionRegistry';
+import { FULL_VOLUME_KEYWORD } from '../../projection/projectionConstants';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -441,7 +443,7 @@ class CornerstoneViewportService
       return;
     }
 
-    const cleanProperties = properties => {
+    const cleanProperties = (properties, isFusion = false) => {
       if (properties?.isComputedVOI) {
         delete properties?.voiRange;
         delete properties?.VOILUTFunction;
@@ -450,6 +452,11 @@ class CornerstoneViewportService
         if (properties.colormap?.opacity?.length === 0) {
           delete properties.colormap.opacity;
         }
+      }
+      // In a fusion the engine reports the slab viewport-wide, and a restore would
+      // write it to every layer; the ProjectionService restores per layer instead.
+      if (isFusion && properties && 'slabThickness' in properties) {
+        delete properties.slabThickness;
       }
       return properties;
     };
@@ -461,7 +468,7 @@ class CornerstoneViewportService
     if (properties instanceof Map) {
       const volumeIds = (csViewport as Types.IBaseVolumeViewport).getAllVolumeIds();
       volumeIds?.forEach(volumeId => {
-        const csProps = cleanProperties(csViewport.getProperties(volumeId));
+        const csProps = cleanProperties(csViewport.getProperties(volumeId), volumeIds.length > 1);
         properties.set(volumeId, csProps);
       });
     }
@@ -1389,8 +1396,9 @@ class CornerstoneViewportService
 
     const applyRepresentation = () => {
       const { predecessorImageId } = displaySet;
-      const segmentationRepresentationPromise =
-        segmentationService.addSegmentationRepresentation(viewport.id, {
+      const segmentationRepresentationPromise = segmentationService.addSegmentationRepresentation(
+        viewport.id,
+        {
           segmentationId,
           predecessorImageId,
           type: representationType,
@@ -1400,7 +1408,8 @@ class CornerstoneViewportService
                 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
                 : undefined,
           },
-        });
+        }
+      );
       this.storePresentation({ viewportId: viewport.id });
       return segmentationRepresentationPromise;
     };
@@ -1468,8 +1477,7 @@ class CornerstoneViewportService
 
         // Stop waiting immediately if the SEG load itself fails — otherwise the
         // loading-complete event never fires and we would idle until the timeout.
-        const loadingPromise = (displaySet as { loadingPromise?: Promise<unknown> })
-          .loadingPromise;
+        const loadingPromise = (displaySet as { loadingPromise?: Promise<unknown> }).loadingPromise;
         loadingPromise?.catch(error => {
           if (settled) {
             return;
@@ -1585,19 +1593,17 @@ class CornerstoneViewportService
       return displaySetOptions.slabThickness;
     }
 
-    if (displaySetOptions.slabThickness.toLowerCase() === 'fullvolume') {
-      // calculate the slab thickness based on the volume dimensions
+    if (displaySetOptions.slabThickness.toLowerCase() === FULL_VOLUME_KEYWORD.toLowerCase()) {
+      // The volume bounding diagonal, shared with the runtime slab range so the
+      // keyword and the slider ceiling can never disagree.
       const imageVolume = cache.getVolume(volumeId);
 
-      const { dimensions, spacing } = imageVolume;
-      const slabThickness = Math.sqrt(
-        Math.pow(dimensions[0] * spacing[0], 2) +
-          Math.pow(dimensions[1] * spacing[1], 2) +
-          Math.pow(dimensions[2] * spacing[2], 2)
-      );
-
-      return slabThickness;
+      return getVolumeDiagonal(imageVolume);
     }
+
+    throw new Error(
+      `Unsupported slabThickness "${displaySetOptions.slabThickness}": use a number or "${FULL_VOLUME_KEYWORD}"`
+    );
   }
 
   _getFrameOfReferenceUID(displaySetInstanceUID) {

@@ -1,0 +1,23 @@
+// URL-loaded customization: projectionMenu
+//
+// Shows the projection button (MIP on/off and slab thickness) in the top-left
+// action corner of every reconstructable viewport, after the orientation and
+// data overlay menus. The button is registered by the cornerstone extension but
+// is not part of the default corner menu, so a deployment or a mode opts in.
+//
+// It extends the default section layout registered by the cornerstone
+// extension (`cornerstone.toolbarSections`) with an immutability-helper
+// `$push`, so the built-in corner buttons are preserved. The `setProjectionMode`
+// and `setSlabThickness` commands and the ProjectionService work without it.
+//
+// Load it with `?customization=tools/projectionMenu`, or list it in
+// `customizationService` in the app config.
+{
+  "global": {
+    "cornerstone.toolbarSections": {
+      "viewportActionMenu.topLeft": {
+        "$push": ["projectionMenu"]
+      }
+    }
+  }
+}
