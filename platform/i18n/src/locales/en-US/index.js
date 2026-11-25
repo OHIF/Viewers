@@ -34,6 +34,7 @@ import PanelSUV from './PanelSUV.json';
 import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
 import USAnnotationPanel from './USAnnotationPanel.json';
 import EncapsulatedDocument from './EncapsulatedDocument.json';
+import InvestigationalUseDialog from './InvestigationalUseDialog.json';
 
 export default {
   'en-US': {
@@ -73,5 +74,6 @@ export default {
     ROIThresholdConfiguration,
     USAnnotationPanel,
     EncapsulatedDocument,
+    InvestigationalUseDialog,
   },
 };

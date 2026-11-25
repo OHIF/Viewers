@@ -1,0 +1,8 @@
+{
+  "Loading document...": "Φόρτωση εγγράφου...",
+  "This document type cannot be displayed": "Αυτός ο τύπος εγγράφου δεν μπορεί να εμφανιστεί",
+  "Document content does not match its declared type": "Το περιεχόμενο του εγγράφου δεν αντιστοιχεί στον δηλωμένο τύπο του",
+  "Unable to retrieve this document": "Αδυναμία ανάκτησης αυτού του εγγράφου",
+  "No viewer installed for {{mimeType}}": "Δεν έχει εγκατασταθεί προβολέας για {{mimeType}}",
+  "Encapsulated document": "Ενσωματωμένο έγγραφο"
+}
