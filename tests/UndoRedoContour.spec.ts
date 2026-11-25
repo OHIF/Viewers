@@ -4,7 +4,6 @@ import type { MainToolbarPageObject, RightPanelPageObject, ViewportPageObject } 
 import type { IViewportPageObject } from './pages/ViewportPageObject';
 import {
   expect,
-  livewireContourClicks,
   readWhenSettled,
   test,
   visitStudy,
@@ -24,13 +23,14 @@ const FREEHAND_PATH = [
   { x: 0.4, y: 0.4 },
 ];
 
-const SPLINE_POINTS = [
+// A square the spline and livewire tools click around, closing on the first point.
+const CONTOUR_POINTS = [
   { x: 0.4, y: 0.4 },
   { x: 0.6, y: 0.4 },
   { x: 0.6, y: 0.6 },
   { x: 0.4, y: 0.6 },
 ];
-// Drags the second control point outward.
+// Drags the spline's second control point outward.
 const SPLINE_POINT_MOVE = { start: { x: 0.6, y: 0.4 }, end: { x: 0.65, y: 0.35 } };
 
 type ContourTool = {
@@ -52,17 +52,12 @@ const FREEHAND_CONTOUR: ContourTool = {
 
 const SPLINE_CONTOUR: ContourTool = {
   select: panel => panel.contourSegmentationPanel.tools.splineContour.click(),
-  draw: viewport => viewport.normalizedPathClickAt({ path: SPLINE_POINTS, closePath: true }),
+  draw: viewport => viewport.normalizedPathClickAt({ path: CONTOUR_POINTS, closePath: true }),
 };
 
 const LIVEWIRE_CONTOUR: ContourTool = {
   select: panel => panel.contourSegmentationPanel.tools.livewireContour.click(),
-  draw: async viewport => {
-    await viewport.clickAt(livewireContourClicks);
-    await expect(viewport.svg('circle')).toHaveCount(livewireContourClicks.length);
-    // Double-clicking the last vertex closes the contour.
-    await viewport.doubleClickAt(livewireContourClicks[livewireContourClicks.length - 1]);
-  },
+  draw: viewport => viewport.normalizedPathClickAt({ path: CONTOUR_POINTS, closePath: true }),
 };
 
 // Largest coordinate difference between two path `d` strings with the same commands; Infinity
@@ -98,7 +93,9 @@ function settledPathD(path: Locator) {
 }
 
 async function drawContour(page: Page, viewport: IViewportPageObject, tool: ContourTool) {
-  await waitForAnnotationCompleted({ page, action: () => tool.draw(viewport) });
+  const completed = await waitForAnnotationCompleted(page);
+  await tool.draw(viewport);
+  await completed.wait();
   await expect(viewport.svg('path'), 'Expected the contour to be drawn').toHaveCount(1);
   await expect(viewport.svg('path').first()).toBeVisible();
 }

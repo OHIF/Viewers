@@ -2,7 +2,6 @@ import {
   checkForViewportScreenshot,
   expect,
   getSvgAttribute,
-  livewireContourClicks,
   press,
   screenShotPaths,
   test,
@@ -10,7 +9,15 @@ import {
   withKeyHeld,
 } from './utils';
 
-// Starts below livewireContourClicks' bottom edge and crosses into it. Both overlap tests
+// Tuned to edges in this study's first slice, and wide enough to leave room for a hole inside it; a new contour's first click must stay ~6px clear of existing outlines.
+const contourClicks = [
+  { x: 350, y: 330 },
+  { x: 430, y: 210 },
+  { x: 570, y: 240 },
+  { x: 520, y: 340 },
+];
+
+// Starts below contourClicks' bottom edge and crosses into it. Both overlap tests
 // share this geometry: it merges within one segment and must stay separate across segments.
 const overlappingContourClicks = [
   { x: 450, y: 400 },
@@ -39,7 +46,7 @@ test('should cancel an in-progress Livewire contour segmentation via Escape', as
   await contourPanel.tools.livewireContour.click();
 
   const activeViewport = await viewportPageObject.active;
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
 
   // Ensure the four points clicked above are rendered in the DOM before pressing Escape
   await expect(activeViewport.svg('circle')).toHaveCount(4);
@@ -49,7 +56,7 @@ test('should cancel an in-progress Livewire contour segmentation via Escape', as
   await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
 
   // Draw again to verify the contour tool is still interactive after cancellation
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
   await expect(activeViewport.svg('circle')).toHaveCount(4);
 });
 
@@ -72,13 +79,13 @@ test('should keep a completed Livewire contour segmentation after navigating awa
   const vertexHandles = activeViewport.svg('circle');
   await expect(paths, 'Expected no contour paths before drawing').toHaveCount(0);
 
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
 
   // Ensure the four vertices are rendered before closing the contour.
   await expect(vertexHandles, 'Expected the four clicked vertices to render').toHaveCount(4);
 
   // Double-clicking the last vertex closes the contour into a single SVG path.
-  await activeViewport.doubleClickAt(livewireContourClicks[3]);
+  await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(vertexHandles, 'Expected the vertex handles to clear on completion').toHaveCount(0);
   await expect(paths, 'Expected the closed livewire contour to be added').toHaveCount(1);
   await expect(paths.first(), 'Expected the drawn livewire contour to be visible').toBeVisible();
@@ -158,12 +165,12 @@ test('should draw a Livewire contour into the active segment', async ({
   const activeViewport = await viewportPageObject.active;
   const paths = activeViewport.svg('path');
 
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
   await expect(
     activeViewport.svg('circle'),
     'Expected the four clicked vertices to render'
   ).toHaveCount(4);
-  await activeViewport.doubleClickAt(livewireContourClicks[3]);
+  await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(paths, 'Expected the contour to be added').toHaveCount(1);
 
   // The contour must belong to segment 2 (active during the draw): hiding segment 1 keeps it, hiding segment 2 removes it.
@@ -200,9 +207,9 @@ test('should keep two disjoint Livewire contours separate within one segment', a
   const paths = activeViewport.svg('path');
   const vertexHandles = activeViewport.svg('circle');
 
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
   await expect(vertexHandles, 'Expected the first contour vertices to render').toHaveCount(4);
-  await activeViewport.doubleClickAt(livewireContourClicks[3]);
+  await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(paths, 'Expected the first contour to be added').toHaveCount(1);
 
   // A second contour placed away from the first, so the union at completion has nothing to merge with.
@@ -234,9 +241,9 @@ test('should merge overlapping Livewire contours drawn into the same segment', a
   const paths = activeViewport.svg('path');
   const vertexHandles = activeViewport.svg('circle');
 
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
   await expect(vertexHandles, 'Expected the first contour vertices to render').toHaveCount(4);
-  await activeViewport.doubleClickAt(livewireContourClicks[3]);
+  await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(paths, 'Expected the first contour to be added').toHaveCount(1);
 
   // An overlapping second contour is merged into a single larger outline rather than kept alongside the first.
@@ -280,9 +287,9 @@ test('should keep overlapping Livewire contours in different segments separate',
   const vertexHandles = activeViewport.svg('circle');
 
   // First contour goes into Segment 1.
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
   await expect(vertexHandles, 'Expected the first contour vertices to render').toHaveCount(4);
-  await activeViewport.doubleClickAt(livewireContourClicks[3]);
+  await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(
     vertexHandles,
     'Expected the first contour vertex handles to clear on completion'
@@ -333,9 +340,9 @@ test('should not carve out overlapping Livewire contours drawn into separate seg
   const vertexHandles = activeViewport.svg('circle');
 
   // First contour goes into Segment 1.
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
   await expect(vertexHandles, 'Expected the first contour vertices to render').toHaveCount(4);
-  await activeViewport.doubleClickAt(livewireContourClicks[3]);
+  await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(paths, 'Expected the first contour to be added').toHaveCount(1);
 
   // Add a second segment and make it the active drawing target.
@@ -394,9 +401,9 @@ test('should cut a hole into a Livewire contour when drawing with Shift held', a
   const paths = activeViewport.svg('path');
   const vertexHandles = activeViewport.svg('circle');
 
-  await activeViewport.clickAt(livewireContourClicks);
+  await activeViewport.clickAt(contourClicks);
   await expect(vertexHandles, 'Expected the four outer contour vertices to render').toHaveCount(4);
-  await activeViewport.doubleClickAt(livewireContourClicks[3]);
+  await activeViewport.doubleClickAt(contourClicks[3]);
   await expect(paths, 'Expected the outer contour to be added').toHaveCount(1);
 
   await withKeyHeld({

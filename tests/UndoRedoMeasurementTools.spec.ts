@@ -104,20 +104,17 @@ async function drawAnnotation(
   DOMOverlayPageObject: DOMOverlayPageObject,
   tool: MeasurementTool
 ) {
-  await waitForAnnotationCompleted({
-    page,
-    action: async () => {
-      await viewport.normalizedClickAt(tool.points);
-      if (tool.label) {
-        await DOMOverlayPageObject.dialog.input.fillAndSave(tool.label);
-      }
-    },
-  });
+  const completed = await waitForAnnotationCompleted(page);
+  await viewport.normalizedClickAt(tool.points);
+  if (tool.label) {
+    await DOMOverlayPageObject.dialog.input.fillAndSave(tool.label);
+  }
+  await completed.wait();
 }
 
 // The only annotation as Cornerstone stores it (handle points and cached stats) and as the user
 // sees it (panel row, viewport text box, and the end points of every SVG line).
-async function annotationSnapshot(
+async function readAnnotationState(
   page: Page,
   rightPanelPageObject: RightPanelPageObject,
   viewport: IViewportPageObject
@@ -135,20 +132,7 @@ async function annotationSnapshot(
       ),
   ]);
   const { points, cachedStats } = annotation;
-  return JSON.stringify({ points, cachedStats, title, panel, textBox, lines });
-}
-
-// Reads the annotation snapshot either once it stops changing, or by polling it in an assertion.
-function snapshotOf(
-  page: Page,
-  rightPanelPageObject: RightPanelPageObject,
-  viewport: IViewportPageObject
-) {
-  const read = () => annotationSnapshot(page, rightPanelPageObject, viewport);
-  return {
-    settled: () => readWhenSettled({ read, message: 'Expected the annotation to stop changing' }),
-    poll: (message: string) => expect.poll(read, { message }),
-  };
+  return { points, cachedStats, title, panel, textBox, lines };
 }
 
 test.beforeEach(async ({ page, rightPanelPageObject, viewportPageObject }) => {
@@ -190,8 +174,11 @@ for (const tool of TOOLS) {
       test.fail(tool === SPLINE_ROI);
       const viewport = await viewportPageObject.active;
       const { rows } = rightPanelPageObject.measurementsPanel.panel;
-      const snapshot = snapshotOf(page, rightPanelPageObject, viewport);
-      const drawn = await snapshot.settled();
+      const readAnnotation = () => readAnnotationState(page, rightPanelPageObject, viewport);
+      const afterDraw = await readWhenSettled({
+        read: readAnnotation,
+        message: 'Expected the annotation to stop changing',
+      });
       await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
       await mainToolbarPageObject.undo.click();
@@ -202,7 +189,9 @@ for (const tool of TOOLS) {
       await mainToolbarPageObject.redo.click();
       await expect(rows, 'Expected redo to restore the row').toHaveCount(1);
       await expect(viewport.nthAnnotation(0).locator).toBeVisible();
-      await snapshot.poll('Expected redo to restore the annotation').toBe(drawn);
+      await expect
+        .poll(readAnnotation, { message: 'Expected redo to restore the annotation' })
+        .toEqual(afterDraw);
       await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
     });
 
@@ -213,22 +202,34 @@ for (const tool of TOOLS) {
       viewportPageObject,
     }) => {
       const viewport = await viewportPageObject.active;
-      const snapshot = snapshotOf(page, rightPanelPageObject, viewport);
-      const drawn = await snapshot.settled();
+      const readAnnotation = () => readAnnotationState(page, rightPanelPageObject, viewport);
+      const afterDraw = await readWhenSettled({
+        read: readAnnotation,
+        message: 'Expected the annotation to stop changing',
+      });
 
       // Moves 150ms apart, longer than SplineROI's 100ms stats throttle, so its stats reach the
       // final position.
       await viewport.normalizedDragAt({ ...tool.handleMove, config: { delay: 150, steps: 5 } });
-      await snapshot.poll('Expected the move to change the annotation').not.toBe(drawn);
-      const moved = await snapshot.settled();
+      await expect
+        .poll(readAnnotation, { message: 'Expected the move to change the annotation' })
+        .not.toEqual(afterDraw);
+      const afterMove = await readWhenSettled({
+        read: readAnnotation,
+        message: 'Expected the moved annotation to stop changing',
+      });
       await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
 
       await mainToolbarPageObject.undo.click();
-      await snapshot.poll('Expected undo to restore the annotation').toBe(drawn);
+      await expect
+        .poll(readAnnotation, { message: 'Expected undo to restore the annotation' })
+        .toEqual(afterDraw);
       await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
       await mainToolbarPageObject.redo.click();
-      await snapshot.poll('Expected redo to move it again').toBe(moved);
+      await expect
+        .poll(readAnnotation, { message: 'Expected redo to move it again' })
+        .toEqual(afterMove);
       await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: false });
     });
 
@@ -240,8 +241,11 @@ for (const tool of TOOLS) {
     }) => {
       const viewport = await viewportPageObject.active;
       const { panel } = rightPanelPageObject.measurementsPanel;
-      const snapshot = snapshotOf(page, rightPanelPageObject, viewport);
-      const drawn = await snapshot.settled();
+      const readAnnotation = () => readAnnotationState(page, rightPanelPageObject, viewport);
+      const afterDraw = await readWhenSettled({
+        read: readAnnotation,
+        message: 'Expected the annotation to stop changing',
+      });
 
       await panel.nthMeasurement(0).actions.delete();
       await expect(panel.rows).toHaveCount(0);
@@ -251,7 +255,9 @@ for (const tool of TOOLS) {
       await mainToolbarPageObject.undo.click();
       await expect(panel.rows, 'Expected undo to bring the row back').toHaveCount(1);
       await expect(viewport.nthAnnotation(0).locator).toBeVisible();
-      await snapshot.poll('Expected undo to restore the annotation').toBe(drawn);
+      await expect
+        .poll(readAnnotation, { message: 'Expected undo to restore the annotation' })
+        .toEqual(afterDraw);
       await expectUndoRedoState({ mainToolbarPageObject, undo: true, redo: true });
 
       await mainToolbarPageObject.redo.click();

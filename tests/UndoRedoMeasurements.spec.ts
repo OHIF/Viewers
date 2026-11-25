@@ -58,10 +58,9 @@ async function expectViewportLengths(viewport: IViewportPageObject, values: stri
 }
 
 async function drawLength(page: Page, viewport: IViewportPageObject, [start, end]: [Point, Point]) {
-  await waitForAnnotationCompleted({
-    page,
-    action: () => viewport.normalizedClickAt([start, end]),
-  });
+  const completed = await waitForAnnotationCompleted(page);
+  await viewport.normalizedClickAt([start, end]);
+  await completed.wait();
 }
 
 test.beforeEach(
