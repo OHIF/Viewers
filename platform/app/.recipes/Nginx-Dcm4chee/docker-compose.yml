@@ -57,7 +57,10 @@ services:
       context: ./../../../../
       # Relative to context
       dockerfile: ./platform/app/.recipes/Nginx-Dcm4chee/dockerfile
-    image: webapp:latest
+    # A recipe-specific tag, so docker compose up never starts an image that
+    # another recipe built. up does not rebuild an image that already exists:
+    # run docker compose up --build after the checkout changes.
+    image: ohif-nginx-dcm4chee:local
     container_name: ohif_dcm4chee
     volumes:
       # Nginx config
