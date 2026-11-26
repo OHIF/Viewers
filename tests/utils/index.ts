@@ -38,6 +38,7 @@ import { getViewportCanvasStats } from './getViewportCanvasStats';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
 import { visitStudyAndHydrate } from './visitStudyAndHydrate';
+import { forceViewportFidelity } from './forceViewportFidelity';
 import { test, expect } from './fixture';
 import { press, withKeyHeld } from './keyboardUtils';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
@@ -90,6 +91,7 @@ export {
   navigateWithViewportArrow,
   contourShowOnlyNthSegment,
   visitStudyAndHydrate,
+  forceViewportFidelity,
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
