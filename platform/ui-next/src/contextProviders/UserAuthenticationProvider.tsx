@@ -1,5 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
-import PropTypes from 'prop-types';
+import React, { createContext, useContext, useEffect, useReducer } from 'react';
 
 const DEFAULT_STATE = {
   user: null,
@@ -37,38 +36,29 @@ export function UserAuthenticationProvider({ children, service }) {
 
   const [userAuthenticationState, dispatch] = useReducer(userAuthenticationReducer, DEFAULT_STATE);
 
-  const getState = useCallback(() => userAuthenticationState, [userAuthenticationState]);
+  const getState = () => userAuthenticationState;
 
-  const setUser = useCallback(
-    user =>
-      dispatch({
-        type: 'SET_USER',
-        payload: {
-          user,
-        },
-      }),
-    [dispatch]
-  );
+  const setUser = user =>
+    dispatch({
+      type: 'SET_USER',
+      payload: {
+        user,
+      },
+    });
 
-  const getUser = useCallback(() => userAuthenticationState.user, [userAuthenticationState]);
+  const getUser = () => userAuthenticationState.user;
 
-  const reset = useCallback(
-    () =>
-      dispatch({
-        type: 'RESET',
-        payload: {},
-      }),
-    [dispatch]
-  );
+  const reset = () =>
+    dispatch({
+      type: 'RESET',
+      payload: {},
+    });
 
-  const set = useCallback(
-    payload =>
-      dispatch({
-        type: 'SET',
-        payload,
-      }),
-    [dispatch]
-  );
+  const set = payload =>
+    dispatch({
+      type: 'SET',
+      payload,
+    });
 
   /**
    * Sets the implementation of the UserAuthenticationService that can be used by extensions.
@@ -123,11 +113,6 @@ export default UserAuthenticationProvider;
 const UserAuthenticationConsumer = UserAuthenticationContext.Consumer;
 export { UserAuthenticationConsumer };
 
-UserAuthenticationProvider.propTypes = {
-  children: PropTypes.any,
-  service: PropTypes.shape({
-    setServiceImplementation: PropTypes.func,
-  }).isRequired,
-};
+
 
 export const useUserAuthentication = () => useContext(UserAuthenticationContext);

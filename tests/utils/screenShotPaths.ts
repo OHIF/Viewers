@@ -26,17 +26,37 @@ const screenShotPaths = {
   ellipse: {
     ellipseDisplayedCorrectly: 'ellipseDisplayedCorrectly.png',
   },
+  freehandContourSegmentation: {
+    disjointContoursSeparate: 'disjointContoursSeparate.png',
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    contourWithHole: 'contourWithHole.png',
+    overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
+  },
   labelMapSegLocking: {
     globalLockedSegPreEdit: 'lockedSegPreEdit.png',
     globalLockedSegPostEdit: 'lockedSegPostEdit.png',
     globalUnlockedSegPreEdit: 'unlockedSegPreEdit.png',
     globalUnlockedSegPostEdit: 'unlockedSegPostEdit.png',
   },
+  labelMapSegmentationColorChange: {
+    colorBeforeChange: 'labelMapSegmentationColor-beforeChange.png',
+    colorAfterChange: 'labelMapSegmentationColor-afterChange.png',
+    colorBeforeCancel: 'labelMapSegmentationColor-beforeCancel.png',
+    colorAfterCancel: 'labelMapSegmentationColor-afterCancel.png',
+  },
   length: {
     lengthDisplayedCorrectly: 'lengthDisplayedCorrectly.png',
   },
   livewire: {
     livewireDisplayedCorrectly: 'livewireDisplayedCorrectly.png',
+  },
+  livewireContourSegmentation: {
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    contourWithHole: 'contourWithHole.png',
+    differentSegmentsContoursSeparate: 'differentSegmentsContoursSeparate.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
@@ -80,6 +100,15 @@ const screenShotPaths = {
   },
   spline: {
     splineDisplayedCorrectly: 'splineDisplayedCorrectly.png',
+  },
+  splineContourSegmentation: {
+    contourPersistedAfterNavigation: 'contourPersistedAfterNavigation.png',
+    disjointContoursSeparate: 'disjointContoursSeparate.png',
+    overlappingContoursMerged: 'overlappingContoursMerged.png',
+    overlappingContourCarvedOut: 'overlappingContourCarvedOut.png',
+    contourWithHole: 'contourWithHole.png',
+    overlappingContoursNotMergedAcrossSegments: 'overlappingContoursNotMergedAcrossSegments.png',
+    overlappingContourNotCarvedAcrossSegments: 'overlappingContourNotCarvedAcrossSegments.png',
   },
   dicomTagBrowser: {
     dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
@@ -127,6 +156,14 @@ const screenShotPaths = {
     srPreHydration: 'srPreHydration.png',
     srJumpToMeasurement: 'srJumpToMeasurement.png',
   },
+  segAcrossViewportTypes: {
+    stackBeforeMPR: 'segAcrossViewportTypes-stackBeforeMPR.png',
+    mprFromStack: 'segAcrossViewportTypes-mprFromStack.png',
+    oneUpAfterMPR: 'segAcrossViewportTypes-oneUpAfterMPR.png',
+    mprAfter3D: 'segAcrossViewportTypes-mprAfter3D.png',
+    stackAfterColorChange: 'segAcrossViewportTypes-stackAfterColorChange.png',
+    mprAfterColorChange: 'segAcrossViewportTypes-mprAfterColorChange.png',
+  },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
     segPreHydration: 'segPreHydration.png',
@@ -170,6 +207,9 @@ const screenShotPaths = {
   segDrawingToolsResizing: {
     brushTool: 'brushTool.png',
     eraserTool: 'eraserTool.png',
+  },
+  thresholdRange: {
+    expandedRangePaint: 'expandedRangePaint.png',
   },
   mprThenRTOverlayNoHydration: {
     mprPreRTOverlayNoHydration: 'mprPreRTOverlayNoHydration.png',
@@ -217,16 +257,20 @@ const screenShotPaths = {
     noOverlay: 'noOverlay.png',
   },
   multipleSegmentationDataOverlays: {
-    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
   },
   overlappingSegmentationRendering: {
     overlappingSegmentsDisplayed: 'overlappingSegmentsDisplayed.png',
   },
+  contourSmoothOperation: {
+    smoothEdgesThresholdResult: 'smoothEdgesThresholdResult.png',
+    removePointsBigSphereResult: 'removePointsBigSphereResult.png',
+  },
   contourCombineOperations: {
     subtractBigSphereMinusSmallSphereResult: 'subtractBigSphereMinusSmallSphereResult.png',
     intersectBigSphereSmallSphereResult: 'intersectBigSphereSmallSphereResult.png',
+    mergeBigSphereSmallSphereResult: 'mergeBigSphereSmallSphereResult.png',
   },
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',

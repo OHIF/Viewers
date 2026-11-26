@@ -59,6 +59,15 @@ const waitForViewportRenderCycle = async (
   await waitForViewportsRendered(page, { timeout: renderedTimeout, waitVolumeLoad, settle });
 };
 
+/** Runs `action` inside a render-cycle wait started first, so its render can't be missed. */
+const waitForRenderCycleForAction = async (
+  page: Page,
+  action: () => Promise<unknown>,
+  options: WaitForRenderCycleToCompleteOptions = {}
+) => {
+  await Promise.all([waitForViewportRenderCycle(page, options), action()]);
+};
+
 /**
  * Waits until at least one viewport enters the 'needsRender' state, indicating
  * that a render has been requested but not yet started.
@@ -213,5 +222,6 @@ export {
   waitForViewportsRendered,
   waitForAnyViewportNeedsRender,
   waitForViewportRenderCycle,
+  waitForRenderCycleForAction,
   waitForPaintToSettle,
 };

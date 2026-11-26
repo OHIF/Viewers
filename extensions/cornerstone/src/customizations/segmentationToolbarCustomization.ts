@@ -726,8 +726,9 @@ const segmentationToolbarButtons: Button[] = [
           name: 'ThresholdRange',
           type: 'double-range',
           id: 'threshold-range',
-          min: -1000,
+          min: 0,
           max: 1000,
+          allowTypedExpansion: true,
           step: 1,
           value: [50, 600],
           condition: ({ options }) =>
