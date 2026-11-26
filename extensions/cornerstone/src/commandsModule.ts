@@ -1228,8 +1228,10 @@ function commandsModule({
      * drag elsewhere to rotate). Passive: the crop box stays, and the previous primary tool
      * comes back. VolumeCroppingControl shows the same box in the MPR viewports.
      */
-    cycleVolumeCropping: ({ mode }: { mode?: string } = {}) => {
-      const toolGroup = _getVolumeCroppingToolGroup();
+    cycleVolumeCropping: ({ mode, viewportId }: { mode?: string; viewportId?: string } = {}) => {
+      const toolGroup = _getVolumeCroppingToolGroup(
+        viewportId ?? viewportGridService.getActiveViewportId()
+      );
       if (!toolGroup) {
         return;
       }
@@ -1237,9 +1239,14 @@ function commandsModule({
       const current = getVolumeCroppingState(toolGroup);
       const next =
         mode ?? (current === Active ? Passive : current === Passive ? Disabled : Active);
+      if (next === current) {
+        // A second activation would record VolumeCropping as its own previous primary tool.
+        return;
+      }
       const tool = toolGroup.getToolInstance(toolNames.VolumeCropping);
 
-      if (next === Active) {
+      // The crop box is built in onSetToolActive, so Disabled -> Passive activates first.
+      if (next === Active || current === Disabled) {
         actions.setToolActive({
           toolName: toolNames.VolumeCropping,
           toolGroupId: toolGroup.id,
@@ -1253,7 +1260,8 @@ function commandsModule({
         });
         // onSetToolActive hides the box, so show it after activation.
         tool.setClippingPlanesVisible(true);
-      } else if (current === Active) {
+      }
+      if (next !== Active && current !== Passive) {
         actions.setToolActive({
           toolName: toolGroup.getPrevActivePrimaryToolName(),
           toolGroupId: toolGroup.id,
@@ -1275,10 +1283,10 @@ function commandsModule({
           controlGroup.setToolDisabled(toolNames.VolumeCroppingControl);
         } else if (current === Disabled) {
           // Enabled adds the listener that follows the 3D handles; Active adds the box.
+          // No binding: handles of an Active tool drag anyway, and a Primary binding would
+          // overwrite the MPR group's previous primary tool.
           controlGroup.setToolEnabled(toolNames.VolumeCroppingControl);
-          controlGroup.setToolActive(toolNames.VolumeCroppingControl, {
-            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
-          });
+          controlGroup.setToolActive(toolNames.VolumeCroppingControl);
         }
       });
     },

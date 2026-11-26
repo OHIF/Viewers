@@ -299,7 +299,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }, { numTouchPoints: 3 }],
       },
     ],
-    // Activated by the toggleCropping command
+    // Activated by the cycleVolumeCropping command
     disabled: [
       {
         toolName: toolNames.VolumeCropping,

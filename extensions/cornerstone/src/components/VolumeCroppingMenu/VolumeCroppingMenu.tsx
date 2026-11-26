@@ -9,6 +9,7 @@ import {
   Switch,
   useIconPresentation,
 } from '@ohif/ui-next';
+import i18n from 'i18next';
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from '../../initCornerstoneTools';
 import { getVolumeCroppingState } from '../../utils/getVolumeCroppingToolGroup';
@@ -77,17 +78,20 @@ function VolumeCroppingMenu({
 
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
   const Icon = <Icons.Crop className={iconClassName} />;
+  const ariaLabel = i18n.t('Buttons:Volume Cropping');
 
   const rows = [
     {
-      label: 'Show handles',
-      tooltip: 'Show the drag handles of the crop box.',
+      label: i18n.t('Buttons:Show handles'),
+      tooltip: i18n.t('Buttons:Show the drag handles of the crop box'),
       checked: state.handles,
       onChange: (visible: boolean) => run('toggle3Dhandles', { visible }),
     },
     {
-      label: 'Rotate planes on drag',
-      tooltip: 'While the crop tool is active, a drag rotates the crop planes, not the camera.',
+      label: i18n.t('Buttons:Rotate planes on drag'),
+      tooltip: i18n.t(
+        'Buttons:While the crop tool is active, a drag rotates the crop planes, not the camera'
+      ),
       checked: state.rotatePlanes,
       onChange: (enabled: boolean) => run('togglePlaneRotation', { enabled }),
     },
@@ -107,6 +111,7 @@ function VolumeCroppingMenu({
             <IconContainer
               disabled={disabled}
               icon="Crop"
+              aria-label={ariaLabel}
               {...props}
               {...containerProps}
             >
@@ -117,6 +122,7 @@ function VolumeCroppingMenu({
               variant="ghost"
               size="icon"
               disabled={disabled}
+              aria-label={ariaLabel}
             >
               {Icon}
             </Button>
