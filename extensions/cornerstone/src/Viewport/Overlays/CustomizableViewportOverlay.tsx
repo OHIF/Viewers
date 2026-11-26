@@ -422,9 +422,9 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
     >
       {label ? <span className="mr-1 shrink-0 opacity-[0.70]">{label}</span> : null}
       <span className="mr-0.5 shrink-0 opacity-[0.70]">W:</span>
-      <span className="mr-2.5 shrink-0">{csUtils.roundNumber(windowWidth, 5)}</span>
+      <span className="mr-2.5 shrink-0">{csUtils.roundNumberTrim(windowWidth, 5)}</span>
       <span className="mr-0.5 shrink-0 opacity-[0.70]">L:</span>
-      <span className="shrink-0">{csUtils.roundNumber(windowCenter, 5)}</span>
+      <span className="shrink-0">{csUtils.roundNumberTrim(windowCenter, 5)}</span>
     </div>
   );
 }

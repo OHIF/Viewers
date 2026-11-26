@@ -21,11 +21,9 @@ of Cornerstone3D ([cornerstonejs/cornerstone3D#2856](https://github.com/cornerst
 - A LINEAR_EXACT image with a window of W 400 / C 40 now reads `W: 400 L: 40`.
   Before 3.14, the overlay showed `W: 401 L: 41`.
 - The overlay no longer rounds the W/L values to an integer. It uses
-  `utilities.roundNumber(value, 5)` of Cornerstone3D, which keeps at least 3
+  `utilities.roundNumberTrim(value, 5)` of Cornerstone3D, which keeps at least 3
   decimals and removes trailing zeros. W 400.5 / L 40.25 reads
   `W: 400.5 L: 40.25`, and W 400 / L 40 reads `W: 400 L: 40`.
-- Cornerstone3D `roundNumber` now removes trailing zeros in all of its output,
-  so measurement labels change too: `10.0 mm` reads `10 mm`.
 - A typed W/L preset on a LINEAR_EXACT image gives the exact range. For example,
   W 400 / C 40 gives -160..240, not -160..239.
 
