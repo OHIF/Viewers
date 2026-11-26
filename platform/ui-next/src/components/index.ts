@@ -103,6 +103,7 @@ import {
   useSegmentationTableContext,
   useSegmentationExpanded,
   useSegmentStatistics,
+  SegmentationTableProvider,
 } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
@@ -143,6 +144,7 @@ import {
 import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
 import { ContextMenuViewport } from './ContextMenuViewport';
+export * from './DataTable';
 export * from './StudyList';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
@@ -152,9 +154,15 @@ export * from './AllInOneMenu';
 export { default as LineChart } from './LineChart';
 export { default as InvestigationalUseDialog } from './InvestigationalUseDialog';
 export { default as LabellingFlow } from './Labelling';
+export type { SegmentationTableContextType } from './SegmentationTable';
 
 // Segmentation Context Exports
-export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
+export {
+  useSegmentationTableContext,
+  useSegmentationExpanded,
+  useSegmentStatistics,
+  SegmentationTableProvider,
+};
 
 export {
   Numeric,

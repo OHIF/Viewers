@@ -22,6 +22,11 @@ import {
   rememberSeriesDescription,
 } from '../utils/seriesDescriptionHistory';
 
+/**
+ * The dialog that stores a segmentation, a contour set or a measurement report.
+ * See `platform/docs/docs/behaviours/report-dialog-save-destinations.md`.
+ */
+
 type DataSource = {
   value: string;
   label: string;
@@ -47,11 +52,7 @@ type ExistingSeries = {
  *   - `new` a series created for it
  *   - `replace` another loaded series of this modality
  *
- * All three store the same object - all of the current data, as selected from
- * the service holding it.  The destination only decides which series that object
- * belongs to, and so which instance it supersedes.  Nothing is merged: storing
- * into a series that already has data neither loads that data to add to it, nor
- * leaves any of the current data out.
+ * All three store the same object, and the dialog merges nothing.
  */
 type Destination = 'current' | 'new' | 'replace';
 
@@ -93,8 +94,14 @@ type ReportDialogProps = {
   /** Lowest series number to use for a newly created series of this modality. */
   minSeriesNumber?: number;
   /**
-   * Series description to offer when creating a new series - typically the name
-   * of the object being saved, such as the segmentation name or 'Contours'.
+   * The name that the user chose for the item - the segmentation name, for
+   * example.  A new series offers this name first.  A generated name is not such
+   * a name, and belongs in `defaultSeriesDescription`.
+   */
+  itemName?: string;
+  /**
+   * The name for an item that has no other name, such as 'Contours' or
+   * 'Measurements'.  A new series offers this name last.
    */
   defaultSeriesDescription?: string;
   /**
@@ -124,6 +131,7 @@ function ReportDialog({
   modality = 'SR',
   predecessorImageId,
   minSeriesNumber = 3000,
+  itemName = '',
   defaultSeriesDescription = '',
   itemType,
   rememberedDescriptionCount = 5,
@@ -141,18 +149,24 @@ function ReportDialog({
   );
   const { displaySetService } = servicesManager.services;
 
+  /** Every loaded display set of the stored modality. */
+  const modalityDisplaySets = useMemo(
+    () =>
+      Array.from(displaySetService.getDisplaySetCache().values()).filter(
+        ds => ds.Modality === modality
+      ),
+    [displaySetService, modality]
+  );
+
   const existingSeries = useMemo((): ExistingSeries[] => {
-    const displaySetsMap = displaySetService.getDisplaySetCache();
-    const displaySets = Array.from(displaySetsMap.values());
     const seen = new Set<string>();
 
-    return displaySets
-      .filter(ds => ds.Modality === modality)
+    return modalityDisplaySets
       .map(ds => {
         const hasSeriesNumber = isFinite(ds.SeriesNumber);
         const seriesNumberLabel = hasSeriesNumber ? `${ds.SeriesNumber}` : 'Not specified';
         return {
-          value: ds.predecessorImageId || ds.SeriesInstanceUID,
+          value: ds.predecessorImageId,
           seriesNumber: hasSeriesNumber ? Number(ds.SeriesNumber) : minSeriesNumber,
           seriesNumberLabel,
           description: ds.SeriesDescription || null,
@@ -160,15 +174,15 @@ function ReportDialog({
         };
       })
       .filter(series => {
-        // Two display sets of one series would otherwise both be offered, and
-        // the select needs unique values.
+        // The value names the superseded instance, so a display set without one
+        // cannot be a target.  Two display sets can share a series.
         if (!series.value || seen.has(series.value)) {
           return false;
         }
         seen.add(series.value);
         return true;
       });
-  }, [displaySetService, modality, minSeriesNumber]);
+  }, [modalityDisplaySets, minSeriesNumber]);
 
   /**
    * The series the data was loaded from, which `Save to current` writes into.
@@ -185,35 +199,56 @@ function ReportDialog({
     [existingSeries, currentSeries]
   );
 
-  /** The series number offered for a new series - one past the existing ones. */
+  /** One past every loaded series of the modality, not only the offered ones. */
   const defaultNewSeriesNumber = useMemo(
-    () => 1 + Math.max(minSeriesNumber, ...existingSeries.map(series => series.seriesNumber)),
-    [existingSeries, minSeriesNumber]
+    () =>
+      1 +
+      modalityDisplaySets.reduce(
+        (highest, ds) =>
+          isFinite(ds.SeriesNumber) ? Math.max(highest, Number(ds.SeriesNumber)) : highest,
+        minSeriesNumber
+      ),
+    [modalityDisplaySets, minSeriesNumber]
   );
 
   /**
-   * The series descriptions to offer for a new series, being the one provided
-   * for this data followed by the ones last used for this type of item.  The
-   * most recently used one is what gets offered in the field, as it is the most
-   * likely one to want again.
+   * The series descriptions to offer for a new series: `itemName`, then the
+   * description of `currentSeries`, then the ones used before for this type of
+   * item, then `defaultSeriesDescription`.
    */
   const descriptionOptions = useMemo(() => {
-    const history = getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount);
-    const options = [defaultSeriesDescription, ...history].filter(option => !!option?.trim());
+    // A count of 0 turns the history off, and the list then holds one name.
+    const remembered =
+      rememberedDescriptionCount > 0
+        ? getSeriesDescriptionHistory(itemType || modality, rememberedDescriptionCount)
+        : [];
 
-    return options.filter(
+    // Trimmed here, so the stored, shown and remembered names all match.
+    const offered = [itemName, currentSeries?.description, ...remembered, defaultSeriesDescription]
+      .map(option => option?.trim())
+      .filter((option): option is string => !!option);
+
+    const options = offered.filter(
       (option, index) =>
-        options.findIndex(other => other.toLowerCase() === option.toLowerCase()) === index
+        offered.findIndex(other => other.toLowerCase() === option.toLowerCase()) === index
     );
-  }, [defaultSeriesDescription, itemType, modality, rememberedDescriptionCount]);
+
+    return rememberedDescriptionCount > 0 ? options : options.slice(0, 1);
+  }, [
+    currentSeries,
+    itemName,
+    defaultSeriesDescription,
+    itemType,
+    modality,
+    rememberedDescriptionCount,
+  ]);
+
+  /** The name a new series starts from, and the fallback for an emptied field. */
+  const baseSeriesDescription = descriptionOptions[0] ?? '';
 
   const [destination, setDestination] = useState<Destination>(currentSeries ? 'current' : 'new');
   const [newSeriesNumber, setNewSeriesNumber] = useState(String(defaultNewSeriesNumber));
-  const [newSeriesDescription, setNewSeriesDescription] = useState(
-    // The provided description is the first option, so anything after it is a
-    // remembered one, and the first of those was the last one used.
-    () => descriptionOptions[1] ?? defaultSeriesDescription
-  );
+  const [newSeriesDescription, setNewSeriesDescription] = useState(baseSeriesDescription);
   const [replacedSeriesValue, setReplacedSeriesValue] = useState<string | null>(null);
   const [descriptionsOpen, setDescriptionsOpen] = useState(false);
   // Typing narrows the list to what it can complete; opening the list from its
@@ -279,9 +314,14 @@ function ReportDialog({
       // the user to have changed there.
       const storedDescription = targetSeries
         ? (targetSeries.description ?? '')
-        : newSeriesDescription.trim() || defaultSeriesDescription;
+        : newSeriesDescription.trim() || baseSeriesDescription;
 
-      if (!targetSeries) {
+      // The history keeps only a name the user chose, so the offered default
+      // does not consume a slot.
+      const isProvidedName =
+        storedDescription.toLowerCase() === defaultSeriesDescription?.trim().toLowerCase();
+
+      if (!targetSeries && !isProvidedName) {
         rememberSeriesDescription(
           itemType || modality,
           storedDescription,
@@ -305,6 +345,7 @@ function ReportDialog({
       targetSeries,
       seriesNumber,
       newSeriesDescription,
+      baseSeriesDescription,
       defaultSeriesDescription,
       itemType,
       modality,

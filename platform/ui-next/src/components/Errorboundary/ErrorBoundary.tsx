@@ -272,6 +272,17 @@ const ErrorBoundary = ({
     onReset();
   };
 
+  // Declared above the effect that calls it: the effect body only runs after
+  // render, but a reference that textually precedes its declaration is something
+  // the compiler refuses to reason about.
+  const onErrorHandler = (
+    error: ErrorBoundaryError | ErrorEvent,
+    componentStack: string | null
+  ) => {
+    console.debug(`${context} Error Boundary`, error, componentStack, context);
+    onError(error, componentStack || '', context);
+  };
+
   // Add error event listener to window
   useEffect(() => {
     let errorTimeout: NodeJS.Timeout;
@@ -303,13 +314,6 @@ const ErrorBoundary = ({
     };
   }, []);
 
-  const onErrorHandler = (
-    error: ErrorBoundaryError | ErrorEvent,
-    componentStack: string | null
-  ) => {
-    console.debug(`${context} Error Boundary`, error, componentStack, context);
-    onError(error, componentStack || '', context);
-  };
 
   return (
     <ReactErrorBoundary

@@ -114,6 +114,25 @@ const UNRELATED_SERIES = {
   SeriesDescription: 'Axial',
 };
 
+// An uploaded instance carries a local id, which the provider resolves.
+const LOCAL_SERIES = {
+  displaySetInstanceUID: 'ds-local',
+  Modality: 'SEG',
+  SeriesInstanceUID: '1.2.6',
+  SeriesNumber: 3107,
+  SeriesDescription: 'Kidney',
+  predecessorImageId: 'dicomfile:3',
+};
+
+// The viewer never stored this series, so the series has no predecessor image id.
+const DOWNLOADED_SERIES = {
+  displaySetInstanceUID: 'ds-downloaded',
+  Modality: 'SEG',
+  SeriesInstanceUID: '1.2.7',
+  SeriesNumber: 3108,
+  SeriesDescription: 'Pancreas',
+};
+
 const HISTORY_STORAGE_KEY = 'ohif.seriesDescriptionHistory';
 
 function setDisplaySets(displaySets) {
@@ -242,6 +261,15 @@ describe('ReportDialog', () => {
       expect(seriesNumberField().value).toBe('3101');
     });
 
+    it('counts a series that it does not offer as a destination', () => {
+      // The lists do not offer series 3108, because that series has no
+      // predecessor image id.  A new series must still take a number past 3108.
+      setDisplaySets([CURRENT_SERIES, DOWNLOADED_SERIES]);
+      renderDialog();
+
+      expect(seriesNumberField().value).toBe('3109');
+    });
+
     it('saves an edited series number and description', () => {
       const { onSave } = renderDialog();
 
@@ -314,6 +342,45 @@ describe('ReportDialog', () => {
 
       expect(screen.getByText('Series 3103')).toBeTruthy();
     });
+
+    it('does not offer a series that no predecessor image id names', () => {
+      setDisplaySets([CURRENT_SERIES, OTHER_SERIES, LOCAL_SERIES, DOWNLOADED_SERIES]);
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      fireEvent.click(tab('replace'));
+
+      expect(screen.getByText('Spleen')).toBeTruthy();
+      // An uploaded instance carries a local id, which the provider resolves.
+      expect(screen.getByText('Kidney')).toBeTruthy();
+      // The list gave the `SeriesInstanceUID` of this display set before, which
+      // is not an image id, and the provider then threw a `TypeError`.
+      expect(screen.queryByText('Pancreas')).toBeNull();
+    });
+
+    it('cannot replace when the only other series has no predecessor image id', () => {
+      setDisplaySets([CURRENT_SERIES, DOWNLOADED_SERIES]);
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      expect(isDisabled(tab('replace'))).toBe(true);
+    });
+
+    it('stores into an uploaded series through its local image id', () => {
+      // A user must be able to save against an uploaded instance more than once.
+      setDisplaySets([LOCAL_SERIES]);
+      const { onSave } = renderDialog();
+
+      fireEvent.click(tab('replace'));
+      fireEvent.click(screen.getByText('Kidney'));
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reportName: 'Kidney',
+          series: 'dicomfile:3',
+          seriesNumber: 3107,
+        })
+      );
+    });
   });
 
   describe('remembered series descriptions', () => {
@@ -324,6 +391,29 @@ describe('ReportDialog', () => {
       fireEvent.click(saveButton());
 
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
+    });
+
+    it('remembers nothing for the name that the caller provides', () => {
+      // `Segmentation 1` is the generated name of this segmentation.  A later
+      // segmentation carries `Segmentation 2`, and the history would otherwise
+      // offer `Segmentation 1` as the name of that unrelated segmentation.
+      const { onSave } = renderDialog();
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({ reportName: 'Segmentation 1' })
+      );
+      expect(storedHistory()).toEqual({});
+    });
+
+    it('remembers nothing when the typed name is the provided one', () => {
+      renderDialog({ defaultSeriesDescription: 'Contours' });
+
+      fireEvent.change(descriptionField(), { target: { value: '  contours  ' } });
+      fireEvent.click(saveButton());
+
+      expect(storedHistory()).toEqual({});
     });
 
     it('remembers nothing when an existing series is stored into', () => {
@@ -342,8 +432,120 @@ describe('ReportDialog', () => {
       expect(descriptionField().value).toBe('Right kidney');
 
       fireEvent.click(screen.getByTestId('report-series-description-options'));
-      // The provided description first, then the ones used before it.
-      expect(shownDescriptions()).toEqual(['Segmentation 1', 'Right kidney', 'Left kidney']);
+      // The ones used before, most recent first, then the generic name.
+      expect(shownDescriptions()).toEqual(['Right kidney', 'Left kidney', 'Segmentation 1']);
+    });
+
+    it('offers the item name before every other description', () => {
+      // The user renamed `Liver` to `Liver + tumor` before the save.
+      setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID, itemName: 'Liver + tumor' });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver + tumor');
+
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
+      expect(shownDescriptions()).toEqual([
+        'Liver + tumor',
+        'Liver',
+        'Right kidney',
+        'Left kidney',
+        'Segmentation 1',
+      ]);
+    });
+
+    it('ignores an item name of spaces', () => {
+      // A blank name must not hide the description of the loaded series.
+      setStoredHistory({ SEG: ['Right kidney'] });
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID, itemName: '  ' });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver');
+    });
+
+    it('offers the description of the loaded series when there is no item name', () => {
+      // The name of the last save comes before the remembered names.
+      setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
+      renderDialog({ predecessorImageId: CURRENT_SERIES_IMAGE_ID });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver');
+
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
+      expect(shownDescriptions()).toEqual([
+        'Liver',
+        'Right kidney',
+        'Left kidney',
+        'Segmentation 1',
+      ]);
+    });
+
+    it('offers the last used description when the caller provides none', () => {
+      // A caller such as the findings flow of a fork provides no description.
+      setStoredHistory({ SEG: ['Right kidney', 'Left kidney'] });
+      renderDialog({ defaultSeriesDescription: '' });
+
+      expect(descriptionField().value).toBe('Right kidney');
+    });
+
+    it('saves when the caller provides a null description', () => {
+      // A mode context, or a customization, can give an explicit null, and the
+      // default of the prop replaces `undefined` alone.  A save read `.trim()`
+      // off that null and threw, and the save then stored nothing.
+      setStoredHistory({ SEG: ['Right kidney'] });
+      const { onSave } = renderDialog({ defaultSeriesDescription: null });
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+      expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
+    });
+
+    it('drops the outer spaces of an offered name', () => {
+      // The dialog shows the trimmed name, so the save stores the trimmed name
+      // as well, and the history holds the same name as the series.
+      const { onSave } = renderDialog({ itemName: '  Right kidney  ' });
+
+      expect(descriptionField().value).toBe('Right kidney');
+
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+      expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
+    });
+
+    it('drops the outer spaces of the name an emptied field falls back to', () => {
+      const { onSave } = renderDialog({ itemName: '  Right kidney  ' });
+
+      fireEvent.change(descriptionField(), { target: { value: '  ' } });
+      fireEvent.click(saveButton());
+
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+    });
+
+    it('drops the second copy of a description that two sources hold', () => {
+      // The history holds the generic name, so the list holds that name once.
+      setStoredHistory({ SEG: ['Segmentation 1', 'Left kidney'] });
+      renderDialog();
+
+      expect(descriptionField().value).toBe('Segmentation 1');
+
+      fireEvent.click(screen.getByTestId('report-series-description-options'));
+      expect(shownDescriptions()).toEqual(['Segmentation 1', 'Left kidney']);
+    });
+
+    it('falls back to the offered description when the field is emptied', () => {
+      setStoredHistory({ SEG: ['Right kidney'] });
+      const { onSave } = renderDialog();
+
+      fireEvent.change(descriptionField(), { target: { value: '  ' } });
+      fireEvent.click(saveButton());
+
+      // The name the field offered, and not the generic name behind it.
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
     });
 
     it('moves a reused description back to the front, without duplicating it', () => {
@@ -377,14 +579,55 @@ describe('ReportDialog', () => {
       expect(storedHistory()).toEqual({ SEG: ['Right kidney'] });
     });
 
+    it('still starts from the item name for a count of 0', () => {
+      setStoredHistory({ SEG: ['Right kidney'] });
+      renderDialog({ rememberedDescriptionCount: 0, itemName: 'Liver + tumor' });
+
+      expect(descriptionField().value).toBe('Liver + tumor');
+      expect(screen.queryByTestId('report-series-description-options')).toBeNull();
+    });
+
+    it('ignores an item name of spaces for a count of 0', () => {
+      // A blank name must not empty the field, and must not hide `Liver`.
+      renderDialog({
+        rememberedDescriptionCount: 0,
+        itemName: '   ',
+        predecessorImageId: CURRENT_SERIES_IMAGE_ID,
+      });
+
+      fireEvent.click(tab('new'));
+
+      expect(descriptionField().value).toBe('Liver');
+      expect(screen.queryByTestId('report-series-description-options')).toBeNull();
+    });
+
+    it('offers the default when the current description is blank, for a count of 0', () => {
+      // A blank loaded description must fall through to the generic name.
+      setDisplaySets([{ ...CURRENT_SERIES, SeriesDescription: '   ' }]);
+      const { onSave } = renderDialog({
+        rememberedDescriptionCount: 0,
+        predecessorImageId: CURRENT_SERIES_IMAGE_ID,
+      });
+
+      fireEvent.click(tab('new'));
+      expect(descriptionField().value).toBe('Segmentation 1');
+
+      fireEvent.change(descriptionField(), { target: { value: '  ' } });
+      fireEvent.click(saveButton());
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({ reportName: 'Segmentation 1' })
+      );
+    });
+
     it('keeps each type of item separate', () => {
       setStoredHistory({ SEG: ['Right kidney'] });
       renderDialog({ modality: 'RTSTRUCT', defaultSeriesDescription: 'Contours' });
 
       expect(descriptionField().value).toBe('Contours');
 
+      fireEvent.change(descriptionField(), { target: { value: 'Left lung' } });
       fireEvent.click(saveButton());
-      expect(storedHistory()).toEqual({ SEG: ['Right kidney'], RTSTRUCT: ['Contours'] });
+      expect(storedHistory()).toEqual({ SEG: ['Right kidney'], RTSTRUCT: ['Left lung'] });
     });
 
     it('narrows the offered descriptions to what is being typed', () => {
@@ -426,11 +669,12 @@ describe('ReportDialog', () => {
       fireEvent.keyDown(descriptionField(), { key: 'ArrowDown' });
       fireEvent.keyDown(descriptionField(), { key: 'Enter' });
 
-      expect(descriptionField().value).toBe('Right kidney');
+      // The field starts from the first entry, so the arrow key picks the second.
+      expect(descriptionField().value).toBe('Left kidney');
       expect(onSave).not.toHaveBeenCalled();
 
       fireEvent.keyDown(descriptionField(), { key: 'Enter' });
-      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Right kidney' }));
+      expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ reportName: 'Left kidney' }));
     });
   });
 

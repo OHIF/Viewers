@@ -11,7 +11,8 @@ describe('OHIF HP', () => {
   });
 
   it('Should display 3 up', () => {
-    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 4);
+    // 3 image series: the first applicable stage is 3x1
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 3);
   });
 
   it('Should navigate next/previous stage', () => {

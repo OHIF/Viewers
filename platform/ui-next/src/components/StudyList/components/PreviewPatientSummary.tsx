@@ -51,7 +51,7 @@ type RootProps = {
 
 function Root({ data: dataProp, className, children }: RootProps) {
   const data = dataProp ?? null;
-  const value = React.useMemo<SummaryContextValue>(() => ({ data }), [data]);
+  const value: SummaryContextValue = { data };
 
   return (
     <SummaryContext.Provider value={value}>
@@ -117,26 +117,15 @@ function Workflows({ className }: { className?: string } = {}) {
   const { workflows, getWorkflowsForStudy, getDefaultWorkflowForStudy, setDefaultWorkflowId } =
     useWorkflows();
 
-  const availableWorkflows = React.useMemo(() => {
-    if (studyRow) {
-      return getWorkflowsForStudy(studyRow);
-    }
-    return workflows;
-  }, [studyRow, workflows, getWorkflowsForStudy]);
+  const availableWorkflows = studyRow ? getWorkflowsForStudy(studyRow) : workflows;
 
-  const defaultWorkflow = React.useMemo(() => {
-    if (studyRow) {
-      return getDefaultWorkflowForStudy(studyRow);
-    }
-    return workflows.find(w => w.isDefault);
-  }, [studyRow, workflows, getDefaultWorkflowForStudy]);
+  const defaultWorkflow = studyRow
+    ? getDefaultWorkflowForStudy(studyRow)
+    : workflows.find(w => w.isDefault);
 
-  const otherWorkflows = React.useMemo(() => {
-    if (!defaultWorkflow) {
-      return availableWorkflows;
-    }
-    return availableWorkflows.filter(w => w.displayName !== defaultWorkflow.displayName);
-  }, [availableWorkflows, defaultWorkflow]);
+  const otherWorkflows = !defaultWorkflow
+    ? availableWorkflows
+    : availableWorkflows.filter(w => w.displayName !== defaultWorkflow.displayName);
 
   const handleLaunch = (displayName: string) => {
     if (!studyRow) {

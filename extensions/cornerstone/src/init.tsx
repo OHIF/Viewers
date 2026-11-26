@@ -39,6 +39,7 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
+import initGpuSettingsPreset from './utils/initGpuSettingsPreset';
 import { colormaps } from './utils/colormaps';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { useLutPresentationStore } from './stores/useLutPresentationStore';
@@ -74,9 +75,15 @@ export default async function init({
   const statsOverlay =
     new URLSearchParams(window.location.search).get('debug') === 'true';
 
+  // OHIF owns the fidelity indicator (top-right action corner); turn off CS3D's .fi-root
+  // so it cannot cover menus (z-index 1000).
   await cs3DInit({
     peerImport: appConfig.peerImport,
     debug: { statsOverlay },
+    dangerouslyDisableFidelityIndicator: true,
+    ...(appConfig.lossyDownsampling && {
+      rendering: { lossyDownsampling: appConfig.lossyDownsampling },
+    }),
   });
 
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
@@ -158,6 +165,8 @@ export default async function init({
     displaySetService,
     toolbarService,
   } = servicesManager.services;
+
+  initGpuSettingsPreset({ customizationService, appConfig });
 
   toolbarService.registerEventForToolbarUpdate(colorbarService, [
     colorbarService.EVENTS.STATE_CHANGED,

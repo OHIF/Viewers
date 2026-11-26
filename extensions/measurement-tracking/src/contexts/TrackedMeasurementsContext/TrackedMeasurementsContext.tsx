@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui-next';
@@ -402,9 +401,6 @@ function TrackedMeasurementsContextProvider(
   );
 }
 
-TrackedMeasurementsContextProvider.propTypes = {
-  children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  appConfig: PropTypes.object,
-};
+
 
 export { TrackedMeasurementsContext, TrackedMeasurementsContextProvider, useTrackedMeasurements };

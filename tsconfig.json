@@ -4,7 +4,7 @@
     "checkJs": true,
     "isolatedModules": true,
     "emitDeclarationOnly": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,

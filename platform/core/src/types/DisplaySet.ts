@@ -28,6 +28,8 @@ export type DisplaySet = {
   isOverlayDisplaySet?: boolean;
   /** Flag indicating this is a derived dataset */
   isDerived?: boolean;
+  /** Flag that a SOP class handler sets on a derived display set, for example a SEG */
+  isDerivedDisplaySet?: boolean;
   /** flag indicating if it supports window level */
   supportsWindowLevel?: boolean;
 
@@ -63,7 +65,46 @@ export type DisplaySet = {
    */
   FrameOfReferenceUID?: string;
 
+  /**
+   * The date and the time **of the display set**, which is what the series list
+   * is ordered by - `dateTimeSortKey` in `sortStudy`. The two names are
+   * historical: the value is not always the `SeriesDate`/`SeriesTime` of the
+   * series that the instances belong to, and it must not be copied back to the
+   * series metadata or to an instance.
+   *
+   * The SOP class handler that creates the display set writes both, and the two
+   * kinds of handler take the value from different places:
+   *
+   * - An image display set takes the instance's `SeriesDate`/`SeriesTime`
+   *   directly. Every instance of a series carries those two identically, so
+   *   every display set of one image series holds the same value, ties on the
+   *   sort key, and the display sets stay together in the series list - ordered
+   *   among themselves by `compareSameSeriesDisplaySet`. Such a handler must not
+   *   call `getLatestInstanceDateTime`, which also reads
+   *   `AcquisitionDate`/`AcquisitionTime` and so differs per instance.
+   * - A derived display set - SEG, RTSTRUCT, SR, PMAP, PDF, video, chart -
+   *   takes the creation date/time of the instance it shows, from
+   *   `getLatestInstanceDateTime`. A report saved
+   *   today into a series created last week gets today's date, and the series
+   *   list places that display set as today's work. The series' own
+   *   `SeriesDate`/`SeriesTime`, in the instance metadata and in the archive,
+   *   stay as they are.
+   *
+   * A display set that changes the instance it shows has to write both again,
+   * or the series list keeps the position of the instance it no longer shows.
+   * `addInstances` of the SR handler and of the chart handler does that. The
+   * SEG, the RTSTRUCT and the PMAP handler have no `addInstances`, so
+   * `DisplaySetService` gives each new instance its own display set, and that
+   * display set writes its own date/time.
+   *
+   * Two display sets of one series that hold different values order by those
+   * values, and a display set of another series can come between them. A split
+   * that needs its display sets kept together gives all of them one value - the
+   * value of the series - and registers a comparison with `addSameSeriesCompare`
+   * to order them among themselves.
+   */
   SeriesDate?: string;
+  /** The time of the display set. See {@link DisplaySet.SeriesDate}. */
   SeriesTime?: string;
   instance?: InstanceMetadata;
 
@@ -124,6 +165,46 @@ export type DisplaySet = {
    * sets that are coming from same series instanceUID.
    */
   compareSameSeries?: string;
+
+  /**
+   * The deterministic, rule-namespaced group key assigned by the
+   * `@cornerstonejs/metadata` split-rules engine when this display set was
+   * created via the `useMetadataDisplaySet` customization.  Used to reconcile
+   * re-splits of the same series with already-created display sets.
+   */
+  splitKey?: string;
+
+  /** The id of the split rule that created this display set, when applicable. */
+  splitRuleId?: string;
+
+  /**
+   * The group of split rules that the rule belongs to: the rule's `groupId`,
+   * else its id, so it equals `splitRuleId` unless a deployment groups rules.
+   * Several rules can make one kind of display set (for example breast
+   * tomosynthesis, legacy mammography, and mammography already split), and a
+   * hanging protocol or another reader matches this value to find all of them.
+   * Neither this nor `splitRuleId` can be set by a rule's `customAttributes`.
+   */
+  splitGroupId?: string;
+
+  /**
+   * Growth hook for split-rule display sets: adds instances that are new to
+   * the series. A split-rule display set never loses an instance. `series` is
+   * the display set's rule's series facts from the re-split, when the new
+   * instances matched that same rule, so the re-sort sees the facts the split
+   * saw. Intentionally named differently from `addInstances` (the
+   * SOP-class-handler merge hook) so the legacy handler loop never feeds
+   * unmatched instances into split-rule display sets. Returns the updated
+   * display set, or undefined when the display set cannot take the instances.
+   */
+  extendInstances?(
+    instances: InstanceMetadata[],
+    options: {
+      series?: Record<string, unknown>;
+      compareInstances?: (a: unknown, b: unknown, context: unknown) => number;
+    },
+    displaySetService
+  ): DisplaySet | undefined;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

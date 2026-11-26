@@ -21,13 +21,13 @@ the `addOns/` directory, and `preinstall.js` have all been removed.
 | yarn | `>=1.20.0`    | _(removed)_ |
 | npm  | `>=6`         | _(removed)_ |
 
-The root `package.json` declares `"packageManager": "pnpm@11.1.1"`. If you use
+The root `package.json` declares the pnpm version to use in its
+`packageManager` field. If you use
 [Corepack](https://nodejs.org/api/corepack.html), running any pnpm command in
-the repo will pick the correct version automatically:
+the repo picks up that version automatically once Corepack is enabled:
 
 ```bash
 corepack enable
-corepack prepare pnpm@11.1.1 --activate
 ```
 
 ## Install and run commands
@@ -49,17 +49,23 @@ The root `scripts` section was rewritten to use `pnpm --filter @ohif/app run …
 for app-targeted scripts and `pnpm -r run …` for monorepo-wide scripts.
 There is no `preinstall` script anymore.
 
-## `.npmrc`
+## `.npmrc` and the frozen-lockfile default
 
-A new `.npmrc` at the repository root controls install behavior:
+A new `.npmrc` at the repository root controls linking behavior (hoisted
+`node_modules`, workspace package linking, no strict peer checks). The
+frozen-lockfile default lives in `pnpm-workspace.yaml`, not in `.npmrc`:
 
-```ini
-frozen-lockfile=true
+```yaml
+frozenLockfile: true
 ```
 
-CI installs error out if the lockfile would change. To update the lockfile
-locally, use `pnpm install --no-frozen-lockfile` (also exposed as the
-`install:update-lockfile` script).
+With that setting, every plain `pnpm install` in the repo is frozen: it installs
+exactly what `pnpm-lock.yaml` records, transitive versions and integrity hashes
+included, and errors out if the lockfile would change. CI and the Docker image
+builds rely on this; `--no-frozen-lockfile` on the command line overrides it, so
+never use it in a build or CI path. To update the lockfile locally after editing
+a `package.json`, run `pnpm run install:update-lockfile` (which is
+`pnpm install --no-frozen-lockfile`) and commit the result.
 
 ## `pnpm-workspace.yaml`
 
@@ -70,7 +76,7 @@ packages:
   - platform/*
   - extensions/*
   - modes/*
-shamefullyHoist: true
+nodeLinker: hoisted
 allowBuilds:
   '@scarf/scarf': true
   '@swc/core': true
@@ -85,13 +91,16 @@ overrides:
 
 Two settings worth highlighting:
 
-- **`shamefullyHoist: true`** keeps the install layout flat, the way yarn
-  v1 produced it. This is required because some OHIF dependencies expect
-  to resolve transitive packages directly from `node_modules`.
+- **`nodeLinker: hoisted`** installs a plain, flat `node_modules`, the way
+  npm and yarn v1 lay it out, instead of pnpm's default linked layout. This is
+  required because some OHIF dependencies expect to resolve packages they never
+  declared directly from `node_modules`. (It mirrors the cornerstone3D setup;
+  pnpm's `shamefullyHoist` is a different, partly-flat option and is not used.)
 - **`allowBuilds`** is pnpm's allow-list for packages whose install scripts
   are allowed to run. If you add a dependency that ships a postinstall
-  script (native bindings, optimized binaries, etc.) you must add it here
-  or pnpm will skip the build.
+  script (native bindings, optimized binaries, etc.) you must add it here;
+  current pnpm versions fail the install while any such script is left
+  unapproved.
 
 The `addOns/externals/*` workspace entry from 3.12 is **removed**. The
 `dicom-microscopy-viewer` and externals devDependencies are now installed
@@ -124,6 +133,10 @@ already covers them. Inside your extension's `package.json`, change any
 `@ohif/*` deps from hard versions to `workspace:*`.
 
 ## CLI changes
+
+:::note
+The CLI itself is removed in 3.14; see [OHIF CLI removal](../3p13-to-3p14/cli-removal.md).
+:::
 
 `platform/cli` (`@ohif/cli`) no longer wraps yarn:
 

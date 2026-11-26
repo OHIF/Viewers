@@ -1,6 +1,12 @@
 import { annotation } from '@cornerstonejs/tools';
 import { NO_IMAGE_ID } from '@cornerstonejs/adapters';
 
+/** SR display sub-types have no SR adapter of their own; export them as the base tool. */
+const EXPORT_TOOL_TYPE = {
+  SRPoint: 'Probe',
+  SRRectangleROI: 'RectangleROI',
+};
+
 function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes) {
   const filteredToolState = {};
 
@@ -79,7 +85,7 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
           const uidIndex = uids.findIndex(uid => uid === annotation.annotationUID);
 
           if (uidIndex !== -1) {
-            addToFilteredToolState(annotation, toolType);
+            addToFilteredToolState(annotation, EXPORT_TOOL_TYPE[toolType] ?? toolType);
             uids.splice(uidIndex, 1);
 
             if (!uids.length) {
