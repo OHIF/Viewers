@@ -59,7 +59,7 @@ test('should display the circle tool', async ({
       measurementTextFormatters.areaSvgLine(`${expectedArea}`),
       measurementTextFormatters.meanSvgLine(`${expectedMean}`),
       measurementTextFormatters.maxLine(`${expectedMax}`),
-      measurementTextFormatters.minSvgLine(String(expectedMin)),
+      measurementTextFormatters.minSvgLine(expectedMin.toFixed(1)),
       measurementTextFormatters.stdDevSvgLine(`${expectedStdDev}`),
     ],
     assertStats: stats => {

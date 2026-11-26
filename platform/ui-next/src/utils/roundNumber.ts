@@ -7,9 +7,6 @@
  * * Values between 10 and 99 show 1 decimal point
  * * Values between 1 and 9 show 2 decimal points
  *
- * Trailing zeros after the decimal point are removed: 8 gives `8`, 12.30
- * gives `12.3`.
- *
  * @param value - to return a fixed measurement value from
  * @param precision - defining how many digits after 1..9 are desired
  */
@@ -40,11 +37,7 @@ function roundNumber(value, precision = 2) {
               : absValue >= 0.001
                 ? precision + 3
                 : precision + 4;
-  const text = value.toFixed(fixedPrecision);
-  // Same output as roundNumber of @cornerstonejs/core: no trailing zeros, no -0.
-  // toFixed gives exponential text from 1e21; trimming would cut its exponent.
-  const trimmed = text.includes('.') && !text.includes('e') ? text.replace(/\.?0+$/, '') : text;
-  return trimmed === '-0' ? '0' : trimmed;
+  return value.toFixed(fixedPrecision);
 }
 
 export default roundNumber;
