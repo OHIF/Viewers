@@ -807,6 +807,22 @@ window.config = {
     `,
   },
   {
+    id: 'cornerstone.maxUndoRedoCacheSize',
+    description:
+      'The maximum number of undo/redo history items to keep. Segmentation edits record undo memos that hold full labelmap buffers, so a large history can cause memory pressure or out-of-memory errors with large data. The viewer reads the value once, when a mode opens, and that clears the undo/redo history. A later change of the customization has no effect until the next mode opens. A value that is not a positive integer makes the mode entry throw a RangeError.',
+    default: '50',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: {
+    global: {
+      'cornerstone.maxUndoRedoCacheSize': { $set: 10 },
+    },
+  },
+};
+    `,
+  },
+  {
     id: 'autoCineModalities',
     description: 'Specifies the modalities for which the cine player automatically starts.',
     default: ['OT', 'US'],
@@ -1070,6 +1086,24 @@ window.config = {
     {
       customOnDropHandler: {
         $set: customOnDropHandler
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportGrid.emptyViewport',
+    description:
+      'Component rendered by the viewport grid for a viewport that has no display set. It receives the same props as other viewport components (viewportId, viewportOptions, displaySets, ...). The default renders an empty element.',
+    default: 'EmptyViewport (renders an empty div)',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportGrid.emptyViewport': {
+        $set: CustomEmptyViewport,
       },
     },
   ],
@@ -2085,18 +2119,33 @@ window.config = {
     description: 'Sorting options for study browser items.',
     image: seriesSortImage,
     default: [
+      // Each function orders ascending (the direction is applied on top) and
+      // returns 0 on a tie, so the default series order breaks the tie.
       {
         label: 'Series Number',
+        // Lowest first; a series with no number sorts first.
         sortFunction: (a, b) => {
-          return a?.SeriesNumber - b?.SeriesNumber;
+          const key = displaySet => {
+            const value = displaySet?.SeriesNumber;
+            const n = value === '' || value === null ? NaN : Number(value);
+            return Number.isFinite(n) ? n : -Infinity;
+          };
+          const keyA = key(a);
+          const keyB = key(b);
+          return keyA === keyB ? 0 : keyA < keyB ? -1 : 1;
         },
       },
       {
         label: 'Series Date',
+        // Oldest first by series date and time; a series with no date sorts first.
+        // The built-in function builds this key with utils.getDateTimeSortKey from
+        // @ohif/core, which also normalises partial DICOM times.
         sortFunction: (a, b) => {
-          const dateA = new Date(formatDate(a?.SeriesDate));
-          const dateB = new Date(formatDate(b?.SeriesDate));
-          return dateB.getTime() - dateA.getTime();
+          const key = displaySet =>
+            displaySet?.SeriesDate ? `${displaySet.SeriesDate} ${displaySet.SeriesTime ?? ''}` : '';
+          const keyA = key(a);
+          const keyB = key(b);
+          return keyA === keyB ? 0 : keyA < keyB ? -1 : 1;
         },
       },
     ],

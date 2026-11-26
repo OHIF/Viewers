@@ -17,6 +17,17 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     throw new Error('No instances were provided');
   }
 
+  // The legacy display set has no `instances` field.
+  const displaySet = {};
+  _applyFields(displaySet, instances, { servicesManager, extensionManager });
+  return [displaySet];
+}
+
+/**
+ * Adds the microscopy annotation fields to `displaySet`. Shared by the legacy builder and the
+ * split-rule path (the `bulkAnnotation` handler).
+ */
+function _applyFields(displaySet, instances, { servicesManager, extensionManager }) {
   const { displaySetService, microscopyService } = servicesManager.services;
 
   // Sort instances by date/time in ascending order (oldest first)
@@ -45,13 +56,13 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     SOPClassUID,
   } = instance;
 
-  const displaySet = {
+  Object.assign(displaySet, {
     isOverlayDisplaySet: true,
     plugin: 'microscopy',
     Modality: 'ANN',
     thumbnailSrc: null,
     altImageText: 'Microscopy Annotation',
-    displaySetInstanceUID: utils.uuidv4(),
+    displaySetInstanceUID: displaySet.displaySetInstanceUID ?? utils.uuidv4(),
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -68,7 +79,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     isLoading: false,
     isLoaded: false,
     loadError: false,
-  };
+  });
 
   displaySet.load = function () {
     return loadAnnotation({
@@ -93,8 +104,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     const ds = getSourceDisplaySet(allDisplaySets, displaySet);
     return ds;
   };
-
-  return [displaySet];
 }
 
 export default function getDicomMicroscopyANNSopClassHandler({
@@ -109,5 +118,8 @@ export default function getDicomMicroscopyANNSopClassHandler({
     name: 'DicomMicroscopyANNSopClassHandler',
     sopClassUids: [SOP_CLASS_UIDS.MICROSCOPY_BULK_SIMPLE_ANNOTATION],
     getDisplaySetsFromSeries,
+    handlerNames: ['bulkAnnotation'],
+    extendDisplaySet: (displaySet, options) =>
+      _applyFields(displaySet, displaySet.instances, options),
   };
 }

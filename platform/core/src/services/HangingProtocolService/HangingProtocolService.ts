@@ -294,7 +294,7 @@ export default class HangingProtocolService extends PubSubService {
       return this.protocol;
     }
 
-    let protocol = this.protocols.get(protocolId);
+    let protocol = this._getCustomizedProtocol(protocolId) ?? this.protocols.get(protocolId);
     if (!protocol && caseInsensitive) {
       const lowerCaseId = protocolId.toLowerCase();
       for (const [key] of this.protocols) {
@@ -322,6 +322,23 @@ export default class HangingProtocolService extends PubSubService {
     } else {
       return this._validateProtocol(protocol);
     }
+  }
+
+  /**
+   * The `hangingProtocols.<id>` customization defines the protocol with that id.
+   * Thus a JSONC customization can add a protocol, or change one with `$set` or
+   * `$merge`. The order of precedence:
+   * 1. A global or mode customization.
+   * 2. A protocol that `addProtocol` registered.
+   * 3. A default customization, for example the built-in `@ohif/mnGrid`.
+   */
+  private _getCustomizedProtocol(protocolId: string): HangingProtocol.Protocol | undefined {
+    const { customizationService } = this._servicesManager.services;
+    const customizationId = `hangingProtocols.${protocolId}`;
+    if (this.protocols.has(protocolId) && !customizationService.hasCustomization(customizationId)) {
+      return;
+    }
+    return customizationService.getCustomization(customizationId) as HangingProtocol.Protocol;
   }
 
   /**
@@ -906,7 +923,7 @@ export default class HangingProtocolService extends PubSubService {
     options = {} as HangingProtocol.SetProtocolOptions,
     errorCallback = null
   ): void {
-    const foundProtocol = this.protocols.get(protocolId);
+    const foundProtocol = this._getCustomizedProtocol(protocolId) ?? this.protocols.get(protocolId);
 
     if (!foundProtocol) {
       console.warn(
@@ -997,24 +1014,27 @@ export default class HangingProtocolService extends PubSubService {
     });
   }
 
+  /**
+   * Returns the index of the stage that `options` asks for. When `options` gives
+   * no stage, or the stage it gives is `disabled` for this study, returns the
+   * first `enabled` stage, or else the first `passive` stage.
+   */
   private _findStageIndex(options = null as HangingProtocol.SetProtocolOptions): number | void {
     const stageId = options?.stageId;
     const protocol = this.protocol;
     const stages = protocol.stages;
 
-    if (stageId) {
-      for (let i = 0; i < stages.length; i++) {
-        const stage = stages[i];
-        if (stage.id === stageId && stage.status !== 'disabled') {
-          return i;
-        }
-      }
-      return;
+    const requestedIndex = stageId
+      ? stages.findIndex(stage => stage.id === stageId)
+      : options?.stageIndex;
+    const requested = stages[requestedIndex ?? -1];
+    if (requested && requested.status !== 'disabled') {
+      return requestedIndex;
     }
-
-    const stageIndex = options?.stageIndex;
-    if (stageIndex !== undefined) {
-      return stages[stageIndex]?.status !== 'disabled' ? stageIndex : undefined;
+    if (requested) {
+      console.warn(
+        `Stage ${requested.id ?? requestedIndex} of ${protocol.id} is disabled for this study, so the first applicable stage opens`
+      );
     }
 
     let firstNotDisabled: number;
@@ -1068,7 +1088,7 @@ export default class HangingProtocolService extends PubSubService {
 
       const stage = this._findStageIndex(options);
       if (stage === undefined) {
-        throw new Error(`Can't find applicable stage ${protocol.id} ${options?.stageIndex}`);
+        throw new Error(`Protocol ${protocol.id} has no applicable stage for this study`);
       }
       this.stageIndex = stage as number;
 
@@ -1102,16 +1122,17 @@ export default class HangingProtocolService extends PubSubService {
     }
   }
 
-  public getStageIndex(protocolId: string, options): number {
+  /**
+   * Returns the index of the given stageId or stageIndex.  With neither, returns
+   * undefined, so that setProtocol opens the first applicable stage.
+   */
+  public getStageIndex(protocolId: string, options): number | undefined {
     const protocol = this.getProtocolById(protocolId);
     const { stageId, stageIndex } = options;
     if (stageId !== undefined) {
       return protocol.stages.findIndex(it => it.id === stageId);
     }
-    if (stageIndex !== undefined) {
-      return stageIndex;
-    }
-    return 0;
+    return stageIndex;
   }
 
   /**
@@ -1368,7 +1389,8 @@ export default class HangingProtocolService extends PubSubService {
     viewport.displaySets.forEach(displaySetOptions => {
       const { id, matchedDisplaySetsIndex = 0 } = displaySetOptions;
       const reuseDisplaySetUIDs =
-        id && displaySetSelectorMap[`${activeStudyUID}:${id}:${matchedDisplaySetsIndex || 0}`];
+        id &&
+        displaySetSelectorMap[this.getDisplaySetSelectorMapKey(activeStudyUID, displaySetOptions)];
       const viewportDisplaySetMain = this.displaySetMatchDetails.get(id);
 
       const viewportDisplaySet = this.findDeduplicatedMatchDetails(
@@ -1477,7 +1499,11 @@ export default class HangingProtocolService extends PubSubService {
     // only match the required rules
     const requiredRules = seriesMatchingRules.filter(rule => rule.required);
     if (requiredRules.length) {
-      const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
+      const matched = this.protocolEngine.findMatch(
+        displaySet,
+        requiredRules,
+        this._getSeriesMatchOptions(displaySet)
+      );
 
       if (!matched || matched.score === 0) {
         throw new Error(
@@ -1485,6 +1511,45 @@ export default class HangingProtocolService extends PubSubService {
         );
       }
     }
+  }
+
+  /**
+   * Returns the displaySetSelectorMap key that remembers the user's display set
+   * for the given viewport display set options of the active protocol.  It uses
+   * the selector's `selectorMapId` when set, so that stages using different
+   * selectors for the same viewport share the user's choice.
+   */
+  public getDisplaySetSelectorMapKey(
+    studyInstanceUID: string,
+    displaySetOptions: HangingProtocol.DisplaySetOptions
+  ): string {
+    const { id, matchedDisplaySetsIndex } = displaySetOptions;
+    const mapId = this.protocol?.displaySetSelectors?.[id]?.selectorMapId ?? id;
+    return `${studyInstanceUID}:${mapId}:${matchedDisplaySetsIndex || 0}`;
+  }
+
+  /** Returns the supported display sets of the given study. */
+  private _getStudyDisplaySets(studyInstanceUID: string): DisplaySet[] {
+    return this.displaySets.filter(
+      it => it.StudyInstanceUID === studyInstanceUID && !it?.unsupported
+    );
+  }
+
+  /**
+   * Returns the options that series matching rules get.  Both the series
+   * matching and the validation of the required series rules use it, so that a
+   * custom attribute or a `from` rule gets the same data in both.
+   */
+  private _getSeriesMatchOptions(
+    displaySet: DisplaySet,
+    studyDisplaySets = this._getStudyDisplaySets(displaySet.StudyInstanceUID)
+  ) {
+    return {
+      studies: this.studies,
+      instance: displaySet.images?.[0],
+      displaySetMatchDetails: this.displaySetMatchDetails,
+      displaySets: studyDisplaySets,
+    };
   }
 
   _validateOptions(options: HangingProtocol.SetProtocolOptions): void {
@@ -1524,9 +1589,7 @@ export default class HangingProtocolService extends PubSubService {
         return;
       }
 
-      const studyDisplaySets = this.displaySets.filter(
-        it => it.StudyInstanceUID === study.StudyInstanceUID && !it?.unsupported
-      );
+      const studyDisplaySets = this._getStudyDisplaySets(study.StudyInstanceUID);
 
       const studyMatchDetails = this.protocolEngine.findMatch(study, studyMatchingRules, {
         studies: this.studies,
@@ -1547,13 +1610,7 @@ export default class HangingProtocolService extends PubSubService {
         const seriesMatchDetails = this.protocolEngine.findMatch(
           displaySet,
           seriesMatchingRules,
-          // Todo: why we have images here since the matching type does not have it
-          {
-            studies: this.studies,
-            instance: displaySet.images?.[0],
-            displaySetMatchDetails: this.displaySetMatchDetails,
-            displaySets: studyDisplaySets,
-          }
+          this._getSeriesMatchOptions(displaySet, studyDisplaySets)
         );
 
         // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed

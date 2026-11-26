@@ -71,6 +71,18 @@ export default class ToolGroupService {
     this._init();
   }
 
+  /**
+   * Listens for tool activation again on every mode entry. `destroy` (run on mode exit)
+   * removes the listener, and the constructor that first added it runs once per page, so
+   * without this every mode entry after the first — switching study from inside the
+   * viewer, say — left TOOL_ACTIVATED and PRIMARY_TOOL_ACTIVATED silent for the rest of
+   * the session. Cornerstone's event target ignores a listener it already holds, so the
+   * first entry, which follows the constructor, does not register it twice.
+   */
+  onModeEnter() {
+    this._init();
+  }
+
   onModeExit() {
     this.destroy();
   }
