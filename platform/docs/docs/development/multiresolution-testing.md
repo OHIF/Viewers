@@ -304,14 +304,12 @@ failure. A later pull request will add an automatic mode that probes the device.
   the volume. These protocols still show gray lines while a volume loads.
 - **The Cornerstone3D fidelity indicator is disabled in OHIF.** `init.tsx` sets
   `dangerouslyDisableFidelityIndicator: true` so CS3D’s `.fi-root` (z-index 1000) cannot
-  cover OHIF menus. OHIF shows fidelity on `viewportOverlay.topRight` instead (#6256),
-  in the top-right corner, level with the viewport action corners; the action menus
-  stay hover-gated. The indicator takes space only in a viewport that was lossy: the
-  top-right action items move aside for it, and stay aside after it withdraws, so that
-  the hover target that re-reveals the recovered state stays reachable. Its position
-  does not depend on the items of any action corner. Volume3D layouts keep
-  `hideOverlays` (no StudyDate / scrollbar chrome) but still mount the fidelity
-  overlay item. Placement is covered by `FidelityIndicatorPlacement.spec.ts`
+  cover OHIF menus. OHIF shows fidelity as the last item of the top-right viewport
+  action corner instead (#6256). The indicator shows without hover; the action buttons
+  stay hover-gated and sit to its left. The indicator takes space only in a viewport
+  that was lossy, and keeps a hover target after it withdraws, so that the recovered
+  state can be re-revealed. Volume3D layouts keep `hideOverlays` and still show the
+  indicator, because the action corners render there. Placement is covered by `FidelityIndicatorPlacement.spec.ts`
   (injected fidelity state; no GPU required).
 - **No automatic test covers the new viewports or the reduction.** See
   [OHIF/Viewers#6404](https://github.com/OHIF/Viewers/issues/6404).

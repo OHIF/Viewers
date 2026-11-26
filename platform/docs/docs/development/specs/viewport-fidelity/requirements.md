@@ -466,8 +466,7 @@ of removing it.
 > writes that config line should have to read that sentence first.
 
 **VF-CFG-3**
-The system shall allow a deployment to move the indicator to another position by configuration,
-alongside the other overlay text of the viewport.
+The system shall allow a deployment to move the indicator to another position by configuration.
 
 ### 4.6 Language — `VF-LANG`
 

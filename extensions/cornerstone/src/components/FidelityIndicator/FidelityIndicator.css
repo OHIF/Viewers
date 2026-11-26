@@ -53,39 +53,3 @@
 .ohif-fidelity--idle .ohif-fidelity__label {
   display: none;
 }
-
-/*
- * Icon mode in viewportOverlay.topRight: lift the slot from the text band
- * (2.15rem) to the action-corner row (4px). Other corners and the text/both
- * modes keep the slot in the overlay text flow.
- */
-.viewport-overlay.overlay-top.right-viewport-scrollbar
-  .ohif-fidelity-slot:has(.ohif-fidelity--icon) {
-  position: absolute;
-  top: calc(4px - 2.15rem);
-  right: 0;
-  height: 24px;
-  display: flex;
-  align-items: center;
-}
-
-/*
- * The top-right action row moves aside while the icon is in that corner, also
- * while idle so the recovered hover target stays reachable. The row renders only
- * on the active or hovered viewport. 24px = .ohif-fidelity__glyph width.
- */
-div:has(> .ohif-action-corner-top-right) {
-  transition: margin-right 160ms ease;
-}
-
-.viewport-wrapper:has(.overlay-top.right-viewport-scrollbar .ohif-fidelity--icon)
-  ~ *
-  div:has(> .ohif-action-corner-top-right) {
-  margin-right: 24px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  div:has(> .ohif-action-corner-top-right) {
-    transition: none;
-  }
-}

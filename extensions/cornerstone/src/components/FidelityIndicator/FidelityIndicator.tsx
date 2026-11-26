@@ -2,12 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
-import { useCustomization } from '@ohif/core';
 import {
   useViewportFidelity,
   type FidelityPresentation,
 } from '../../hooks/useViewportFidelity';
-import type { FidelityIndicatorDisplay } from '../../customizations/fidelityIndicatorDisplayCustomization';
 import type { Types } from '@cornerstonejs/core';
 
 import './FidelityIndicator.css';
@@ -57,32 +55,27 @@ function causeSummary(
   return known[state.cause] ?? t('CauseUnknown');
 }
 
-function normalizeDisplay(value: unknown): FidelityIndicatorDisplay {
-  if (value === 'text' || value === 'both' || value === 'icon') {
-    return value;
-  }
-  return 'icon';
-}
+/** `icon`: glyph only (default). `text`: label only. `both`: glyph and label. */
+export type FidelityIndicatorDisplay = 'icon' | 'text' | 'both';
 
 /**
- * Per-viewport fidelity indicator for OHIF (#6256 / VF-VIS).
+ * Per-viewport fidelity indicator for OHIF (#6256 / VF-VIS), rendered last in the
+ * top-right viewport action corner.
  * Consumes Cornerstone3D `VIEWPORT_FIDELITY_CHANGED` / `getFidelityState()`.
  * Glyph is a fixed yellow warning triangle; transient vs standing is carried by
- * label / aria / tooltip. `cornerstone.fidelityIndicator.display`:
- * `icon` | `text` | `both` (default `icon`). The mode is also a class on the
- * button (`ohif-fidelity--icon` etc.); FidelityIndicator.css uses it for placement.
+ * label / aria / tooltip. No customization sets `display` yet; that comes with
+ * `Replaceable` (OHIF/Viewers#6452).
  */
 function FidelityIndicator({
   viewportId,
-  element,
+  display = 'icon',
 }: {
   viewportId: string;
-  element?: HTMLElement | null;
+  display?: FidelityIndicatorDisplay;
 }) {
   const { t } = useTranslation('FidelityIndicator');
-  const display = normalizeDisplay(useCustomization('cornerstone.fidelityIndicator.display'));
   const { presentation, wasLossy, state, revealRecovered, hideRecoveredReveal } =
-    useViewportFidelity({ viewportId, element });
+    useViewportFidelity({ viewportId });
 
   const idleRevealer = presentation === 'none' && wasLossy;
   const showIcon = display === 'icon' || display === 'both';

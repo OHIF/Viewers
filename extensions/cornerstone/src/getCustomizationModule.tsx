@@ -17,7 +17,6 @@ import captureViewportModalCustomization from './customizations/captureViewportM
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
 import getViewportScrollbarCustomization from './customizations/viewportScrollbarCustomization';
 import gpuSettingsPresetCustomization from './customizations/gpuSettingsPresetCustomization';
-import fidelityIndicatorDisplayCustomization from './customizations/fidelityIndicatorDisplayCustomization';
 
 function getCustomizationModule({ commandsManager, servicesManager, extensionManager }) {
   return [
@@ -47,7 +46,6 @@ function getCustomizationModule({ commandsManager, servicesManager, extensionMan
         ...viewportDownloadWarningCustomization,
         ...getViewportScrollbarCustomization(),
         ...gpuSettingsPresetCustomization,
-        ...fidelityIndicatorDisplayCustomization,
       },
     },
   ];

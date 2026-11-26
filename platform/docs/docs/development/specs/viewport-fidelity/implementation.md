@@ -29,11 +29,8 @@ into the requirements specification first, under the change rule of that documen
 The code is in `@ohif/extension-cornerstone`:
 
 - `hooks/useViewportFidelity.ts` — the state source and the lossiness history.
-- `components/FidelityIndicator/` — the indicator, its tooltip, and its placement CSS.
-- `customizations/viewportOverlayCustomization.tsx` and
-  `customizations/fidelityIndicatorDisplayCustomization.ts` — the registration and the display
-  mode.
-- `components/OHIFViewportActionCorners.tsx` — the wrapper of the top-right viewport controls.
+- `components/FidelityIndicator/` — the indicator, its tooltip, and its styles.
+- `components/OHIFViewportActionCorners.tsx` — the placement in the top-right action corner.
 
 ## 2. State source and update — `VF-STATE`
 
@@ -131,63 +128,55 @@ layer.
 ## 4. Registration and placement — `VF-REG`
 
 **VF-REG-1**
-The system shall register the indicator as an overlay item (`ohif.overlayItem.fidelity`) on the
-`viewportOverlay.*` customization surface, which renders independently of hover and active
-state, and not on `viewportActionMenu.*`, which renders only when `isHovered || isActive` in
-`OHIFViewportActionCorners.tsx`. Satisfies `VF-VIS-2`, `VF-VIS-3`, `VF-VIS-9`.
+The system shall render the indicator as the last item of the top-right viewport action corner
+(`ViewportActionCorners.TopRight` in `OHIFViewportActionCorners.tsx`). The indicator shall render
+independently of hover and active state; only the toolbar buttons of each corner render while
+the viewport is hovered or active. Satisfies `VF-VIS-2`, `VF-VIS-3`, `VF-VIS-9`.
 
 **VF-REG-2**
-The system shall register the indicator by default as the `FidelityIndicator` item of
-`viewportOverlay.topRight`, and shall allow a deployment to move it to another `viewportOverlay.*`
-list or to remove it. Satisfies `VF-VIS-6`, `VF-CFG-1`, `VF-CFG-3`.
+The indicator shall be the rightmost item of the flex row of the corner, so that the toolbar
+buttons of the corner sit to its left and never cover it or its hover target. Satisfies
+`VF-VIS-10`.
 
-> The top-right list is empty by default, so fewer deployments replace it than replace
-> `viewportOverlay.topLeft`. A customization that replaces `viewportOverlay.topRight` must add the
-> item again (`customizations/veterinary/veterinaryOverlay.jsonc` does not).
+> The indicator draws nothing in a never-lossy viewport, so it takes no space there
+> (`VF-VIS-11`). In a viewport that is or was lossy, the glyph (24px) or the idle hover target
+> (12px) keeps its place in the row.
 
 **VF-REG-3**
 The system shall not require a mode to enumerate the indicator in order to receive it.
 Satisfies `VF-VIS-6`, `VF-VIS-8`.
 
+> The indicator is not a toolbar button: modes replace the `viewportActionMenu.*` lists, and a
+> button would also render only on hover.
+
 **VF-REG-4**
 The indicator shall obtain the image identity it reports on from the viewport rather than from
-overlay item props. Satisfies `VF-VIS-4a`.
+component props. Satisfies `VF-VIS-4a`.
 
 **VF-REG-5**
-In the `icon` display mode in `viewportOverlay.topRight`, the system shall place the indicator in
-the top-right corner, level with the row of viewport controls (4px from the top), and out of the
-flow of the overlay text. In another list, and in the `text` and `both` modes, the indicator
-shall be a line of the overlay text. Satisfies `VF-VIS-9`, `VF-CFG-3`.
+After OHIF/Viewers#6452 (`Replaceable`) merges, the system shall make the indicator replaceable
+as `components.fidelityIndicator`: removal, the display mode, and a different design. Until then,
+no configuration changes the indicator. Satisfies `VF-CFG-1`, `VF-CFG-3`, `VF-UX-1`.
 
-> The CSS rule is scoped to `.viewport-overlay.overlay-top.right-viewport-scrollbar`, so a moved
-> indicator does not keep the top-right offset.
+> A move to a different corner needs a small replacement component at first. A later
+> `Replaceable` feature (add children to an existing component by reference) makes the move
+> configuration only. That feature also needs `ViewportActionCorners` to accept more than one
+> registration for each corner; today the last registration wins.
 
 **VF-REG-6**
-WHILE the `icon` indicator is in the top-right overlay of a viewport — lossy, recovered, or idle
-— the system shall move the top-right row of viewport controls aside by the width of the glyph
-(24px), with a 160ms transition and none under `prefers-reduced-motion`.
-Satisfies `VF-VIS-10`, `VF-VIS-11`.
-
-> The row is wrapped in `.ohif-action-corner-top-right`. The rule depends on the DOM order of
-> `OHIFCornerstoneViewport.tsx`, where the viewport controls follow `.viewport-wrapper`. The
-> indicator exists only in a viewport that is or was lossy, so a never-lossy viewport keeps the
-> row in the corner. The row renders only on the active or hovered viewport, so the space shows
-> only there.
-
-**VF-REG-7**
-The top-right overlay and the top-right viewport controls shall keep the `right-viewport-scrollbar`
-offset (24px), which is wider than the navigation bar (11px track and 5px padding on each side,
-21px in total). Satisfies `VF-VIS-12`.
-
-> Measured on OHIF/Viewers#6440 in a 424px MPR viewport: indicator right edge 24px from the
-> viewport edge, navigation bar 21px wide, 3px clear, in the `icon`, `text`, and `both` modes.
-
-**VF-REG-8**
-WHERE a viewport hides its overlays (`customViewportProps.hideOverlays`, the 3D viewport of
-`main3D` and `fourUp`), the system shall still mount the overlay with the fidelity item only.
+The action corners render for every viewport, also with `customViewportProps.hideOverlays` (the
+3D viewport of `main3D` and `fourUp`), so the indicator needs no special path there.
 Satisfies `VF-VIS-6`, `VF-VIS-8`.
 
-**VF-REG-9**
+**VF-REG-7**
+The top-right action corner shall keep the `right-viewport-scrollbar` offset (24px), which is
+wider than the navigation bar (11px track and 5px padding on each side, 21px in total).
+Satisfies `VF-VIS-12`.
+
+> Measured on OHIF/Viewers#6440 in a 424px MPR viewport: indicator right edge 24px from the
+> viewport edge, navigation bar 21px wide, 3px clear.
+
+**VF-REG-8**
 The system shall turn off the Cornerstone3D built-in indicator
 (`dangerouslyDisableFidelityIndicator: true`), so that only one indicator shows, and so that its
 z-index does not cover the OHIF menus. Satisfies `VF-VIS-5`, `VF-VIS-8`.
@@ -198,8 +187,8 @@ z-index does not cover the OHIF menus. Satisfies `VF-VIS-5`, `VF-VIS-8`.
 > Requirements §6 items 6 and 7 hold the open design questions.
 
 **VF-UX-1**
-The system shall offer three display modes with `cornerstone.fidelityIndicator.display`: `icon`
-(default), `text`, and `both`. The tooltip and the accessible name always carry the words.
+The indicator shall support three display modes with its `display` prop: `icon` (default),
+`text`, and `both`. The tooltip and the accessible name always carry the words.
 Satisfies `VF-LANG-1`, `VF-LANG-4`.
 
 **VF-UX-2**
@@ -273,7 +262,7 @@ registers a new fidelity reason, its arguments, and its translation.
 
 **VF-DOC-3**
 The configuration surface shall be documented, covering the display mode, moving the indicator,
-and removing it (`specificCustomizations.md` §5). Satisfies `VF-CFG-1`, `VF-CFG-3`.
+and removing it, in `specificCustomizations.md`, when `VF-REG-5` adds the configuration. Satisfies `VF-CFG-1`, `VF-CFG-3`.
 
 **VF-DOC-4**
 The documentation for the configuration that removes the indicator shall state the consequence
@@ -307,4 +296,7 @@ meet yet.
 | `VF-LANG-2` | Not met. No help text for each cause. |
 | `VF-LANG-4` | Partly met. The display issue messages come from Cornerstone3D in English, and do not pass through the translation layer. |
 | `VF-VIS-1d` in the `text` mode | Not met. The `text` mode keeps no hover target after the recovered hold. |
+| `VF-CFG-1`, `VF-CFG-2`, `VF-DOC-3`, `VF-DOC-4` | Not met. No configuration removes the indicator. `VF-REG-5` adds removal with `Replaceable` (OHIF/Viewers#6452). |
+| `VF-CFG-3` | Not met. `VF-REG-5`: first a small replacement component, then configuration only. |
+| `VF-UX-1` (`text` and `both` modes) | Partly met. The modes exist as the `display` prop, and no configuration sets the prop until `VF-REG-5`. |
 | `VF-UX-2` (red for terminally lossy) | Changed by design: one yellow glyph. Requirements §6 item 7. |
