@@ -338,6 +338,17 @@ export class MainToolbarPageObject {
           },
         };
       },
+      get volumeCropping() {
+        // Qualified by role for the same reason as `imageSliceSync`.
+        const button = page.locator('[data-cy="VolumeCropping"][role="menuitem"]');
+        return {
+          button,
+          async click() {
+            await moreTools.click();
+            await button.click();
+          },
+        };
+      },
       get magnify() {
         const button = page.getByTestId('Magnify');
         return {
