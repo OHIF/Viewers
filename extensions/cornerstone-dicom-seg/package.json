@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.14.0-beta.104",
+  "version": "3.14.0-beta.108",
   "private": true,
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
@@ -44,8 +44,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@cornerstonejs/adapters": "5.18.3",
-    "@cornerstonejs/core": "5.18.3",
+    "@cornerstonejs/adapters": "5.19.7",
+    "@cornerstonejs/core": "5.19.7",
     "@kitware/vtk.js": "36.4.1"
   },
   "devDependencies": {

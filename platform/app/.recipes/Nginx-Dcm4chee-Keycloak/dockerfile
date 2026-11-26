@@ -1,8 +1,19 @@
 # syntax=docker/dockerfile:1.7-labs
-# Build context: the repository root (see docker-compose.yml).
+# Nginx + dcm4chee + Keycloak recipe: the viewer served by a stock nginx that
+# signs users in through oauth2-proxy and Keycloak, and proxies /pacs/
+# (DICOMweb) and /dcm4chee-arc/ to the dcm4chee archive container (see
+# docker-compose.yml and config/nginx.conf).
+#
+# The build context is the repository root (docker-compose.yml sets it), so
+# every COPY below is relative to the root, and the root .dockerignore applies.
+#
+# STAGE 1 IS A VERBATIM COPY of the `builder` stage in the root Dockerfile,
+# except for the lines marked "recipe:". Keep the two in sync: when the
+# root build steps change (Node version, pnpm version, install layout), copy
+# them here again. This recipe once kept building with Node 20 + yarn after
+# the repo had moved to pnpm, and stopped building.
 
-# Stage 1: Build the application. Keep this stage the same as in the root
-# Dockerfile, so that all builds share the cached pnpm install layer.
+# Stage 1: Build the application
 FROM node:24.22.2-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
@@ -14,17 +25,53 @@ RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
-# Install from the package manifests first, for layer caching. See the root Dockerfile.
+# Copy package manifests for install caching. preinstall.js is included because
+# the root package.json's "preinstall" lifecycle script (node preinstall.js)
+# runs during `pnpm install` below -- before the full source is copied -- so the
+# script file must already be present or install fails with MODULE_NOT_FOUND.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
 COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
+# Run the install before copying the rest of the files.
+# Frozen, like CI, so the image installs exactly the reviewed lockfile --
+# transitive versions and integrity hashes included -- and never re-resolves
+# against the registry. pnpm 12 requires a manifest for every importer the
+# lockfile records, so .dockerignore lets platform/docs/package.json in; the
+# filter then skips installing the docs site itself.
 RUN pnpm install --frozen-lockfile --filter '!ohif-docs'
+# Copy the local directory
 COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
-ENV APP_CONFIG=config/docker-nginx-dcm4chee-keycloak.js
+# Build here
+# After install it should hopefully be stable until the local directory changes
+# recipe: minify, because nginx compresses these files on each request (see
+# the compressDist.sh note below), and a smaller bundle loads faster.
+ENV QUICK_BUILD false
+# recipe: the viewer config that points the data source at the /pacs/ proxy
+# and serves the viewer under /ohif-viewer/.
+ARG APP_CONFIG=config/docker-nginx-dcm4chee-keycloak.js
+ARG PUBLIC_URL=/
+ENV PUBLIC_URL=${PUBLIC_URL}
+
+RUN pnpm run show:config
 RUN pnpm run build
 
-# Stage 2: Setup the NGINX environment with OAuth2 Proxy
+# recipe: the root Dockerfile precompresses dist here (.docker/compressDist.sh),
+# which gzips each asset in place and leaves an empty file under the original
+# name. The root image serves the .gz files through `gzip_static always`; this
+# recipe's config/nginx.conf compresses dynamically (`gzip on`) and has no
+# gzip_static, so precompressed output would be served as empty files. Skipped.
+
+# Stage 2: Bundle the built application into a Docker container which runs
+# NGINX and oauth2-proxy using Alpine Linux
+# Same nginx line as the root Dockerfile, but the stock image rather than
+# nginx/nginx-unprivileged: config/nginx.conf (mounted at runtime) writes its
+# pid file and logs under root-owned paths (/var/run, /var/logs/nginx), which
+# the unprivileged image's nginx user cannot write, and config/entrypoint.sh
+# runs oauth2-proxy alongside nginx in this container.
 FROM nginx:1.30.7-alpine
+
+# The base image is not rebuilt for each Alpine fix, so take the fixes at build time.
+RUN apk upgrade --no-cache
 
 # Install dependencies for oauth2-proxy
 RUN apk add --no-cache curl
