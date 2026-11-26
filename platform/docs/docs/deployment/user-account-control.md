@@ -209,13 +209,13 @@ wadoRoot: 'http://127.0.0.1/pacs',
 :::note
 This is the config that is used inside the dockerfile to build the viewer, look at dockerfile
 
-`ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js`
+`ARG APP_CONFIG=config/docker-nginx-orthanc-keycloak.js`
 :::
 
 Run the following command to start the services:
 
 ```
-docker-compose up --build
+docker compose up --build
 ```
 
 
@@ -438,19 +438,19 @@ Stop running all containers:
 
 The OHIF Viewer's configuration is imported from a static `.js` file. The
 configuration we use is set to a specific file when we build the viewer, and
-determined by the env variable: `APP_CONFIG`. You can see where we set its value
-in the `dockerfile` for this solution:
+determined by the build argument: `APP_CONFIG`. You can see where we set its
+default value in the `dockerfile` for this solution:
 
-`ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js`
+`ARG APP_CONFIG=config/docker-nginx-orthanc-keycloak.js`
 
 You can find the configuration we're using here:
 `/public/config/docker-nginx-orthanc-keycloak.js`
 
-To rebuild the `webapp` image created by our `dockerfile` after updating the
-Viewer's configuration, you can run:
+To rebuild the `ohif-nginx-orthanc-keycloak:local` image created by our
+`dockerfile` after updating the Viewer's configuration, you can run:
 
-- `docker-compose build` OR
-- `docker-compose up --build`
+- `docker compose build` OR
+- `docker compose up --build`
 
 
 
