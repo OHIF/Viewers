@@ -29,7 +29,7 @@ into the requirements specification first, under the change rule of that documen
 The code is in `@ohif/extension-cornerstone`:
 
 - `hooks/useViewportFidelity.ts` — the state source and the lossiness history.
-- `components/FidelityIndicator/` — the indicator, its tooltip, and its styles.
+- `components/FidelityIndicator/` — the indicator and its tooltip (Tailwind classes, no CSS file).
 - `components/OHIFViewportActionCorners.tsx` — the placement in the top-right action corner.
 
 ## 2. State source and update — `VF-STATE`

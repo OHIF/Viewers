@@ -2,13 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
-import {
-  useViewportFidelity,
-  type FidelityPresentation,
-} from '../../hooks/useViewportFidelity';
+import { useViewportFidelity, type FidelityPresentation } from '../../hooks/useViewportFidelity';
 import type { Types } from '@cornerstonejs/core';
-
-import './FidelityIndicator.css';
 
 function labelKeyOf(presentation: FidelityPresentation): string | null {
   if (presentation === 'transient') {
@@ -105,8 +100,9 @@ function FidelityIndicator({
         <button
           type="button"
           data-cy="fidelity-indicator"
-          className={classNames('ohif-fidelity', `ohif-fidelity--${display}`, {
-            'ohif-fidelity--idle': isIdle,
+          className={classNames('inline-flex cursor-default items-center gap-1.5 leading-none', {
+            // Invisible hover target after the recovered hold (VF-VIS-1d).
+            'h-3 w-3 opacity-0': isIdle,
           })}
           aria-label={t(ariaKeyOf(ariaPresentation))}
           onMouseEnter={revealRecovered}
@@ -116,32 +112,34 @@ function FidelityIndicator({
         >
           {showWarningGlyph ? (
             <Icons.StatusWarning
-              className="ohif-fidelity__glyph"
+              className="h-6 w-6 shrink-0"
               aria-hidden="true"
             />
           ) : null}
           {showRecoveredGlyph ? (
             <Icons.StatusSuccess
-              className="ohif-fidelity__glyph text-green-500"
+              className="h-6 w-6 shrink-0 text-green-500"
               aria-hidden="true"
             />
           ) : null}
           {showText && labelKey ? (
-            <span className="ohif-fidelity__label">{t(labelKey)}</span>
+            <span className="whitespace-nowrap text-xs font-semibold leading-tight [text-shadow:0_0_2px_rgb(0_0_0/70%)]">
+              {t(labelKey)}
+            </span>
           ) : null}
         </button>
       </TooltipTrigger>
       <TooltipContent
         side="bottom"
-        className="ohif-fidelity__tooltip"
+        className="max-w-[16rem]"
       >
         <div>{t(ariaKeyOf(ariaPresentation))}</div>
-        {cause ? <div className="ohif-fidelity__cause">{cause}</div> : null}
+        {cause ? <div className="mt-1 opacity-[.85]">{cause}</div> : null}
         {/* VF-INFO-11: Cornerstone3D gives the issue messages in English only. */}
         {state?.issues?.map(issue => (
           <div
             key={issue.code}
-            className="ohif-fidelity__cause"
+            className="mt-1 opacity-[.85]"
           >
             {issue.message}
           </div>
