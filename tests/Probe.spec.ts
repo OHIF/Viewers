@@ -47,7 +47,7 @@ test('should display the probe tool', async ({
     expectedPanelPrimaryLines: [measurementTextFormatters.probeValueLine(expectedValue.toFixed(1))],
     expectedSvgLines: [
       measurementTextFormatters.probeIndexSvgLine(expectedIndex),
-      measurementTextFormatters.probeValueLine(expectedValue.toFixed(1)),
+      measurementTextFormatters.probeValueLine(String(expectedValue)),
     ],
     assertStats: stats => {
       expect(stats.modalityUnit).toBe('HU');
