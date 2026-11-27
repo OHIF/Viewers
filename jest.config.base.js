@@ -3,6 +3,8 @@
 // '<rootDir>' warning:
 // Strings should avoid referencing the node_modules directory (prefer require.resolve)
 
+const path = require('path');
+
 module.exports = {
   verbose: true,
   // roots: ['<rootDir>/src'],
@@ -27,7 +29,7 @@ module.exports = {
     '^@cornerstonejs/([^/]+)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm',
   },
   // Setup
-  // setupFiles: ["jest-canvas-mock/lib/index.js"],
+  setupFiles: [path.join(__dirname, 'jest.setup.js')],
   // Coverage
   reporters: [
     'default',
