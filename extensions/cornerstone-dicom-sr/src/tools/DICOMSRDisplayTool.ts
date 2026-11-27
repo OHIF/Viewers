@@ -1,4 +1,4 @@
-import { Types, metaData, utilities as csUtils } from '@cornerstonejs/core';
+import { Types } from '@cornerstonejs/core';
 import {
   AnnotationTool,
   annotation,
@@ -9,6 +9,7 @@ import {
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
 import { SCOORDTypes } from '../enums';
 import toolNames from './toolNames';
+import drawCross, { CROSS_SIZE } from './drawCross';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
   static toolName = toolNames.DICOMSRDisplay;
@@ -25,12 +26,28 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   _getTextBoxLinesFromLabels(labels) {
     // TODO -> max 5 for now (label + shortAxis + longAxis), need a generic solution for this!
 
+    if (!labels?.length) {
+      return [];
+    }
+
     const labelLength = Math.min(labels.length, 5);
     const lines = [];
 
     for (let i = 0; i < labelLength; i++) {
       const labelEntry = labels[i];
-      lines.push(`${_labelToShorthand(labelEntry.label)}: ${labelEntry.value}`);
+      const shorthand = _labelToShorthand(labelEntry.label);
+      const value = labelEntry.value ?? '';
+
+      /** An empty shorthand shows the value only, and an empty value shows the shorthand only. */
+      if (shorthand === '') {
+        if (value !== '') {
+          lines.push(String(value));
+        }
+      } else if (value === '') {
+        lines.push(shorthand);
+      } else {
+        lines.push(`${shorthand}: ${value}`);
+      }
     }
 
     return lines;
@@ -230,55 +247,31 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     options
   ) {
     const canvasCoordinates = [];
+
     renderableData.map((data, index) => {
-      const point = data[0];
-      // This gives us one point for arrow
-      canvasCoordinates.push(viewport.worldToCanvas(point));
+      const canvasPoint = viewport.worldToCanvas(data[0]);
+      canvasCoordinates.push(canvasPoint);
 
       if (data[1] !== undefined) {
         canvasCoordinates.push(viewport.worldToCanvas(data[1]));
-      }
-      else{
-         // We get the other point for the arrow by using the image size
-      const imagePixelModule = metaData.get('imagePixelModule', referencedImageId);
-
-      let xOffset = 10;
-      let yOffset = 10;
-
-      if (imagePixelModule) {
-        const { columns, rows } = imagePixelModule;
-        xOffset = columns / 10;
-        yOffset = rows / 10;
-      }
-
-      const imagePoint = csUtils.worldToImageCoords(referencedImageId, point);
-      const arrowEnd = csUtils.imageToWorldCoords(referencedImageId, [
-        imagePoint[0] + xOffset,
-        imagePoint[1] + yOffset,
-      ]);
-
-      canvasCoordinates.push(viewport.worldToCanvas(arrowEnd));
-        
-      }
-     
-
-      const arrowUID = `${index}`;
-
-      // Todo: handle drawing probe as probe, currently we are drawing it as an arrow
-      drawing.drawArrow(
-        svgDrawingHelper,
-        annotationUID,
-        arrowUID,
-        canvasCoordinates[1],
-        canvasCoordinates[0],
-        {
+        drawing.drawArrow(
+          svgDrawingHelper,
+          annotationUID,
+          `arrow-${index}`,
+          canvasCoordinates[canvasCoordinates.length - 1],
+          canvasCoordinates[canvasCoordinates.length - 2],
+          { color: options.color, width: options.lineWidth, lineDash: options.lineDash }
+        );
+      } else {
+        drawCross(svgDrawingHelper, annotationUID, `cross-${index}`, canvasPoint, CROSS_SIZE, {
           color: options.color,
-          width: options.lineWidth,
-        }
-      );
+          lineWidth: options.lineWidth,
+          lineDash: options.lineDash,
+        });
+      }
     });
 
-    return canvasCoordinates; // used for drawing textBox
+    return canvasCoordinates;
   }
 
   renderEllipse(
@@ -348,15 +341,16 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     }
 
     const { annotationUID, data = {} } = annotation;
-    const { labels } = data;
+    const { labels, label } = data;
     const { color } = options;
 
     let adaptedCanvasCoordinates = canvasCoordinates;
-    // adapt coordinates if there is an adapter
+
     if (typeof canvasCoordinatesAdapter === 'function') {
       adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
     }
-    const textLines = this._getTextBoxLinesFromLabels(labels);
+
+    const textLines = getPreviewTextLines(label, this._getTextBoxLinesFromLabels(labels));
     const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
     if (!annotation.data?.handles?.textBox?.worldPosition) {
@@ -379,6 +373,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       {
         ...textBoxOptions,
         color,
+        padding: textBoxOptions.padding ?? 6,
       }
     );
 
@@ -394,12 +389,24 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 }
 
 const SHORT_HAND_MAP = {
-  'Short Axis': 'W: ',
-  'Long Axis': 'L: ',
-  AREA: 'Area: ',
+  'Short Axis': 'W',
+  'Long Axis': 'L',
+  AREA: 'Area',
   Length: '',
   CORNERSTONEFREETEXT: '',
 };
+
+/**
+ * The text lines of the preview text box: the label (finding, finding site or comment) first, then
+ * the measurement lines. The label is left out when a measurement line already shows it.
+ */
+export function getPreviewTextLines(label: string | undefined, lines: string[]): string[] {
+  if (typeof label !== 'string' || label.length === 0) {
+    return lines;
+  }
+  const shown = lines.some(line => line === label || line.endsWith(`: ${label}`));
+  return shown ? lines : [label, ...lines];
+}
 
 function _labelToShorthand(label) {
   const shortHand = SHORT_HAND_MAP[label];
