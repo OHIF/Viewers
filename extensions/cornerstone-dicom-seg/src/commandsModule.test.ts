@@ -1,5 +1,7 @@
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
+import { createReportDialogPrompt } from '@ohif/extension-default';
 import commandsModule from './commandsModule';
+import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 
 jest.mock('@cornerstonejs/adapters/version', () => ({ version: '9.9.9' }));
 jest.mock('@cornerstonejs/adapters', () => ({
@@ -24,11 +26,10 @@ jest.mock('@cornerstonejs/tools', () => ({
     state: { getSegmentation: () => ({ representationData: { Labelmap: {} } }) },
   },
 }));
+// jest.config.js maps both extensions to one stub module, so one mock gives the names of both.
 jest.mock('@ohif/extension-default', () => ({
   createReportDialogPrompt: jest.fn(),
   useUIStateStore: jest.fn(),
-}));
-jest.mock('@ohif/extension-cornerstone', () => ({
   utils: { getSingleLayerExportSource: () => ({ imageIds: ['seg'] }) },
 }));
 
@@ -41,18 +42,22 @@ const OHIF_WRITER = {
   SoftwareVersions: ['OHIF 3.14.0', 'CS3D 9.9.9'],
 };
 
-function getActions() {
+function getActions(services = {}, commandsManager = {}) {
   const segmentationService = {
-    getSegmentation: () => ({ segments: {} }),
+    getSegmentation: () => ({ segments: {}, label: 'Contours' }),
     getRepresentationsForSegmentation: () => [{ viewportId: 'viewport' }],
     getSegmentColor: () => [0, 0, 0, 255],
   };
   const { actions } = commandsModule({
     servicesManager: {
-      services: { segmentationService, customizationService: { getCustomization: () => {} } },
+      services: {
+        segmentationService,
+        customizationService: { getCustomization: () => {} },
+        ...services,
+      },
     },
     extensionManager: { getActiveDataSourceDefinition: () => ({}) },
-    commandsManager: {},
+    commandsManager,
   } as never);
   return actions;
 }
@@ -90,6 +95,30 @@ describe('SEG and RTSTRUCT writer header', () => {
     expect(jest.mocked(generateSegmentation).mock.calls[0][3].Manufacturer).toBe('Site viewer');
     expect(jest.mocked(generateRTSSFromRepresentation).mock.calls[0][1].Manufacturer).toBe(
       'Site viewer'
+    );
+  });
+});
+
+describe('storeSegmentation', () => {
+  it('stores one series when the user saves the same segmentation again during a save', async () => {
+    let finishStore;
+    const storeFn = jest.fn(() => new Promise(resolve => (finishStore = resolve)));
+    const uiNotificationService = { show: jest.fn() };
+    jest
+      .mocked(createReportDialogPrompt)
+      .mockResolvedValue({ action: PROMPT_RESPONSES.CREATE_REPORT, dataSourceName: 'ds' } as never);
+    const actions = getActions({ uiNotificationService }, { runCommand: () => storeFn });
+    const save = () => actions.storeSegmentation({ segmentationId: 'seg', modality: 'RTSTRUCT' });
+
+    const firstSave = save();
+    await new Promise(resolve => setTimeout(resolve));
+    await save();
+    finishStore();
+    await firstSave;
+
+    expect(storeFn).toHaveBeenCalledTimes(1);
+    expect(uiNotificationService.show).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'warning' })
     );
   });
 });
