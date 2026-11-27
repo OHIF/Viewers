@@ -1,5 +1,5 @@
 import React from 'react';
-import { FooterAction } from '@ohif/ui-next';
+import { Button, Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 
 export type TimePointScope = 'all' | 'each';
@@ -10,32 +10,50 @@ function TimePointScopeDialog({ hide, onChoose }) {
     hide();
   };
   return (
-    <div className="text-foreground text-[13px]">
-      <p>{i18n.t('Tools:This series has more than one time point.')}</p>
-      <p className="mt-2">
-        {i18n.t(
-          'Tools:"All time points" makes one segmentation that shows on every time point. "Each time point" keeps a separate segmentation for each time point, and an edit changes only the time point on display.'
-        )}
-      </p>
-      <FooterAction className="mt-4">
-        <FooterAction.Left>
-          <FooterAction.Secondary onClick={hide}>{i18n.t('Common:Cancel')}</FooterAction.Secondary>
-        </FooterAction.Left>
-        <FooterAction.Right>
-          <FooterAction.Secondary
-            dataCY="time-point-scope-each"
-            onClick={() => choose('each')}
-          >
-            {i18n.t('Tools:Each time point')}
-          </FooterAction.Secondary>
-          <FooterAction.Primary
-            dataCY="time-point-scope-all"
-            onClick={() => choose('all')}
-          >
-            {i18n.t('Tools:All time points')}
-          </FooterAction.Primary>
-        </FooterAction.Right>
-      </FooterAction>
+    <div className="text-foreground text-base">
+      <p className="mb-3">{i18n.t('Tools:This series has multiple time points.')}</p>
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="flex flex-col shadow-none">
+          <CardHeader className="space-y-1 p-3">
+            <CardTitle className="text-base font-normal leading-snug tracking-normal">
+              {i18n.t('Tools:Create a segmentation for each time point')}
+            </CardTitle>
+            <CardDescription className="leading-snug">
+              {i18n.t('Tools:Changes apply only to the time point shown.')}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="mt-auto p-3 pt-0">
+            <Button
+              variant="default"
+              className="w-full"
+              dataCY="time-point-scope-each"
+              onClick={() => choose('each')}
+            >
+              {i18n.t('Tools:Each time point')}
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="flex flex-col shadow-none">
+          <CardHeader className="space-y-1 p-3">
+            <CardTitle className="text-base font-normal leading-snug tracking-normal">
+              {i18n.t('Tools:Create one segmentation, shown on every time point')}
+            </CardTitle>
+            <CardDescription className="leading-snug">
+              {i18n.t('Tools:Changes apply to every time point.')}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="mt-auto p-3 pt-0">
+            <Button
+              variant="default"
+              className="w-full"
+              dataCY="time-point-scope-all"
+              onClick={() => choose('all')}
+            >
+              {i18n.t('Tools:All time points')}
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
