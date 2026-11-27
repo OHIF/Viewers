@@ -24,14 +24,17 @@ export interface ByteArrayHandle {
  * a separate change token would be dropped from the emitted cache guard, and a
  * consumer memoizing on `bytes` alone would never recompute.
  *
- * @param size       - Number of positions (e.g. total slices in a viewport).
+ * @param requestedSize - Number of positions (e.g. total slices in a viewport).
+ *                        A non-finite or negative value (e.g. a degenerate
+ *                        volume that reports Infinity slices) gives 0 positions.
  * @param batchIntervalMs - When > 0, writes are coalesced into a scheduled
  *                          flush: the first write starts a timer, the next
  *                          flush publishes, and the timer stops. New writes
  *                          start a new interval window. Omit or pass 0 for
  *                          immediate re-renders on every write.
  */
-export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle {
+export function useByteArray(requestedSize: number, batchIntervalMs = 0): ByteArrayHandle {
+  const size = Number.isFinite(requestedSize) && requestedSize > 0 ? Math.floor(requestedSize) : 0;
   // State is declared first so the initial buffer comes from it rather than
   // from a ref read during render, which the compiler rightly rejects.
   const [published, setPublished] = useState(() => ({
