@@ -14,7 +14,7 @@ function getDefaultButtons({ toolbarService }) {
   return [
     {
       buttonSection: toolbarService.sections.primary,
-      buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
+      buttons: ['MeasurementTools', 'Zoom', 'Mode', 'WindowLevel', 'Crosshairs', 'Pan'],
     },
     {
       buttonSection: 'MeasurementTools',
