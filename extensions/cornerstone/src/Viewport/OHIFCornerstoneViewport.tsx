@@ -454,6 +454,15 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
+  // displayArea is plain hanging-protocol data (numbers, small arrays, nested objects);
+  // utilities.isEqual only compares numbers and number arrays, so compare the JSON form.
+  if (
+    JSON.stringify(prevProps.viewportOptions?.displayArea) !==
+    JSON.stringify(nextProps.viewportOptions?.displayArea)
+  ) {
+    return false;
+  }
+
   if (nextProps.viewportOptions.needsRerendering) {
     return false;
   }
