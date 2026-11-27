@@ -104,9 +104,32 @@ You can pass one or more customization entries in the URL:
 
 Each entry is split into a prefix and a name, resolved through `customizationUrlPrefixes`, fetched, parsed as JSONC, and then applied.
 
+#### Custom loads with `loadResource` (app config)
+
+The app config can define a `loadResource` hook to change how a module loads, for example to send an `Authorization` header, or to load a JavaScript module:
+
+```js
+window.config = {
+  customizationUrlPrefixes: { default: 'https://config.example.com/customizations/' },
+  loadResource: async ({ kind, name, url, defaultLoad }) => {
+    if (kind !== 'customization' || !url.startsWith('https://config.example.com/')) {
+      return undefined; // the regular load
+    }
+    return defaultLoad(url, { headers: { Authorization: `Bearer ${getToken()}` } });
+  },
+};
+```
+
+- The hook runs for every URL customization load: the `?customization=` values, `customizationService.requires`, and each nested `requires`.
+- The `customizationUrlPrefixes` policy runs first. The hook gets the resolved `url` and cannot load a value that the policy refused.
+- `defaultLoad(url, init?)` is the regular load (`fetch` and a JSONC parse). `init` takes fetch options.
+- Return the data (an object, or a module whose `default` export is the object), or `undefined` to use the regular load.
+- A hook that throws gives the same result as a failed regular load: the loader warns and skips the module.
+- The hook is an app-config property, for the same reason as `customizationUrlPrefixes`: a URL-loaded customization must not change how customizations load.
+
 #### Security considerations (`?customization=`)
 
-A URL-loaded customization is a **JSONC data file** (JSON with comments / trailing commas). It is fetched and parsed as data — it is **never executed** as code. Executable code (plugins, modes, extensions) loads only through `pluginConfig.json`, never from the customization URL path. This makes `?customization=` far lower risk than loading a JavaScript bundle, but the values still change application behavior, so treat the source directories as trusted configuration.
+A URL-loaded customization is a **JSONC data file** (JSON with comments / trailing commas). It is fetched and parsed as data — it is **never executed** as code, unless the app config defines a [`loadResource`](#custom-loads-with-loadresource-app-config) hook that executes it. Executable code (plugins, modes, extensions) loads only through `pluginConfig.json`, never from the customization URL path. This makes `?customization=` far lower risk than loading a JavaScript bundle, but the values still change application behavior, so treat the source directories as trusted configuration.
 
 - **Off until configured, and a hard failure when misused:** With no `customizationUrlPrefixes` set, every `?customization=` value is rejected. A value whose prefix is not on the allowlist **throws and aborts app startup** rather than being silently ignored — so a stray or hostile `?customization=` link on an unconfigured deployment fails loudly instead of partially applying.
 - **Allowlisted resolution only:** The loader rejects values that look like full URLs (with a scheme), rejects path traversal (`..`), rejects unknown prefixes, and rejects unsafe name segments. The final fetch URL is always built from your configured `customizationUrlPrefixes` plus a `.jsonc` file under that base—users cannot pass an arbitrary absolute URL as the customization token alone.
