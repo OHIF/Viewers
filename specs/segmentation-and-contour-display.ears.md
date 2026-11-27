@@ -200,7 +200,8 @@ and whether the representation may finally be mounted — and they do not use th
   and listing it for that viewport only, shall leave it loaded and available elsewhere, and shall not
   restore it to that viewport on a later content change.
 - **SEG-20** — When the user deletes a segmentation, the system shall remove it from every viewport,
-  and shall delete its display set if it was created in the client.
+  and shall delete its display set if it was created in the client. If the segmentation was the only
+  display set of a viewport, then the system shall show its referenced images in that viewport.
 - **SEG-21** — When a segmentation loaded from the server is deleted, the system shall retain its
   series in the study panel so it can be loaded again.
 

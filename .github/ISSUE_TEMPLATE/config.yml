@@ -3,3 +3,6 @@ contact_links:
   - name: 🤗 Support Question
     url: https://community.ohif.org/
     about: Please use our forum if you have questions or need help.
+  - name: 🔒 Report a security vulnerability
+    url: https://github.com/OHIF/Viewers/security/advisories/new
+    about: Please do not open a public issue for security problems. Use GitHub's private reporting form instead (see SECURITY.md).
