@@ -10,16 +10,21 @@ const DefaultStatsList = () => {
     return null;
   }
 
+  // An empty segment (0 voxels) yields NaN / Infinity / -Infinity for most statistics: show a dash
+  // instead of those computation artefacts.
+  const NO_VALUE = '—';
+  const isMissing = (value: unknown) => typeof value === 'number' && !Number.isFinite(value);
+
   const handleNumber = (value: number) => {
     if (value === null) {
       return '';
     }
 
     if (Array.isArray(value)) {
-      return value.map(handleNumber).join(', ');
+      return value.every(isMissing) ? NO_VALUE : value.map(handleNumber).join(', ');
     }
 
-    return roundNumber(value);
+    return isMissing(value) ? NO_VALUE : roundNumber(value);
   };
 
   // Sort namedStats entries by order property
@@ -44,7 +49,9 @@ const DefaultStatsList = () => {
             <div>{label}</div>
             <div>
               <span className="text-foreground">{handleNumber(value)}</span>{' '}
-              <span className="">{unit && unit !== 'none' ? unit : ''}</span>
+              <span className="">
+                {unit && unit !== 'none' && handleNumber(value) !== NO_VALUE ? unit : ''}
+              </span>
             </div>
           </div>
         );
