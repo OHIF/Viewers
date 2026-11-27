@@ -1,0 +1,31 @@
+{
+  "name": "@ohif/extension-cornerstone-dicom-ups",
+  "version": "0.0.1",
+  "description": "DICOMweb UPS-RS Task Requester + Watcher (standards-based AI workflow trigger)",
+  "author": "OHIF",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/ohif-extension-cornerstone-dicom-ups.umd.js",
+  "module": "src/index.ts",
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist/**",
+    "public/**",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules"
+  },
+  "dependencies": {
+    "dcmjs": "0.52.0"
+  },
+  "keywords": [
+    "ohif-extension"
+  ]
+}
