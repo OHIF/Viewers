@@ -935,6 +935,16 @@ class CornerstoneViewportService
   ): Promise<void> {
     const [displaySet] = viewportData.data;
 
+    // A viewport element previously showing an image stack has stack-context
+    // prefetch enabled on it (see _setStackViewport / NextViewportBackend
+    // mountStack). Video and whole-slide viewports are not stacks, so disable
+    // prefetch here: otherwise the stale listener keeps firing on wheel
+    // events over the video and issues spurious WADO-RS /frames/N requests.
+    // _setOtherViewport only ever mounts non-stack content (video / WSI on
+    // both backends), so this cannot disable prefetch for a stack viewport,
+    // and the stack path re-enables it on every stack mount.
+    csToolsUtils.stackContextPrefetch.disable(viewport.element);
+
     await this.backend.mountOther(viewport, displaySet);
 
     const viewReference = viewportInfo.getViewReference();
