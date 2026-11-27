@@ -447,6 +447,13 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       label?: string;
       /** The caller invented the label, so the user has not chosen a name. */
       labelIsGenerated?: boolean;
+      /**
+       * For a 4D display set.  'all' (the default) makes one 3D labelmap that
+       * all time points share; 'each' makes a labelmap for each time point.
+       */
+      timePointScope?: 'all' | 'each';
+      /** For 'all': the 0-based time point of the labelmap.  Default: the middle one. */
+      timePointIndex?: number;
     }
   ): Promise<string> {
     return this._createSegmentationForDisplaySet(displaySet, LABELMAP, options);
@@ -484,23 +491,30 @@ class SegmentationService extends PubSubService implements ISegmentationServiceI
       label?: string;
       /** The caller invented the label, so the user has not chosen a name. */
       labelIsGenerated?: boolean;
+      timePointScope?: 'all' | 'each';
+      timePointIndex?: number;
     }
   ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
-    const isDynamicVolume = displaySet.isDynamicVolume;
-
-    let referenceImageIds = displaySet.imageIds;
-    if (isDynamicVolume) {
-      // get the middle timepoint for referenceImageIds
-      const timePoints = displaySet.dynamicVolumeInfo.timePoints;
-      const middleTimePoint = timePoints[Math.floor(timePoints.length / 2)];
-      referenceImageIds = middleTimePoint;
-    }
-
-    const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
+    // A 4D segmentation is one 3D labelmap of one time point, which shows on
+    // every time point.  A labelmap with 'each' has one labelmap image for each
+    // frame of every time point; Cornerstone tools shows and edits the images
+    // of the time point on display, and RLE keeps the many images small.
+    const timePoints = displaySet.isDynamicVolume && displaySet.dynamicVolumeInfo?.timePoints;
+    const eachTimePoint =
+      timePoints && segmentationType === LABELMAP && options?.timePointScope === 'each';
+    const referenceImageIds =
+      timePoints && !eachTimePoint
+        ? timePoints[options?.timePointIndex ?? Math.floor(timePoints.length / 2)]
+        : displaySet.imageIds;
+    const derivedImages = await (eachTimePoint
+      ? imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds, {
+          voxelRepresentation: csEnums.VoxelManagerEnum.RLE,
+        })
+      : imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds));
 
     const segs = this.getSegmentations();
     const label = options?.label || `Segmentation ${segs.length + 1}`;
