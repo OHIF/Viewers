@@ -26,6 +26,7 @@ async function getViewportsByType(viewportPageObject) {
 
 test.describe('Volume cropping', () => {
   test('cycles Active, Passive, and Off, with the crop box in the MPR viewports', async ({
+    page,
     mainToolbarPageObject,
     viewportPageObject,
   }) => {
@@ -42,10 +43,19 @@ test.describe('Volume cropping', () => {
     await expect(cropMenu).toBeVisible();
     await expect(mprCropLines.first()).toBeAttached();
 
-    // Passive: the crop box stays.
+    // Passive: the crop box stays, and the previous primary tool comes back.
     await mainToolbarPageObject.moreTools.volumeCropping.click();
     await expect(cropMenu).toBeVisible();
     await expect(mprCropLines.first()).toBeAttached();
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          (window as any).cornerstoneTools.ToolGroupManager.getAllToolGroups()
+            .find(toolGroup => toolGroup.hasTool('VolumeCropping'))
+            ?.getActivePrimaryMouseButtonTool()
+        )
+      )
+      .toBe('TrackballRotate');
 
     // Off: the corner menu and the crop box go away.
     await mainToolbarPageObject.moreTools.volumeCropping.click();
