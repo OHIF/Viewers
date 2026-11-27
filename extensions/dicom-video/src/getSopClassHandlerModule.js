@@ -13,6 +13,11 @@ const SOP_CLASS_UIDS = {
 };
 
 const sopClassUids = Object.values(SOP_CLASS_UIDS);
+const videoSopClassUids = [
+  SOP_CLASS_UIDS.VIDEO_MICROSCOPIC_IMAGE_STORAGE,
+  SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE,
+  SOP_CLASS_UIDS.VIDEO_ENDOSCOPIC_IMAGE_STORAGE,
+];
 const secondaryCaptureSopClassUids = [
   SOP_CLASS_UIDS.SECONDARY_CAPTURE_IMAGE_STORAGE,
   SOP_CLASS_UIDS.MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE,
@@ -39,7 +44,7 @@ const isSupportedVideo = metadata => {
     return true;
   }
 
-  if (metadata.SOPClassUID === SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE) {
+  if (videoSopClassUids.includes(metadata.SOPClassUID)) {
     return true;
   }
 
