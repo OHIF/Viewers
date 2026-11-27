@@ -3,7 +3,10 @@ services:
     build:
       context: ./../../../../
       dockerfile: ./platform/app/.recipes/Nginx-Orthanc-Keycloak/dockerfile
-    image: webapp:latest
+    # A recipe-specific tag, so docker compose up never starts an image that
+    # another recipe built. up does not rebuild an image that already exists:
+    # run docker compose up --build after the checkout changes.
+    image: ohif-nginx-orthanc-keycloak:local
     container_name: webapp
     ports:
       - '443:443' # SSL
@@ -27,11 +30,14 @@ services:
       - ./config/certbot:/var/www/certbot
 
   orthanc:
-    image: jodogne/orthanc-plugins
+    image: jodogne/orthanc-plugins:1.13.0
     hostname: orthanc
     container_name: orthanc
+    # Read only the recipe config. The image config directory also has advanced.json,
+    # which repeats options of the recipe config, and Orthanc then does not start.
+    command: /etc/orthanc-recipe/
     volumes:
-      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      - ./config/orthanc.json:/etc/orthanc-recipe/orthanc.json:ro
       - ./volumes/orthanc-db/:/var/lib/orthanc/db/
     restart: unless-stopped
     networks:

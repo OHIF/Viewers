@@ -1,6 +1,7 @@
 import { Locator, Page } from '@playwright/test';
 
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
+import { ViewportPageObject } from './ViewportPageObject';
 
 /** The segmentation selector (dropdown) returned by the segmentation panels. */
 export type SegmentationSelect = {
@@ -222,6 +223,65 @@ export class RightPanelPageObject {
     };
   }
 
+  /**
+   * The statistics computed for a segment. They show in a hover card that opens while the
+   * segment row is hovered, once the stats are computed.
+   */
+  private getSegmentStats(rowTitle: Locator) {
+    const locator = this.page.locator('.segment-statistics');
+    const entries = locator.locator('.segment-statistics-body > div > div');
+    // Each entry is a name cell followed by a cell holding the value and unit spans.
+    const valueSpans = (label: string) =>
+      entries
+        .filter({ has: this.page.getByText(label, { exact: true }) })
+        .locator(':scope > div:last-child > span');
+
+    // Moves the pointer off the panel and waits for the card to close.
+    const close = async () => {
+      await this.page.mouse.move(0, 0);
+      await locator.waitFor({ state: 'hidden' });
+    };
+
+    const open = async () => {
+      await close();
+      await rowTitle.hover();
+      await locator.waitFor({ state: 'visible' });
+    };
+
+    const computeButton = locator.getByTestId('segment-bidirectional-compute');
+
+    return {
+      locator,
+      // The stat names, in the order the card lists them
+      labels: entries.locator(':scope > div:first-child'),
+      // The stat values, in the same order
+      values: entries.locator(':scope > div:last-child > span:first-child'),
+      value: (label: string) => valueSpans(label).first(),
+      unit: (label: string) => valueSpans(label).last(),
+      open,
+      close,
+      // The segment's largest bidirectional measurement, at the top of the card
+      bidirectional: {
+        computeButton,
+        length: locator.getByTestId('segment-bidirectional-length'),
+        width: locator.getByTestId('segment-bidirectional-width'),
+        compute: async () => {
+          await open();
+          await computeButton.click();
+        },
+        jumpTo: async () => {
+          await open();
+          await locator.getByTestId('segment-bidirectional-jump').click();
+        },
+      },
+    };
+  }
+
+  /** Adds the segment's computed statistics to a segmentation panel row. */
+  private getRowWithSegmentStats<T extends { title: Locator }>(row: T) {
+    return { ...row, stats: this.getSegmentStats(row.title) };
+  }
+
   private getPanelRowByIdx(index: number) {
     const row = this.page.getByTestId('data-row').nth(index);
     return this.getPanelRowDataObject(row);
@@ -329,10 +389,13 @@ export class RightPanelPageObject {
   }
 
   private get addSegmentationButton() {
-    const button = this.page.getByTestId('addSegmentation');
+    const page = this.page;
+    const button = page.getByTestId('addSegmentation');
     return {
       button,
       click: async () => {
+        // "Add segmentation" fails until the active viewport has loaded its display set.
+        await new ViewportPageObject(page).waitForActiveDisplaySet();
         await button.click();
       },
     };
@@ -364,8 +427,10 @@ export class RightPanelPageObject {
 
   private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
-    const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
-    const getSegmentByText = (text: string) => this.getPanelRowByText(text);
+    const getSegmentByIdx = (index: number) =>
+      this.getRowWithSegmentStats(this.getPanelRowByIdx(index));
+    const getSegmentByText = (text: string) =>
+      this.getRowWithSegmentStats(this.getPanelRowByText(text));
     const moreMenu = this.getCollapsedMoreMenu(typeSuffix);
 
     return {

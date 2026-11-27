@@ -11,9 +11,10 @@ async function run() {
   const nextVersion = (await fs.readFile('./version.txt', 'utf-8')).trim();
   const packages = ['extensions/*', 'platform/*', 'modes/*'];
 
-  // Track only the files this script writes, so the release commit stages
-  // exactly the version bump and never sweeps in unrelated local edits or
-  // generated artifacts via `git add -A`.
+  // Track only the release's version files (the ones this script writes, plus
+  // version.txt), so the release commit stages exactly the version bump and
+  // never sweeps in unrelated local edits or generated artifacts via
+  // `git add -A`.
   const updatedFiles = [];
 
   // For each package's package.json file, update:
@@ -55,6 +56,13 @@ async function run() {
   updatedFiles.push('package.json');
   console.log('Updated root package.json');
 
+  // version.txt holds the version version.mjs computed for this release. The
+  // viewer build reads it as its version (process.env.VERSION_NUMBER, shown in
+  // the About dialog), so commit it with the package.json files: a build from
+  // the release tag, or from a checkout, then reports the version it was
+  // tagged with.
+  updatedFiles.push('version.txt');
+
   // NOTE: Do not delete .npmrc here. It is tracked and holds pnpm workspace
   // config (node-linker, workspace linking) with no npm credentials, so
   // removing it would commit the loss of needed install config. This script
@@ -62,8 +70,8 @@ async function run() {
 
   console.log('Setting the version...');
 
-  // Stage only the package.json files this script updated, so the release
-  // commit is deterministic and doesn't pick up unrelated worktree changes.
+  // Stage only the version files tracked above, so the release commit is
+  // deterministic and doesn't pick up unrelated worktree changes.
   await execa('git', ['add', '--', ...updatedFiles]);
 
   // Create the version commit

@@ -151,10 +151,21 @@ const screenShotPaths = {
     rtNoHydrationPreMPR: 'rtNoHydrationPreMpr.png',
     rtNoHydrationPostMPR: 'rtNoHydrationPostMpr.png',
   },
+  rtNonHydratedDelete: {
+    viewportAfterDelete: 'viewportAfterDelete.png',
+  },
   srHydration: {
     srPostHydration: 'srPostHydration.png',
     srPreHydration: 'srPreHydration.png',
     srJumpToMeasurement: 'srJumpToMeasurement.png',
+  },
+  segAcrossViewportTypes: {
+    stackBeforeMPR: 'segAcrossViewportTypes-stackBeforeMPR.png',
+    mprFromStack: 'segAcrossViewportTypes-mprFromStack.png',
+    oneUpAfterMPR: 'segAcrossViewportTypes-oneUpAfterMPR.png',
+    mprAfter3D: 'segAcrossViewportTypes-mprAfter3D.png',
+    stackAfterColorChange: 'segAcrossViewportTypes-stackAfterColorChange.png',
+    mprAfterColorChange: 'segAcrossViewportTypes-mprAfterColorChange.png',
   },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
