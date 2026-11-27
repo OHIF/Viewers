@@ -379,7 +379,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       prefetchInstanceFrames: ({ instance, imageId }) => {
         const noop = { done: Promise.resolve(false), cancel: () => {} };
 
-        if (!instance || !imageId) {
+        // A wrapper (merge) data source hides getConfig from the SEG handler, so check the opt-out here.
+        if (!instance || !imageId || dicomWebConfigCopy?.loadMultiframeAsPart10 === false) {
           return noop;
         }
 

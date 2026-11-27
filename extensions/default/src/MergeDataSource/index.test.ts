@@ -212,6 +212,11 @@ describe('MergeDataSource', () => {
   });
 
   describe('createMergeDataSourceApi', () => {
+    afterEach(() => {
+      (IWebApiDataSource.create as jest.Mock).mockReset();
+      (DicomMetadataStore.getSeries as jest.Mock).mockReset();
+    });
+
     it('sends instance calls to the data source that holds the series', () => {
       (IWebApiDataSource.create as jest.Mock).mockImplementation(impl => impl);
       (DicomMetadataStore.getSeries as jest.Mock).mockImplementation((_study, series) =>
@@ -247,6 +252,8 @@ describe('MergeDataSource', () => {
       expect(
         api.retrieve.prefetchInstanceFrames({ instance: { SeriesInstanceUID: 'other' } })
       ).toBeUndefined();
+      // A default data source without a DICOMweb client (JSON, local) gives no client.
+      expect(api.retrieve.getWadoDicomWebClient()).toBeUndefined();
     });
   });
 });

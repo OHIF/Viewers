@@ -262,13 +262,11 @@ function createMergeDataSourceApi(
           url: (url as string | undefined | null) || null,
         }));
       },
-      getWadoDicomWebClient: (...args: unknown[]) =>
-        callForDefaultDataSource({
-          path: 'retrieve.getWadoDicomWebClient',
-          args,
-          defaultDataSourceName,
-          extensionManager,
-        }),
+      // A JSON or local default data source has no client; microscopy then uses its fallback.
+      getWadoDicomWebClient: () => {
+        const [dataSource] = extensionManager.getDataSources(defaultDataSourceName) ?? [];
+        return dataSource?.retrieve?.getWadoDicomWebClient?.();
+      },
       prefetchInstanceFrames: (...args: unknown[]) =>
         callByRetrieveAETitle({
           path: 'retrieve.prefetchInstanceFrames',
