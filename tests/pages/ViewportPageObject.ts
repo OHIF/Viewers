@@ -8,6 +8,7 @@ import {
   simulateNormalizedDragOnElement,
   simulateNormalizedPathDragOnElement,
   waitForViewportsRendered,
+  type MouseButton,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
@@ -18,7 +19,7 @@ export type SvgInnerElement = 'circle' | 'path' | 'line' | 'polyline' | 'g';
 type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
-  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+  config?: { button?: MouseButton; delay?: number; steps?: number };
 };
 
 type NormalizedPathClickParams = {
@@ -28,7 +29,7 @@ type NormalizedPathClickParams = {
 
 type NormalizedPathDragParams = {
   path: { x: number; y: number }[];
-  config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+  config?: { button?: MouseButton; delay?: number; steps?: number };
 };
 
 export interface IOverlayText {
@@ -61,14 +62,11 @@ export interface IViewportPageObject {
       click: () => Promise<void>;
     };
   };
-  clickAt: (
-    points: { x: number; y: number }[],
-    button?: 'left' | 'right' | 'middle'
-  ) => Promise<void>;
+  clickAt: (points: { x: number; y: number }[], button?: MouseButton) => Promise<void>;
   doubleClickAt: (point: { x: number; y: number }) => Promise<void>;
   normalizedClickAt: (
     normalizedPoints: { x: number; y: number }[],
-    button?: 'left' | 'right' | 'middle'
+    button?: MouseButton
   ) => Promise<void>;
   normalizedDoubleClickAt: (normalizedPoint: { x: number; y: number }) => Promise<void>;
   normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
@@ -438,7 +436,7 @@ export class ViewportPageObject {
           point,
         });
       },
-      clickAt: async (points: { x: number; y: number }[], button?: 'left' | 'right' | 'middle') => {
+      clickAt: async (points: { x: number; y: number }[], button?: MouseButton) => {
         await simulateClicksOnElement({
           locator: viewport,
           points,
@@ -447,7 +445,7 @@ export class ViewportPageObject {
       },
       normalizedClickAt: async (
         normalizedPoints: { x: number; y: number }[],
-        button?: 'left' | 'right' | 'middle'
+        button?: MouseButton
       ) => {
         await simulateNormalizedClicksOnElement({
           locator: viewport,
@@ -527,6 +525,31 @@ export class ViewportPageObject {
   get active(): Promise<IViewportPageObject> {
     const viewport = this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
     return this.viewportPageObjectFactory(viewport);
+  }
+
+  /**
+   * Waits until the active viewport has a display set with image ids.
+   *
+   * A display set does not get `imageIds` when it is made: `makeImageSetDisplaySet`
+   * computes the ids but does not store them. `CornerstoneCacheService` sets
+   * `displaySet.imageIds` only when the viewport component mounts and builds its
+   * viewport data. The order is:
+   *
+   * 1. The hanging protocol puts the display set UID in the viewport grid state.
+   * 2. The viewport component mounts and calls `createViewportData` (async).
+   * 3. `CornerstoneCacheService` sets `displaySet.imageIds`.
+   *
+   * Between steps 1 and 3, "Add segmentation" throws in `createAndCacheDerivedImages`,
+   * because `_createSegmentationForDisplaySet` reads the undefined `imageIds`. A wait on
+   * the UID alone stops at step 1, so this wait also checks `imageIds`.
+   */
+  async waitForActiveDisplaySet(): Promise<void> {
+    await this.page.waitForFunction(() => {
+      const services = (window as any).services;
+      const state = services?.viewportGridService?.getState();
+      const uid = state?.viewports.get(state.activeViewportId)?.displaySetInstanceUIDs?.[0];
+      return !!uid && !!services.displaySetService.getDisplaySetByUID(uid)?.imageIds?.length;
+    });
   }
 
   get crosshairs() {

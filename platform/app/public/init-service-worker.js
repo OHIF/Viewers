@@ -1,8 +1,12 @@
-navigator.serviceWorker.getRegistrations().then(function (registrations) {
-  for (let registration of registrations) {
-    registration.unregister();
-  }
-});
+// navigator.serviceWorker is undefined outside a secure context (plain HTTP on a
+// non-localhost host), so an unguarded call throws a TypeError.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
+  });
+}
 
 // https://developers.google.com/web/tools/workbox/modules/workbox-window
 // All major browsers that support service worker also support native JavaScript

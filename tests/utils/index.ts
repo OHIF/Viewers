@@ -16,7 +16,7 @@ import {
   simulateNormalizedPathDragOnElement,
 } from './simulateDragOnElement';
 import { reduce3DViewportSize } from './reduce3DviewportSize';
-import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
+import { getMousePosition, initializeMousePositionTracker, type MouseButton } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { getAnnotationStats } from './getAnnotationStats';
@@ -38,6 +38,7 @@ import { getViewportCanvasStats } from './getViewportCanvasStats';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { contourShowOnlyNthSegment } from './contourShowOnlyNthSegment';
 import { visitStudyAndHydrate } from './visitStudyAndHydrate';
+import { forceViewportFidelity } from './forceViewportFidelity';
 import { test, expect } from './fixture';
 import { press, withKeyHeld } from './keyboardUtils';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
@@ -48,6 +49,7 @@ import {
   waitForRenderCycleForAction,
   waitForPaintToSettle,
 } from './waitForViewportsRendered';
+import { waitForViewportNotBlank } from './waitForViewportNotBlank';
 
 export {
   visitStudy,
@@ -68,6 +70,7 @@ export {
   reduce3DViewportSize,
   getMousePosition,
   initializeMousePositionTracker,
+  type MouseButton,
   getSUV,
   getTMTVModalityUnit,
   getAnnotationStats,
@@ -88,11 +91,13 @@ export {
   navigateWithViewportArrow,
   contourShowOnlyNthSegment,
   visitStudyAndHydrate,
+  forceViewportFidelity,
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
   waitForViewportRenderCycle,
   waitForRenderCycleForAction,
   waitForPaintToSettle,
+  waitForViewportNotBlank,
   press,
   withKeyHeld,
   test,

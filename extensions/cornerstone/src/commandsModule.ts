@@ -103,13 +103,13 @@ const segmentAI = new ONNXSegmentationController({
     sam_b: [
       {
         name: 'sam-b-encoder',
-        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.encoder-fp16.onnx',
+        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/b64d0347d4d2cafd9a4e43b38853d6b5daa319fb/sam_vit_b_01ec64.encoder-fp16.onnx',
         size: 180,
         key: 'encoder',
       },
       {
         name: 'sam-b-decoder',
-        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.decoder.onnx',
+        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/b64d0347d4d2cafd9a4e43b38853d6b5daa319fb/sam_vit_b_01ec64.decoder.onnx',
         size: 17,
         key: 'decoder',
       },
@@ -118,6 +118,25 @@ const segmentAI = new ONNXSegmentationController({
   modelName: 'sam_b',
 });
 let segmentAIEnabled = false;
+
+/**
+ * Converts a CSS color (hex or rgb/rgba string) to the { r, g, b, a }
+ * object shape the color picker dialog expects.
+ */
+function _cssColorToRgba(cssColor = ''): { r: number; g: number; b: number; a: number } {
+  const rgbMatch = cssColor.match(
+    /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/
+  );
+  if (rgbMatch) {
+    return {
+      r: Number(rgbMatch[1]),
+      g: Number(rgbMatch[2]),
+      b: Number(rgbMatch[3]),
+      a: rgbMatch[4] !== undefined ? Number(rgbMatch[4]) : 1,
+    };
+  }
+  return { r: 255, g: 255, b: 0, ...csUtils.color.hexToRgb(cssColor), a: 1 };
+}
 
 function commandsModule({
   servicesManager,
@@ -850,6 +869,51 @@ function commandsModule({
     },
 
     /**
+     * Opens a color picker for the measurement and applies the chosen color
+     * to the annotation (and its text box) via per-annotation styles.
+     */
+    changeMeasurementColor: ({ uid }) => {
+      const measurement = measurementService.getMeasurement(uid);
+      if (!measurement) {
+        console.warn('No measurement found to change color', uid);
+        return;
+      }
+
+      const currentColor = annotation.config.style.getStyleProperty('color', {
+        annotationUID: uid,
+        toolName: measurement.toolName,
+      });
+
+      uiDialogService.show({
+        content: colorPickerDialog,
+        title: i18n.t('Tools:Measurement Color'),
+        contentProps: {
+          value: _cssColorToRgba(currentColor),
+          onSave: newRgbaColor => {
+            const { r, g, b, a = 1 } = newRgbaColor;
+            const cssColor = `rgba(${r}, ${g}, ${b}, ${a})`;
+            // updateMeasurement replaces the annotation styles and sets the contour shape from them
+            actions.updateMeasurement({
+              uid,
+              style: {
+                ...annotation.config.style.getAnnotationToolStyles(uid),
+                isOpenUShapeContour: annotation.state.getAnnotation(uid)?.data?.isOpenUShapeContour,
+                color: cssColor,
+                colorHighlighted: cssColor,
+                colorSelected: cssColor,
+                colorLocked: cssColor,
+                textBoxColor: cssColor,
+                textBoxColorHighlighted: cssColor,
+                textBoxColorSelected: cssColor,
+                textBoxColorLocked: cssColor,
+              },
+            });
+          },
+        },
+      });
+    },
+
+    /**
      * Records the instance that the given measurements were just stored as, so
      * that storing them again offers to extend that series rather than creating
      * another one.
@@ -985,6 +1049,11 @@ function commandsModule({
     arrowTextCallback: async ({ callback, data }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
+      // ArrowAnnotateTool removes a just-drawn annotation when its text
+      // callback returns a falsy label. Saving an empty label should keep
+      // the arrow (same as Cancel), so skip the callback for new
+      // annotations (no `data` means the annotation is new, not edited).
+      const isNewAnnotation = !data;
 
       if (!labelConfig) {
         const label = await callInputDialog({
@@ -994,6 +1063,9 @@ function commandsModule({
           defaultValue: data?.data?.label || '',
         });
 
+        if (isNewAnnotation && !label) {
+          return;
+        }
         callback?.(label);
         return;
       }
@@ -1003,6 +1075,9 @@ function commandsModule({
         labelConfig,
         renderContent,
       });
+      if (isNewAnnotation && !value) {
+        return;
+      }
       callback?.(value);
     },
 
@@ -1492,14 +1567,8 @@ function commandsModule({
       cornerstoneViewportService.storePresentation({ viewportId });
     },
     updateVolumeData: ({ volume }) => {
-      // update vtkOpenGLTexture and imageData of computed volume
-      const { imageData, vtkOpenGLTexture } = volume;
-      const numSlices = imageData.getDimensions()[2];
-      const slicesToUpdate = [...Array(numSlices).keys()];
-      slicesToUpdate.forEach(i => {
-        vtkOpenGLTexture.setUpdatedFrame(i);
-      });
-      imageData.modified();
+      // Marks the imageData and every texture set (full and reduced) of the computed volume dirty.
+      volume.modified();
     },
 
     attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
@@ -2586,6 +2655,9 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
+    },
+    changeMeasurementColor: {
+      commandFn: actions.changeMeasurementColor,
     },
     jumpToMeasurement: actions.jumpToMeasurement,
     recordMeasurementsPredecessor: {

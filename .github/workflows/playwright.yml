@@ -279,7 +279,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [24.15.0]
+        node-version: [24.22.2]
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
@@ -297,7 +297,7 @@ jobs:
       # on this self-hosted runner is corrupted (Cannot find module
       # '../lib/cli.js'), so it dies regardless of `standalone:true`. Corepack
       # ships inside the Node that setup-node just installed, reads the pinned
-      # `packageManager` (pnpm@12.8.1) from package.json, and fetches pnpm via
+      # `packageManager` (pnpm@12.23.0) from package.json, and fetches pnpm via
       # Node's own https — it never invokes the npm CLI.
       - name: Enable Corepack (pnpm)
         shell: bash

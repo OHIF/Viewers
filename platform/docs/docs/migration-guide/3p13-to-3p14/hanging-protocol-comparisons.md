@@ -38,8 +38,8 @@ decide which meaning the rule needs:
   value, the result can change; see "Number values".
 - The rule needs the strict meaning. Make no change. For example,
   `numImageFrames: { greaterThan: 0 }` now fails for a display set with 0 image frames, such
-  as a whole slide or ECG display set. Before 3.14, `numImageFrames: { greaterThan:
-  { value: 0 } }` matched these display sets.
+  as a whole slide or ECG display set. Before 3.14,
+  `numImageFrames: { greaterThan: { value: 0 } }` matched these display sets.
 
 ```js
 // 3.13: matches a study with 2 or more display sets with images
@@ -292,3 +292,60 @@ here:
 - The error messages of the validators changed. They show the test value as JSON, for
   example `must equal ""` and `must include one of []`. `HPMatcher` gives them in the match
   details only. Do not test for the old text.
+
+## Stage selection and mnGrid
+
+These changes apply to every hanging protocol, or to `@ohif/mnGrid` and `@ohif/mnGrid8`.
+
+### The first applicable stage opens
+
+When no stage is given, the viewer opens the first stage with all of its viewports filled
+(the first `enabled` stage), or else the first `passive` stage. In 3.13 the viewer opened
+stage 0. This applies to:
+
+- a URL with `&hangingProtocolId=` and no `&stageid=`
+- a URL with an unknown `&stageid=`
+- the `setHangingProtocol` command with no stage, for example "Apply Hanging Protocol" in
+  the study menu.
+
+A site protocol whose stage 0 needs more series than a study has now opens a later stage.
+To get the 3.13 behaviour, lower `stageActivation.enabled.minViewportsMatched` of stage 0.
+
+### mnGrid fills the large stages with images only
+
+The 2x2 and 3x1 stages of `@ohif/mnGrid`, and the 4x2 and 3x2 stages of `@ohif/mnGrid8`,
+use only display sets with at least one image frame, and never a SEG. ECG, SM and PDF
+display sets show only in the 2x1 and 1x1 stages. A study with 3 image series and a PDF
+opens in 3x1 without the PDF. In 3.13 the study opened in 2x2 with the PDF in the fourth
+viewport.
+
+A protocol that imports `seriesWithImages` from `seriesSelectors.ts` no longer matches a
+display set with 0 image frames. `seriesViewable` accepts 0 image frames, as the 3.13 rule
+did, but it rejects a SEG.
+
+### A disabled stage is never opened
+
+In any protocol, a stage is disabled for a study when its `stageActivation.passive` rule
+fails. The viewer never opens a disabled stage. `,` and `.` skip it, and a URL `&stageid=`
+or a `setHangingProtocol` command that asks for it opens the first applicable stage instead.
+The console then shows a warning. In 3.13, a request for a disabled stage gave an error.
+
+For example, the 2x2 and 3x1 stages of mnGrid are now disabled on a study with no image
+display set. In 3.13 the user could step to an empty 2x2 and drag series into it. The layout
+selector still gives any layout.
+
+### Protocols as customizations
+
+A `hangingProtocols.<id>` customization defines the protocol with that id. The order of
+precedence:
+
+1. A customization at global or mode scope, for example from a `?customization=` file or
+   from the `customizationService` of the app config.
+2. A protocol that `addProtocol` or a hanging protocol module registered.
+3. A customization at default scope.
+
+`@ohif/mnGrid` and `@ohif/mnGrid8` now have default customizations. A site that registers
+its own `@ohif/mnGrid` still gets its own protocol. A global `$set` or `$merge` on
+`hangingProtocols.@ohif/mnGrid` changes the built-in protocol, and it then takes precedence
+over the site protocol. See
+[Protocols as customizations](../../platform/services/data/HangingProtocolService.md#protocols-as-customizations).

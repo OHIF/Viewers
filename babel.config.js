@@ -78,7 +78,7 @@ module.exports = {
     },
     production: {
       presets: [
-        // WebPack handles ES6 --> Target Syntax
+        // rspack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         ['@babel/preset-react', { runtime: 'automatic' }],
         '@babel/preset-typescript',
@@ -87,7 +87,7 @@ module.exports = {
     },
     development: {
       presets: [
-        // WebPack handles ES6 --> Target Syntax
+        // rspack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         ['@babel/preset-react', { runtime: 'automatic' }],
         '@babel/preset-typescript',

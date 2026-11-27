@@ -1,36 +1,76 @@
-# Stage 1: Build the application
-FROM node:20.18.1-slim as builder
+# syntax=docker/dockerfile:1.7-labs
+# Nginx + Orthanc + Keycloak recipe: the viewer served by a stock nginx that
+# signs users in through oauth2-proxy and Keycloak, and proxies /pacs/ to the
+# Orthanc container (see docker-compose.yml and config/nginx.conf).
+#
+# The build context is the repository root (docker-compose.yml sets it), so
+# every COPY below is relative to the root, and the root .dockerignore applies.
+#
+# STAGE 1 IS A VERBATIM COPY of the `builder` stage in the root Dockerfile,
+# except for the lines marked "recipe:". Keep the two in sync: when the
+# root build steps change (Node version, pnpm version, install layout), copy
+# them here again. This recipe once kept building with Node 20 + yarn after
+# the repo had moved to pnpm, and stopped building.
 
-# Setup the working directory
+# Stage 1: Build the application
+FROM node:24.22.2-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm@12
+
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
+ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
-# Install dependencies
-# apt-get update is combined with apt-get install to avoid using outdated packages
-RUN apt-get update && apt-get install -y build-essential python3
+# Copy package manifests for install caching. preinstall.js is included because
+# the root package.json's "preinstall" lifecycle script (node preinstall.js)
+# runs during `pnpm install` below -- before the full source is copied -- so the
+# script file must already be present or install fails with MODULE_NOT_FOUND.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc preinstall.js ./
+COPY --parents ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
+# Run the install before copying the rest of the files.
+# Frozen, like CI, so the image installs exactly the reviewed lockfile --
+# transitive versions and integrity hashes included -- and never re-resolves
+# against the registry. pnpm 12 requires a manifest for every importer the
+# lockfile records, so .dockerignore lets platform/docs/package.json in; the
+# filter then skips installing the docs site itself.
+RUN pnpm install --frozen-lockfile --filter '!ohif-docs'
+# Copy the local directory
+COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile . .
 
-# Copy package.json and other dependency-related files first
-# Assuming your package.json and yarn.lock or similar are located in the project root
-# Todo: this probably can get improved by copying
-# only the package json files and running yarn install before
-# copying the rest of the files but having a monorepo setup
-# makes this a bit more complicated, i wasn't able to get it working
-COPY ./ /usr/src/app/
+# Build here
+# After install it should hopefully be stable until the local directory changes
+# recipe: minify, because nginx compresses these files on each request (see
+# the compressDist.sh note below), and a smaller bundle loads faster.
+ENV QUICK_BUILD false
+# recipe: the viewer config that points the data source at the /pacs/ proxy
+# and serves the viewer under /ohif-viewer.
+ARG APP_CONFIG=config/docker-nginx-orthanc-keycloak.js
+ARG PUBLIC_URL=/
+ENV PUBLIC_URL=${PUBLIC_URL}
 
-# Install node dependencies
-RUN yarn config set workspaces-experimental true
-RUN yarn install --frozen-lockfile
+RUN pnpm run show:config
+RUN pnpm run build
 
-# Copy the rest of the application code
+# recipe: the root Dockerfile precompresses dist here (.docker/compressDist.sh),
+# which gzips each asset in place and leaves an empty file under the original
+# name. The root image serves the .gz files through `gzip_static always`; this
+# recipe's config/nginx.conf compresses dynamically (`gzip on`) and has no
+# gzip_static, so precompressed output would be served as empty files. Skipped.
 
-# set QUICK_BUILD to true to make the build faster for dev
-ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js
+# Stage 2: Bundle the built application into a Docker container which runs
+# NGINX and oauth2-proxy using Alpine Linux
+# Same nginx line as the root Dockerfile, but the stock image rather than
+# nginx/nginx-unprivileged: config/nginx.conf (mounted at runtime) writes its
+# pid file and logs under root-owned paths (/var/run, /var/logs/nginx), which
+# the unprivileged image's nginx user cannot write, and config/entrypoint.sh
+# runs oauth2-proxy alongside nginx in this container.
+FROM nginx:1.30.7-alpine
 
-# Build the application
-RUN yarn run build
-
-# Use nginx as the base image
-FROM nginx:alpine
+# The base image is not rebuilt for each Alpine fix, so take the fixes at build time.
+RUN apk upgrade --no-cache
 
 # Install dependencies for oauth2-proxy
 RUN apk add --no-cache curl
