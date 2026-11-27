@@ -82,11 +82,21 @@ export function isDisplaySetOverlayable({
     return false;
   }
 
-  if (!csUtils.isValidVolume(backgroundDisplaySet.imageIds || [])) {
+  // A 4D series is a valid volume when one time point is.
+  const firstTimePoint = ds => ds.dynamicVolumeInfo?.timePoints?.[0];
+
+  if (
+    !csUtils.isValidVolume(
+      firstTimePoint(backgroundDisplaySet) || backgroundDisplaySet.imageIds || []
+    )
+  ) {
     return false;
   }
 
-  const imageIds = displaySet.imageIds || displaySet.images?.map(image => image.imageId);
+  const imageIds =
+    firstTimePoint(displaySet) ||
+    displaySet.imageIds ||
+    displaySet.images?.map(image => image.imageId);
 
   if (!displaySet.isMultiFrame && imageIds?.length > 0 && !csUtils.isValidVolume(imageIds)) {
     return false;
