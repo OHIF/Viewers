@@ -291,9 +291,18 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         {
           toolName: toolNames.OrientationController,
           configuration: {
-            colorScheme: 'gray',
+            faceColors: {
+              topBottom: [173, 202, 240], // --neutral-light
+              frontBack: [173, 202, 240],
+              leftRight: [173, 202, 240],
+            },
+            letterColorScheme: 'black',
+            edgeColor: [127, 148, 173], // --neutral
+            cornerColor: [127, 148, 173],
+            highlightColor: [53, 140, 253], // --primary
+            restingAmbient: 0.65,
+            hoverAmbient: 1.0,
             keepOrientationUp: true,
-            letterColorScheme: 'white',
             size: 0.028,
           },
         },
