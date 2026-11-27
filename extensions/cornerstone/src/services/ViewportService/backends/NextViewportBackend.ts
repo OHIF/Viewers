@@ -525,15 +525,17 @@ export class NextViewportBackend implements IViewportBackend {
           presentationProps.colormap = props.colormap;
         }
         // Slab/blend for projection viewports (e.g. the TMTV MIP pane: blendMode
-        // 'MIP' + slabThickness 'fullVolume'). The native volume-slice render path
-        // maps blendMode -> reslice SlabType (MAX/MIN/MEAN) and applies the slab
-        // thickness on the reslice mapper; without them the mapper renders a single
-        // slice instead of a projection. 3D volume rendering derives its look from
-        // the preset, not a slab, so this is planar-only. blendMode was already
-        // normalized from the HP string ('MIP') to a BlendModes enum by
+        // 'MIP' + slabThickness 'fullVolume'). blendMode is per-display-set data
+        // presentation for both paths: the native volume-slice render path maps it
+        // to the reslice SlabType (MAX/MIN/MEAN), and the native 3D render path
+        // applies it as the volume mapper blend mode (e.g. a full-volume MIP).
+        // slabThickness stays planar-only: the planar reslice mapper needs it to
+        // render a projection instead of a single slice, while a 3D ray cast
+        // already traverses the whole volume. blendMode was already normalized
+        // from the HP string ('MIP') to a BlendModes enum by
         // ViewportInfo.mapDisplaySetOptions, and slabThickness was resolved to a
         // number by _getSlabThickness ('fullVolume' -> volume diagonal).
-        if (!is3D && volumeInput.blendMode !== undefined) {
+        if (volumeInput.blendMode !== undefined) {
           presentationProps.blendMode = volumeInput.blendMode;
         }
         if (!is3D && volumeInput.slabThickness !== undefined) {
