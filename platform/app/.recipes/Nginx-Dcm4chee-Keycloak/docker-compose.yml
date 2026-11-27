@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   ldap:
     image: dcm4che/slapd-dcm4chee:2.6.3-29.0
@@ -60,7 +58,10 @@ services:
     build:
       context: ./../../../../
       dockerfile: ./platform/app/.recipes/Nginx-Dcm4chee-Keycloak/dockerfile
-    image: webapp:latest
+    # A recipe-specific tag, so docker compose up never starts an image that
+    # another recipe built. up does not rebuild an image that already exists:
+    # run docker compose up --build after the checkout changes.
+    image: ohif-nginx-dcm4chee-keycloak:local
     container_name: webapp
     ports:
       - '443:443' # SSL

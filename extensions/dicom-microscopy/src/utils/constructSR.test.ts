@@ -9,7 +9,7 @@ describe('constructSR', () => {
 
   it('names OHIF and dcmjs as the writer of the SR', () => {
     process.env.VERSION_NUMBER = '3.14.0';
-    process.env.DCMJS_VERSION = '0.52.0';
+    process.env.DCMJS_VERSION = '1.0.0';
     const metadata = {
       StudyInstanceUID: '1.2.3',
       SeriesInstanceUID: '1.2.3.4',
@@ -24,7 +24,7 @@ describe('constructSR', () => {
     expect(dataset).toMatchObject({
       Manufacturer: 'OHIF',
       ManufacturerModelName: 'dcmjs',
-      SoftwareVersions: ['OHIF 3.14.0', 'dcmjs 0.52.0'],
+      SoftwareVersions: ['OHIF 3.14.0', 'dcmjs 1.0.0'],
     });
   });
 });

@@ -60,12 +60,12 @@ in command prompt or terminal_
 ### Setup
 
 - `cd platform/app/.recipes/Nginx-Orthanc`
-- run: `docker-compose up --build`
+- run: `docker compose up --build`
 - Navigate to `127.0.0.1` for the viewer (at first there is no study)
 - Navigate to `127.0.0.1/pacs` for uploading studies via the UI, or send studies via DIMSE C-STORE to `ORTHANC@127.0.0.1:4242` (hint: you can use utilizes like dcm4che's `storescu` to send studies in bulk via the command line)
 
 :::note
-For subsequent runs, use `docker-compose up -d` to start the services without rebuilding the images. However, ensure you rebuild the images if you make changes to the Dockerfile. If you modify the configurations in the `nginx.conf` or `orthanc.json` files, you can restart the services by running `docker-compose up`, as these files are mounted as volumes.
+Keep using `docker compose up --build` on later runs. Without `--build`, `docker compose up` starts the viewer image from the last build, even if the viewer code, its configuration or the Dockerfile has changed since; when nothing has changed, `--build` reuses Docker's cache and adds little time. If you modify the configurations in the `nginx.conf` or `orthanc.json` files, run `docker compose restart` to apply them without a rebuild, as these files are mounted as volumes.
 
 ```
 Inside docker compose file you see the following volumes mounted:
@@ -131,19 +131,19 @@ likely want to update:
 
 The OHIF Viewer's configuration is imported from a static `.js` file. The
 configuration we use is set to a specific file when we build the viewer, and
-determined by the env variable: `APP_CONFIG`. You can see where we set its value
-in the `dockerfile` for this solution:
+determined by the build argument: `APP_CONFIG`. You can see where we set its
+default value in the `dockerfile` for this solution:
 
-`ENV APP_CONFIG=config/docker-nginx-orthanc.js`
+`ARG APP_CONFIG=config/docker-nginx-orthanc.js`
 
 You can find the configuration we're using here:
 `/public/config/docker-nginx-orthanc.js`
 
-To rebuild the `webapp` image created by our `dockerfile` after updating the
-Viewer's configuration, you can run:
+To rebuild the `ohif-nginx-orthanc:local` image created by our `dockerfile`
+after updating the Viewer's configuration, you can run:
 
-- `docker-compose build` OR
-- `docker-compose up --build`
+- `docker compose build` OR
+- `docker compose up --build`
 
 #### Other
 

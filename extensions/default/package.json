@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.14.0-beta.103",
+  "version": "3.14.0-beta.118",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -32,8 +32,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@cornerstonejs/metadata": "5.18.3",
-    "@dcmjs-org/dcmjs": "1.0.0-beta.10",
+    "@cornerstonejs/metadata": "5.19.7",
+    "@dcmjs-org/dcmjs": "1.0.0",
     "@ohif/core": "workspace:*",
     "@ohif/i18n": "workspace:*",
     "@ohif/ui-next": "workspace:*",
@@ -47,7 +47,7 @@
   "dependencies": {
     "@babel/runtime": "7.29.7",
     "@cornerstonejs/calculate-suv": "1.1.0",
-    "@cornerstonejs/utils": "5.18.3",
+    "@cornerstonejs/utils": "5.19.7",
     "lodash.get": "4.4.2",
     "lodash.uniqby": "4.7.0",
     "query-string": "10.0.0",
