@@ -176,3 +176,15 @@ customizationService.setCustomizations({
 ```
 
 Remember that this customization will affect all viewports in the active mode. If you need different behavior for different viewports, you should check the `viewportId` parameter in your component's logic.
+
+## Showing the Current Series
+
+The cornerstone extension provides a `seriesIndicator` button (`uiType: 'ohif.seriesIndicator'`) that shows which series a viewport displays and where it sits in its study, for example "Series 3/19 · #5 LAO 30". It is not placed by default. Add it to a viewport action section in your mode's `onModeEnter`:
+
+```js
+toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topMiddle, [
+  'seriesIndicator',
+]);
+```
+
+n/N counts the image series of the shown series' study in the order the study browser lists them; SR, SEG and other non-image display sets show only their series number and description.

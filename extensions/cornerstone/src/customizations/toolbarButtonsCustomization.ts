@@ -74,6 +74,13 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    // Not placed by default: add 'seriesIndicator' to a viewportActionMenu
+    // section (e.g. viewportActionMenu.topMiddle) to show it.
+    id: 'seriesIndicator',
+    uiType: 'ohif.seriesIndicator',
+    props: {},
+  },
+  {
     id: 'trackingStatus',
     uiType: 'ohif.trackingStatus',
     props: {
