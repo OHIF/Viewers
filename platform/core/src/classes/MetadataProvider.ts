@@ -281,7 +281,7 @@ class MetadataProvider {
 
           // dcmjs >= 0.50 names 60xx tags by keyword (OverlayData, OverlayRows, ...) instead of
           // by tag. All overlay groups share these keywords, so dcmjs keeps at most one overlay
-          // under them; it is read as group 6000.
+          // under them, and its attributes can come from different groups; it is read as group 6000.
           const getValue = (tag: string, keyword: string) =>
             instance[tag] ?? (overlayGroup === 0x00 ? instance[keyword] : undefined);
 
@@ -294,7 +294,7 @@ class MetadataProvider {
 
           const OverlayRowsTag = `${groupStr}0010`;
           const OverlayColumnsTag = `${groupStr}0011`;
-          const OverlayType = `${groupStr}0040`;
+          const OverlayTypeTag = `${groupStr}0040`;
           const OverlayOriginTag = `${groupStr}0050`;
           const OverlayDescriptionTag = `${groupStr}0022`;
           const OverlayLabelTag = `${groupStr}1500`;
@@ -338,7 +338,7 @@ class MetadataProvider {
           const overlay = {
             rows: rows,
             columns: columns,
-            type: getValue(OverlayType, 'OverlayType'),
+            type: getValue(OverlayTypeTag, 'OverlayType'),
             x,
             y,
             pixelData: OverlayData,
