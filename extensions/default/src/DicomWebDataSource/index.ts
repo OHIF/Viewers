@@ -77,6 +77,8 @@ export type DicomWebConfig = {
   supportsFuzzyMatching?: boolean;
   /** Whether the server supports wildcard matching */
   supportsWildcard?: boolean;
+  /** Optional orderby for study searches (e.g. '-StudyDate,-StudyTime'); not sent unless set */
+  studySearchOrderBy?: string | false;
   /** Whether the server supports the native DICOM model */
   supportsNativeDICOMModel?: boolean;
   /** Whether to enable request tag */
@@ -281,6 +283,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             mapParams(origParams, {
               supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
               supportsWildcard: dicomWebConfig.supportsWildcard,
+              studySearchOrderBy: dicomWebConfig.studySearchOrderBy,
             }) || {};
 
           const results = await qidoSearch(dicomWebClient, undefined, undefined, mappedParams);

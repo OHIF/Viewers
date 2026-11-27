@@ -45,6 +45,41 @@ function initDataSource(config) {
   return { dataSource, client: dataSource.retrieve.getWadoDicomWebClient() };
 }
 
+describe('DicomWebDataSource study search ordering', () => {
+  it.each([
+    ['sends no orderby by default', {}, {}, null],
+    ['sends no orderby by default without filters', {}, undefined, null],
+    [
+      'uses the configured order without filters',
+      { studySearchOrderBy: '-StudyDate,-StudyTime' },
+      undefined,
+      '-StudyDate,-StudyTime',
+    ],
+    [
+      'keeps caller-supplied ordering',
+      { studySearchOrderBy: 'PatientName' },
+      { orderby: 'StudyDate' },
+      'StudyDate',
+    ],
+    ['uses the configured order', { studySearchOrderBy: 'PatientName' }, {}, 'PatientName'],
+    ['omits orderby when disabled', { studySearchOrderBy: false }, {}, null],
+  ])('%s', async (_description, config, params, expectedOrderBy) => {
+    const { dataSource, client } = initDataSource({
+      qidoRoot: 'https://server.com/dicomweb',
+      ...config,
+    });
+    const getJson = jest.fn(async (_url: string) => []);
+    client._httpGetApplicationJson = getJson;
+
+    await dataSource.query.studies.search(params);
+
+    expect(getJson).toHaveBeenCalledTimes(1);
+    const url = new URL(getJson.mock.calls[0][0]);
+    expect(url.pathname).toBe('/dicomweb/studies');
+    expect(url.searchParams.get('orderby')).toBe(expectedOrderBy);
+  });
+});
+
 describe('DicomWebDataSource service URLs', () => {
   it('routes each service to its own root when qidoRoot and wadoRoot differ', () => {
     const { client } = initDataSource({

@@ -237,6 +237,19 @@ Optional. The maximum number of studies requested from the server for the study 
 queryLimit: 101,
 ```
 
+#### `studySearchOrderBy`
+
+Optional. Sets the `orderby` parameter for QIDO-RS study searches. Not sent
+unless configured. Archives such as dcm4chee return studies oldest first when no
+order is requested, so once there are more studies than the query limit the study
+list misses the newest exams; `'-StudyDate,-StudyTime'` asks the archive to sort
+newest first before applying the limit. Only set it for archives that support
+`orderby`. An `orderby` supplied by the caller takes precedence.
+
+```js
+studySearchOrderBy: '-StudyDate,-StudyTime',
+```
+
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
 

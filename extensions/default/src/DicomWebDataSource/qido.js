@@ -139,12 +139,13 @@ export function seriesInStudy(dicomWebClient, studyInstanceUID) {
  * Maps study list search filter items to study-level QIDO query parameters.
  *
  * @param {object} params - Search filter items, for example `patientName` and `startDate`
- * @param {object} [options] - Data source options: `supportsWildcard`, `supportsFuzzyMatching`
+ * @param {object} [options] - Data source options: `supportsWildcard`, `supportsFuzzyMatching`, `studySearchOrderBy`
  * @returns {object} The query parameters, without undefined or empty values
  */
 function mapParams(params, options = {}) {
+  const orderby = params?.orderby ?? options.studySearchOrderBy;
   if (!params) {
-    return;
+    return orderby ? { orderby } : undefined;
   }
   const commaSeparatedFields = [
     '00081030', // Study Description
@@ -172,6 +173,7 @@ function mapParams(params, options = {}) {
     // Other
     limit: params.limit || 101,
     offset: params.offset || 0,
+    orderby: orderby === false ? undefined : orderby,
     fuzzymatching: options.supportsFuzzyMatching === true,
     includefield: commaSeparatedFields,
   };

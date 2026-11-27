@@ -21,6 +21,7 @@ window.config = {
         name: 'Dcm4chee',
         wadoUriRoot: '/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: '/dcm4chee-arc/aets/DCM4CHEE/rs',
+        studySearchOrderBy: '-StudyDate,-StudyTime',
         wadoRoot: '/dcm4chee-arc/aets/DCM4CHEE/rs',
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
