@@ -3,7 +3,7 @@ import { loadReferencedImages } from './loadReferencedImages';
 
 jest.mock('@cornerstonejs/core', () => ({
   cache: { getImage: jest.fn() },
-  imageLoader: { loadAndCacheImage: jest.fn(() => Promise.resolve()) },
+  imageLoader: { loadAndCacheImages: jest.fn(imageIds => imageIds.map(() => Promise.resolve())) },
 }));
 
 const cachedImages = {
@@ -15,7 +15,7 @@ const cachedImages = {
 describe('loadReferencedImages', () => {
   beforeEach(() => {
     jest.mocked(cache.getImage).mockImplementation(imageId => cachedImages[imageId]);
-    jest.mocked(imageLoader.loadAndCacheImage).mockClear();
+    jest.mocked(imageLoader.loadAndCacheImages).mockClear();
   });
 
   it('loads only the referenced images that are not in the cache, once each', async () => {
@@ -25,12 +25,12 @@ describe('loadReferencedImages', () => {
       labelmaps: { layer: { imageIds: ['seg:2'], referencedImageIds: ['ct:3'] } },
     } as never);
 
-    expect(jest.mocked(imageLoader.loadAndCacheImage).mock.calls).toEqual([['ct:2'], ['ct:3']]);
+    expect(jest.mocked(imageLoader.loadAndCacheImages).mock.calls).toEqual([[['ct:2', 'ct:3']]]);
   });
 
   it('does nothing without labelmap data', async () => {
     await loadReferencedImages(undefined);
 
-    expect(imageLoader.loadAndCacheImage).not.toHaveBeenCalled();
+    expect(imageLoader.loadAndCacheImages).not.toHaveBeenCalled();
   });
 });

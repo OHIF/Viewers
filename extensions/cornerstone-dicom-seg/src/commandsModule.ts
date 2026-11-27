@@ -46,8 +46,15 @@ const commandsModule = ({
   extensionManager,
   commandsManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const { segmentationService, displaySetService, viewportGridService, customizationService } =
-    servicesManager.services as AppTypes.Services;
+  const {
+    segmentationService,
+    displaySetService,
+    viewportGridService,
+    customizationService,
+    uiNotificationService,
+  } = servicesManager.services as AppTypes.Services;
+  // The segmentations that a save stores now, so that a second click does not store a second copy.
+  const storingSegmentationIds = new Set<string>();
 
   const actions = {
     /**
@@ -353,7 +360,8 @@ const commandsModule = ({
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       await loadReferencedImages(
         cornerstoneToolsSegmentation.state.getSegmentation(segmentationId)?.representationData
-          .Labelmap
+          .Labelmap,
+        uiNotificationService
       );
       const generatedSegmentation = actions.generateSegmentation({
         segmentationId,
@@ -423,6 +431,16 @@ const commandsModule = ({
         throw new Error(`No valid store for dataSource: ${dataSourceName}`);
       }
 
+      if (storingSegmentationIds.has(segmentationId)) {
+        uiNotificationService.show({
+          title: 'DICOM SEG',
+          message: 'The save of this segmentation is in progress.',
+          type: 'warning',
+        });
+        return;
+      }
+
+      storingSegmentationIds.add(segmentationId);
       try {
         const args = {
           segmentationId,
@@ -437,7 +455,8 @@ const commandsModule = ({
         if (modality === 'SEG') {
           await loadReferencedImages(
             cornerstoneToolsSegmentation.state.getSegmentation(segmentationId)?.representationData
-              .Labelmap
+              .Labelmap,
+            uiNotificationService
           );
         }
         const generatedDataAsync =
@@ -465,6 +484,8 @@ const commandsModule = ({
       } catch (error) {
         console.debug('Error storing segmentation:', error);
         throw error;
+      } finally {
+        storingSegmentationIds.delete(segmentationId);
       }
     },
 
