@@ -37,6 +37,8 @@ The `Window/Level` tool enables manipulating the window level and window width o
 
 Click on the caret to expand the tool and choose from predefined W/L settings for common imaging scenarios.
 
+The viewport overlay shows the current window as `W:` and `L:`. The values keep up to 3 decimals for a value of 100 or more, and more decimals for a smaller value. The overlay shows no trailing zeros: `W: 400.5 L: 40.25`, or `W: 400 L: 40`. When the image uses a VOI LUT Function other than LINEAR, a label comes before the values: `Exact` for LINEAR_EXACT and `Sigmoid` for SIGMOID. When a VOI LUT Sequence maps the image, the label is `VOI LUT`, and the W/L values do not describe the display.
+
 
 ![user-toolbar-preset](../../assets/img/user-toolbar-preset.png)
 

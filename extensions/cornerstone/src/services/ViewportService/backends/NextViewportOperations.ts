@@ -4,6 +4,7 @@ import {
   Types as CoreTypes,
 } from '@cornerstonejs/core';
 import { getViewportAdapter } from '../adapter';
+import { getVOILUTFunction } from '../../../utils/voiLUTFunction';
 import { legacyViewportOperations } from './LegacyViewportOperations';
 import type {
   IViewportOperations,
@@ -117,7 +118,8 @@ export const nextViewportOperations: IViewportOperations = {
   setWindowLevel(viewport: CoreTypes.IViewport, params: WindowLevelParams): void {
     const { lower, upper } = csUtils.windowLevel.toLowHighRange(
       params.windowWidth,
-      params.windowCenter
+      params.windowCenter,
+      getVOILUTFunction(viewport, params.displaySetInstanceUID)
     );
     // Target the binding for params.displaySetInstanceUID so a PT/CT *fusion* W/L lands
     // on the intended layer (e.g. the PT overlay) instead of always the source (CT) —

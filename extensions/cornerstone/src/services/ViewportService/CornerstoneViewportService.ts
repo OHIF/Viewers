@@ -975,7 +975,8 @@ class CornerstoneViewportService
       if (voi && (voi.windowWidth || voi.windowCenter)) {
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(
           voi.windowWidth,
-          voi.windowCenter
+          voi.windowCenter,
+          metaData.get('voiLutModule', imageIds[0])?.voiLUTFunction
         );
         properties.voiRange = { lower, upper };
       }
@@ -1197,9 +1198,12 @@ class CornerstoneViewportService
       const properties = {} as ViewportProperties;
 
       if (voi && (voi.windowWidth || voi.windowCenter)) {
+        const imageId = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID)
+          ?.imageIds?.[0];
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(
           voi.windowWidth,
-          voi.windowCenter
+          voi.windowCenter,
+          metaData.get('voiLutModule', imageId)?.voiLUTFunction
         );
         properties.voiRange = { lower, upper };
       }

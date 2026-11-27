@@ -123,6 +123,13 @@ export interface IViewportAdapter {
   getDefaultVOIRange(dataId?: string): VOIRange | undefined;
 
   /**
+   * The VOI LUT Function in effect for a binding (application value, else file
+   * value), and whether a VOI LUT Sequence maps the display. Legacy viewports
+   * have no getter for the sequence state, so `voiLUTSequenceApplied` is undefined there.
+   */
+  getVOILUTState(dataId?: string): { VOILUTFunction?: string; voiLUTSequenceApplied?: boolean };
+
+  /**
    * The colormap currently applied to a display set's layer, or undefined when
    * none (callers supply their own fallback, e.g. Grayscale).
    */

@@ -6,7 +6,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
-import { metaData, Enums, eventTarget } from '@cornerstonejs/core';
+import { metaData, Enums, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
@@ -16,6 +16,7 @@ import { utils } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { getViewportAdapter } from '../../services/ViewportService/adapter';
 import { getViewportDataShapeType } from '../../utils/viewportDataShape';
+import { getVOILUTLabel } from '../../utils/voiLUTFunction';
 
 import './CustomizableViewportOverlay.css';
 import { useViewportRendering } from '../../hooks';
@@ -44,6 +45,10 @@ interface OverlayItemProps {
   voi: {
     windowWidth: number;
     windowCenter: number;
+    /** The VOI LUT Function in effect; undefined is LINEAR. */
+    VOILUTFunction?: string;
+    /** True when a VOI LUT Sequence maps the display. */
+    voiLUTSequenceApplied?: boolean;
   };
   instanceNumber?: number;
   scale?: number;
@@ -76,7 +81,13 @@ function CustomizableViewportOverlay({
     servicesManager.services;
   const [scale, setScale] = useState(1);
   const [annotationState, setAnnotationState] = useState(0);
-  const { isViewportBackgroundLight: isLight, windowLevel: voi } = useViewportRendering(viewportId);
+  const {
+    isViewportBackgroundLight: isLight,
+    windowLevel,
+    VOILUTFunction,
+    voiLUTSequenceApplied,
+  } = useViewportRendering(viewportId);
+  const voi = { ...windowLevel, VOILUTFunction, voiLUTSequenceApplied };
   const { imageIndex } = imageSliceData;
 
   // Historical usage defined the overlays as separate items due to lack of
@@ -396,11 +407,12 @@ function OverlayItem(props) {
  * //
  */
 function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
-  const { windowWidth, windowCenter } = voi;
+  const { windowWidth, windowCenter, VOILUTFunction, voiLUTSequenceApplied } = voi;
   const { title } = customization;
   if (typeof windowCenter !== 'number' || typeof windowWidth !== 'number') {
     return null;
   }
+  const label = getVOILUTLabel(VOILUTFunction, voiLUTSequenceApplied);
 
   return (
     <div
@@ -408,10 +420,11 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
       style={{ color: customization?.color }}
       title={title}
     >
+      {label ? <span className="mr-1 shrink-0 opacity-[0.70]">{label}</span> : null}
       <span className="mr-0.5 shrink-0 opacity-[0.70]">W:</span>
-      <span className="mr-2.5 shrink-0">{windowWidth.toFixed(0)}</span>
+      <span className="mr-2.5 shrink-0">{csUtils.roundNumberTrim(windowWidth, 5)}</span>
       <span className="mr-0.5 shrink-0 opacity-[0.70]">L:</span>
-      <span className="shrink-0">{windowCenter.toFixed(0)}</span>
+      <span className="shrink-0">{csUtils.roundNumberTrim(windowCenter, 5)}</span>
     </div>
   );
 }

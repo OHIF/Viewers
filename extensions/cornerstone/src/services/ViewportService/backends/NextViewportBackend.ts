@@ -106,7 +106,7 @@ function getDefaultVoiRangeFromMetadata(
   if (wc == null || ww == null) {
     return;
   }
-  return csUtils.windowLevel.toLowHighRange(ww, wc);
+  return csUtils.windowLevel.toLowHighRange(ww, wc, voiLutModule.voiLUTFunction);
 }
 
 /**

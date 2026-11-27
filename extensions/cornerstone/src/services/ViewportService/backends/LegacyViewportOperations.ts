@@ -7,6 +7,7 @@ import {
 } from '../../../utils/getLegacyViewportType';
 import { getCenterExtent } from '../../../utils/getCenterExtent';
 import { isMeasurementWithinViewport } from '../../../utils/isMeasurementWithinViewport';
+import { getVOILUTFunction } from '../../../utils/voiLUTFunction';
 import type {
   IViewportOperations,
   FlipValue,
@@ -151,7 +152,8 @@ export const legacyViewportOperations: IViewportOperations = {
   setWindowLevel(viewport: CoreTypes.IViewport, params: WindowLevelParams): void {
     const { lower, upper } = csUtils.windowLevel.toLowHighRange(
       params.windowWidth,
-      params.windowCenter
+      params.windowCenter,
+      getVOILUTFunction(viewport, params.volumeId)
     );
     if (isVolumeViewportType(viewport)) {
       (viewport as CoreTypes.IVolumeViewport).setProperties(

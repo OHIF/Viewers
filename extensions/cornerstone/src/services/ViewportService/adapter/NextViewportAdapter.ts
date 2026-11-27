@@ -18,6 +18,7 @@ type NativeViewport = CoreTypes.IViewport & {
   getSourceDataId?: () => string | undefined;
   getDisplaySetPresentation?: (dataId: string) => ViewportPresentation | undefined;
   getDefaultVOIRange?: (dataId?: string) => VOIRange | undefined;
+  getVOILUTState?: (dataId: string) => { VOILUTFunction: string; voiLUTSequenceApplied: boolean };
   setDisplaySetPresentation?: {
     (props: ViewportPresentation): void;
     (dataId: string, props: ViewportPresentation): void;
@@ -146,6 +147,11 @@ export class NextViewportAdapter implements IViewportAdapter {
 
   getDefaultVOIRange(dataId?: string): VOIRange | undefined {
     return this.viewport.getDefaultVOIRange?.(dataId);
+  }
+
+  getVOILUTState(dataId?: string): { VOILUTFunction?: string; voiLUTSequenceApplied?: boolean } {
+    const id = dataId ?? this.viewport.getSourceDataId?.();
+    return (id && this.viewport.getVOILUTState?.(id)) || {};
   }
 
   getColormap(displaySetInstanceUID: string): ViewportColormap | undefined {
