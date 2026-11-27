@@ -6,7 +6,7 @@
 # every COPY below is relative to the root, and the root .dockerignore applies.
 #
 # STAGE 1 IS A VERBATIM COPY of the `builder` stage in the root Dockerfile,
-# except for the two lines marked "recipe:". Keep the two in sync: when the
+# except for the lines marked "recipe:". Keep the two in sync: when the
 # root build steps change (Node version, pnpm version, install layout), copy
 # them here again. This recipe fell three years behind once (Node 20 + yarn
 # after the repo had moved to pnpm) and silently served a stale image.
@@ -41,8 +41,9 @@ COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile
 
 # Build here
 # After install it should hopefully be stable until the local directory changes
-ENV QUICK_BUILD true
-# ENV GENERATE_SOURCEMAP=false
+# recipe: minify, because nginx compresses these files on each request (see
+# the compressDist.sh note below), and a smaller bundle loads faster.
+ENV QUICK_BUILD false
 # recipe: the viewer config that points the data source at the /pacs/ proxy.
 ARG APP_CONFIG=config/docker-nginx-orthanc.js
 ARG PUBLIC_URL=/
@@ -63,6 +64,9 @@ RUN pnpm run build
 # config/nginx.conf listens on 80 as root and is mounted at runtime, so it
 # skips the unprivileged hardening the published ohif/app image carries.
 FROM nginx:1.30.7-alpine
+
+# The base image is not rebuilt for each Alpine fix, so take the fixes at build time.
+RUN apk upgrade --no-cache
 
 # Create directories for logs and html content if they don't already exist
 RUN mkdir -p /var/log/nginx /var/www/html
