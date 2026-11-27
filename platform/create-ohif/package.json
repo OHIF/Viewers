@@ -1,6 +1,6 @@
 {
   "name": "create-ohif",
-  "version": "3.14.0-beta.115",
+  "version": "3.14.0-beta.116",
   "description": "Scaffold OHIF Viewer extensions and modes",
   "type": "module",
   "license": "MIT",
