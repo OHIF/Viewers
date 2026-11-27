@@ -14,10 +14,11 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Series description',
-      condition: ({ referenceInstance }) => {
-        return referenceInstance && referenceInstance.SeriesDescription;
-      },
-      contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
+      // A split rule sets its description on the display set, not on the instance.
+      condition: ({ displaySet, referenceInstance }) =>
+        displaySet?.SeriesDescription || referenceInstance?.SeriesDescription,
+      contentF: ({ displaySet, referenceInstance }) =>
+        displaySet?.SeriesDescription || referenceInstance?.SeriesDescription,
     },
   ],
   'viewportOverlay.topRight': [],
