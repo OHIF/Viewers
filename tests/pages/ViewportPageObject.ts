@@ -96,7 +96,10 @@ export interface IViewportPageObject {
     };
   };
   pane: Locator;
-  /** The Cornerstone viewport type, e.g. 'stack', 'orthographic' or 'volume3d'. */
+  /**
+   * What the viewport renders: 'stack' or 'volume3d' on both the current and the new viewports.
+   * An MPR pane is 'orthographic' on the current viewports and 'volume' on the new ones.
+   */
   getViewportType: () => Promise<string | undefined>;
   svg: (innerElement?: SvgInnerElement) => Locator;
   getSvgAnnotationStatTextLines: (uid: string) => Locator;
@@ -369,8 +372,9 @@ export class ViewportPageObject {
 
     const scrollBy = async (delta: number) => {
       const viewportId = await this.getViewportId(viewport);
-      // Returns the slice the scroll is headed to. A stack viewport may load it after a short
-      // delay, so its target is read from getTargetImageIdIndex; a volume viewport is already on it.
+      // Returns the slice the scroll is headed to: the slice before the scroll plus the delta, kept
+      // within the slices. It is not read back after the scroll, because a viewport may only move
+      // to the new slice a moment later.
       const targetSliceIndex = await page.evaluate(
         ({ services, viewportId, delta }) => {
           const cornerstoneViewport = (
@@ -379,10 +383,12 @@ export class ViewportPageObject {
           if (!cornerstoneViewport) {
             throw new Error(`No Cornerstone viewport found for ${viewportId}`);
           }
+          // A stack viewport that is still loading a slice reports it as its target.
+          const startSliceIndex =
+            cornerstoneViewport.getTargetImageIdIndex?.() ?? cornerstoneViewport.getSliceIndex();
+          const lastSliceIndex = cornerstoneViewport.getNumberOfSlices() - 1;
           cornerstoneViewport.scroll(delta);
-          return (
-            cornerstoneViewport.getTargetImageIdIndex?.() ?? cornerstoneViewport.getSliceIndex()
-          );
+          return Math.min(Math.max(startSliceIndex + delta, 0), lastSliceIndex);
         },
         {
           viewportId,
@@ -500,8 +506,13 @@ export class ViewportPageObject {
       getViewportType: async () => {
         const viewportId = await this.getViewportId(viewport);
         return this.page.evaluate(
-          ({ services, viewportId }) =>
-            (services as any).cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type,
+          ({ services, viewportId }) => {
+            const csViewport = (services as any).cornerstoneViewportService.getCornerstoneViewport(
+              viewportId
+            );
+            // The new viewports have one type for stacks and volumes, so ask what they render.
+            return csViewport?.getCurrentMode?.() ?? csViewport?.type;
+          },
           { viewportId, services: await this.page.evaluateHandle('window.services') }
         );
       },

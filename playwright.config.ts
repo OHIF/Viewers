@@ -1,12 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
+import type { TestOptions } from './tests/utils/fixture';
 
-export default defineConfig({
+export default defineConfig<TestOptions>({
   testDir: './tests',
   globalSetup: './tests/globalSetup.ts',
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  maxFailures: process.env.CI ? 10 : undefined,
+  // TEMPORARY, revert before merge: no failure limit, so a run on the new viewports
+  // reports every failure. Was `process.env.CI ? 10 : undefined`.
+  maxFailures: undefined,
   workers: process.env.CI ? 18 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
@@ -29,7 +32,9 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
+      // TEMPORARY, revert before merge: `useNextViewports` runs the suite on the new
+      // viewports only, against the existing screenshots.
+      use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1, useNextViewports: true },
     },
     // TODO: Fix firefox tests
     // {

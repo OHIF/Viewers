@@ -18,14 +18,22 @@ type PageObjects = {
   notFoundStudyPageObject: NotFoundStudyPageObject;
 };
 
-type TestFixtures = PageObjects & {
-  _applyGlobalE2EOHIFBaseline: void;
+export type TestOptions = {
+  /** Runs the viewer on the new viewports (`genericViewports.enabled`). Set per project. */
+  useNextViewports: boolean;
 };
 
+type TestFixtures = PageObjects &
+  TestOptions & {
+    _applyGlobalE2EOHIFBaseline: void;
+  };
+
 export const test = base.extend<TestFixtures>({
+  useNextViewports: [false, { option: true }],
   _applyGlobalE2EOHIFBaseline: [
-    async ({ page }, use) => {
-      await addOHIFConfiguration(page, {});
+    async ({ page, useNextViewports }, use) => {
+      const config = useNextViewports ? { genericViewports: { enabled: true } } : {};
+      await addOHIFConfiguration(page, config);
       await use();
     },
     { auto: true },
