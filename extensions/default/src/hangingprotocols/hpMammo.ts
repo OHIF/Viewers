@@ -46,7 +46,7 @@ const hpMammography = {
       id: 'numberOfImages',
       attribute: 'numberOfDisplaySetsWithImages',
       constraint: {
-        greaterThan: 2,
+        greaterThanOrEqual: 2,
       },
       required: true,
     },

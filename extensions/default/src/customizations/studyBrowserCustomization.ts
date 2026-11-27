@@ -1,6 +1,25 @@
 import { utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
-const { formatDate } = utils;
+const { getDateTimeSortKey } = utils;
+
+/**
+ * Orders by the given key, lowest first, and returns 0 when the keys are
+ * equal, so that the study browser breaks the tie with its default order.
+ */
+const byKey = keyOf => (a, b) => {
+  const keyA = keyOf(a);
+  const keyB = keyOf(b);
+  return keyA === keyB ? 0 : keyA < keyB ? -1 : 1;
+};
+
+// A series with no number or no date sorts first.
+const seriesNumberKey = displaySet => {
+  const value = displaySet?.SeriesNumber;
+  const seriesNumber = value === '' || value === null ? NaN : Number(value);
+  return Number.isFinite(seriesNumber) ? seriesNumber : -Infinity;
+};
+const seriesDateTimeKey = displaySet =>
+  getDateTimeSortKey(displaySet?.SeriesDate, displaySet?.SeriesTime);
 
 export default {
   'studyBrowser.studyMenuItems': [],
@@ -21,17 +40,11 @@ export default {
   'studyBrowser.sortFunctions': [
     {
       label: i18n.t('StudyBrowser:Series Number'),
-      sortFunction: (a, b) => {
-        return a?.SeriesNumber - b?.SeriesNumber;
-      },
+      sortFunction: byKey(seriesNumberKey),
     },
     {
       label: i18n.t('StudyBrowser:Series Date'),
-      sortFunction: (a, b) => {
-        const dateA = new Date(formatDate(a?.SeriesDate));
-        const dateB = new Date(formatDate(b?.SeriesDate));
-        return dateB.getTime() - dateA.getTime();
-      },
+      sortFunction: byKey(seriesDateTimeKey),
     },
   ],
   'studyBrowser.viewPresets': [

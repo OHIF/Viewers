@@ -1,0 +1,39 @@
+// URL-loaded customization: enableNewSplit
+//
+// Enables metadata-driven display set splitting: series instances are split
+// into display sets by the @cornerstonejs/metadata split-rules engine
+// (`useMetadataDisplaySet` customization), with the @cornerstonejs/metadata
+// default rules. A rule with a `handler` name (video, ECG, whole slide, SEG,
+// RTSTRUCT, parametric map, SR, encapsulated document, bulk annotation,
+// chart, unsupported) gives its display sets to the SOP class handler of the
+// mode that declares that name in `handlerNames`, so the specialized
+// extensions of OHIF keep working unchanged. A handler of another extension
+// for a private SOP class runs only when it declares `handlerNames` and a rule
+// names it: the default `unsupported` rule takes every other instance (see
+// "A SOP class handler of another extension" in displaySetSplitting.md).
+//
+// The default rules include `localizer`, which puts the localizer images of
+// a CT, MR or PT series that also has other images into their own display set,
+// and `mixedDimensionalityBValue`, which splits MR
+// series mixing instances with and without DiffusionBValue into separate
+// display sets (the DWI mixed-b-value issue), and `singleImageModality`, which
+// makes one display set for each CR, DX or MG image, as the stack SOP class
+// handler does. `split/singleImagesBySize.jsonc` groups those images by size.
+//
+// Load it with `?customization=split/enableNewSplit`.
+//
+// Custom rules are @cornerstonejs/metadata rule data (a map of name to
+// test in `matches`, names in `groupBy` and `sortBy`, a rule `context`, and
+// `attributes`) - see `split/scoutSeries.jsonc` for a complete example.
+// `displaySetRules` is the registry, keyed by rule id: add a rule with
+// `$merge`, or change a rule by its id. `displaySetRuleOrder` is the list of
+// rule ids in evaluation order, with first-match-wins per instance: add,
+// remove or replace an id with `$spliceById`, which takes a rule id as the
+// position (`[["volume3d", 0, "myRule"]]` inserts before `volume3d`). A rule
+// that the order does not name is not used. An instance that no rule claims
+// goes to the SOP class handlers.
+{
+  "global": {
+    "useMetadataDisplaySet": { "enabled": { "$set": true } }
+  }
+}

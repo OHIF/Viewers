@@ -21,7 +21,7 @@ yarn run build
 > provide a reliable, fast, and engaging experience across different devices and
 > network conditions.
 
-The OHIF Viewer is maintained as a [monorepo][monorepo]. We use WebPack to build
+The OHIF Viewer is maintained as a [monorepo][monorepo]. We use Rsbuild (built on rspack) to build
 the many small static assets that comprise our application. Also generated is an
 `index.html` that will serve as an entry point for loading configuration and the
 application, as well as a `service-worker` that can intelligently cache files so

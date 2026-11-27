@@ -33,5 +33,9 @@ dockerfile
 .scripts/
 .vscode/
 coverage/
-platform/docs/
+# Keep the docs site out of the image, but let its package.json through:
+# pnpm 12's --frozen-lockfile refuses to run when the lockfile records an
+# importer (platform/docs) whose manifest is missing from the build context.
+platform/docs/*
+!platform/docs/package.json
 testdata/

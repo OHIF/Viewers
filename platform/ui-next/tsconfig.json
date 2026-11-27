@@ -4,8 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "@ui/*": ["./src/*"],
-      "@ohif/core": ["../core/src"],
-      "@ohif/ui": ["../ui/src"]
+      "@ohif/core": ["../core/src"]
     }
   },
   "include": ["src"],
