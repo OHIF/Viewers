@@ -47,6 +47,19 @@ describe('allowNativeKeysPlugin', () => {
     });
   });
 
+  it.each(['listbox', 'menu'])(
+    'stops a single-key hotkey inside a portaled %s outside any dialog',
+    role => {
+      // Select and dropdown-menu content is portaled to <body>, outside the modal that
+      // opened it: typing a letter to jump in the list must not fire that letter's hotkey.
+      const { child } = mount({ role });
+      const { Mousetrap } = makeMousetrap();
+      allowNativeKeysPlugin(Mousetrap);
+
+      expect(Mousetrap.prototype.stopCallback.call({}, {}, child, 'a')).toBe(true);
+    }
+  );
+
   it('stops a hotkey inside an element marked .ohif-text-select', () => {
     const { child } = mount({ class: 'ohif-text-select', tabindex: '-1' });
     const { Mousetrap } = makeMousetrap();
