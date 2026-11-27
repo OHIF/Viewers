@@ -8,7 +8,7 @@ import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
 import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
 import { VolumeLightingParams } from '../types';
-import { getVOILUTFunction, getWindowLevelReadout } from '../utils/voiLUTFunction';
+import { getWindowLevelReadout } from '../utils/voiLUTFunction';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
 
 interface ViewportRenderingOptions {
@@ -177,7 +177,7 @@ function readPresentation(viewport, activeDisplaySetInstanceUID) {
     return {
       voiRange,
       colormap: properties.colormap,
-      VOILUTFunction: getVOILUTFunction(viewport, dataId ?? activeDisplaySetInstanceUID),
+      ...adapter.getVOILUTState(dataId ?? activeDisplaySetInstanceUID),
     };
   } catch (error) {
     console.error('Error initializing VOI range:', error);
@@ -361,6 +361,7 @@ export function useViewportRendering(
     }
 
     setVOILUTFunction(presentation.VOILUTFunction);
+    setVOILUTSequenceApplied(!!presentation.voiLUTSequenceApplied);
     if (presentation.voiRange) {
       setVoiRange(presentation.voiRange);
       voiRangeRef.current = presentation.voiRange;
@@ -412,15 +413,17 @@ export function useViewportRendering(
       const { range, VOILUTFunction: eventVOILUTFunction, voiLUTSequenceApplied } =
         eventDetail.detail;
 
+      // Before the range guard: a colormap change sends no range and replaces the sequence.
+      setVOILUTSequenceApplied(!!voiLUTSequenceApplied);
+
       if (!range) {
         return;
       }
 
-      // Keep the previous function when the event does not carry one (CPU stack).
+      // Keep the previous function when an event has none.
       if (eventVOILUTFunction) {
         setVOILUTFunction(eventVOILUTFunction);
       }
-      setVOILUTSequenceApplied(!!voiLUTSequenceApplied);
 
       // Check if this update is coming from our own setVOIRange or setWindowLevel call
       // If so, we already updated our state and don't need to do it again

@@ -21,8 +21,9 @@ of Cornerstone3D ([cornerstonejs/cornerstone3D#2856](https://github.com/cornerst
 - A LINEAR_EXACT image with a window of W 400 / C 40 now reads `W: 400 L: 40`.
   Before 3.14, the overlay showed `W: 401 L: 41`.
 - The overlay no longer rounds the W/L values to an integer. It uses
-  `utilities.roundNumberTrim(value, 5)` of Cornerstone3D, which keeps at least 3
-  decimals and removes trailing zeros. W 400.5 / L 40.25 reads
+  `utilities.roundNumberTrim(value, 5)` of Cornerstone3D. That function keeps up
+  to 3 decimals for a value of 100 or more, and more decimals for a smaller
+  value. It removes trailing zeros. W 400.5 / L 40.25 reads
   `W: 400.5 L: 40.25`, and W 400 / L 40 reads `W: 400 L: 40`.
 - A typed W/L preset on a LINEAR_EXACT image gives the exact range. For example,
   W 400 / C 40 gives -160..240, not -160..239.
@@ -60,11 +61,9 @@ OHIF code that already passes the function:
   or `'SIGMOID'`), or `undefined` when the viewport does not report it.
   `undefined` converts as LINEAR.
 - `voiLUTSequenceApplied`: `true` when a VOI LUT Sequence maps the display.
+  A native viewport reports the value when the display set changes. A legacy
+  viewport reports the value only in the `VOI_MODIFIED` event.
 
 The `voi` property that the overlay items get also has the two values. A custom
 overlay item that inherits from `ohif.overlayItem.windowLevel` keeps its
 customization contract.
-
-The native ("next") viewports report the function only when the application
-sets it. Until Cornerstone3D reports the file value on these viewports, the
-readout there uses LINEAR.

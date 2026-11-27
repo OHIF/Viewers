@@ -1,4 +1,4 @@
-import { utilities, Types } from '@cornerstonejs/core';
+import { utilities, Enums, Types } from '@cornerstonejs/core';
 import { getViewportAdapter } from '../services/ViewportService/adapter';
 
 type VOIRange = { lower: number; upper: number };
@@ -10,10 +10,7 @@ type VOIRange = { lower: number; upper: number };
  * so that a range -> window -> range round trip is exact for LINEAR_EXACT.
  */
 export function getVOILUTFunction(viewport: Types.IViewport, dataId?: string): string | undefined {
-  const fromPresentation = getViewportAdapter(viewport).getPresentation(dataId)?.VOILUTFunction;
-  return (fromPresentation ??
-    (viewport as unknown as { getProperties?: () => { VOILUTFunction?: string } }).getProperties?.()
-      ?.VOILUTFunction) as string | undefined;
+  return getViewportAdapter(viewport).getVOILUTState(dataId).VOILUTFunction;
 }
 
 /** The W/L readout of a VOI range, or null values when there is no range. */
@@ -38,10 +35,9 @@ export function getVOILUTLabel(
     return 'VOI LUT';
   }
   switch (VOILUTFunction) {
-    case 'LINEAR_EXACT':
+    case Enums.VOILUTFunctionType.LINEAR_EXACT:
       return 'Exact';
-    case 'SIGMOID':
-    case 'SAMPLED_SIGMOID':
+    case Enums.VOILUTFunctionType.SAMPLED_SIGMOID:
       return 'Sigmoid';
     default:
       return undefined;

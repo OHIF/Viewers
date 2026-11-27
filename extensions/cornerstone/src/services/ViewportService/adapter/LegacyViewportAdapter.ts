@@ -123,6 +123,12 @@ export class LegacyViewportAdapter implements IViewportAdapter {
     return undefined;
   }
 
+  getVOILUTState(dataId?: string): { VOILUTFunction?: string } {
+    const VOILUTFunction =
+      this.getPresentation(dataId).VOILUTFunction ?? this.viewport.getProperties?.()?.VOILUTFunction;
+    return { VOILUTFunction: VOILUTFunction as string | undefined };
+  }
+
   getColormap(displaySetInstanceUID: string): ViewportColormap | undefined {
     if (isStackViewportType(this.viewport)) {
       return this.viewport.getProperties?.()?.colormap;

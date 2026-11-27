@@ -295,6 +295,18 @@ describe('per-display-set appearance', () => {
     ).toEqual({ lower: 1, upper: 2 });
   });
 
+  it('getVOILUTState: legacy reads getProperties; native reads the source binding state', () => {
+    const legacy = makeLegacyStackViewport({
+      getProperties: jest.fn().mockReturnValue({ VOILUTFunction: 'LINEAR_EXACT' }),
+    });
+    expect(getViewportAdapter(legacy).getVOILUTState()).toEqual({ VOILUTFunction: 'LINEAR_EXACT' });
+
+    const state = { VOILUTFunction: 'LINEAR_EXACT', voiLUTSequenceApplied: true };
+    const next = makeNextViewport({ getVOILUTState: jest.fn().mockReturnValue(state) });
+    expect(getViewportAdapter(next).getVOILUTState()).toEqual(state);
+    expect(next.getVOILUTState).toHaveBeenCalledWith('source-uid');
+  });
+
   it('getColormap: legacy stack properties / legacy volume actor lookup / native presentation', () => {
     const stack = makeLegacyStackViewport({
       getProperties: jest.fn().mockReturnValue({ colormap: { name: 'gray' } }),
