@@ -37,6 +37,7 @@ import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/u
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
+import { findWindowLevelPreset } from './utils/findWindowLevelPreset';
 import {
   isStackViewportType,
   isOrthographicViewportType,
@@ -1167,9 +1168,16 @@ function commandsModule({
         return;
       }
 
-      const windowLevelPreset =
-        windowLevelPresetForModality[presetName] ??
-        Object.values(windowLevelPresetForModality)[presetIndex];
+      const windowLevelPreset = findWindowLevelPreset(
+        windowLevelPresetForModality,
+        presetName,
+        presetIndex
+      );
+
+      // A customization can have fewer presets than there are W/L hotkeys.
+      if (!windowLevelPreset) {
+        return;
+      }
 
       actions.setViewportWindowLevel({
         viewportId: activeViewport,
