@@ -30,6 +30,12 @@ Implemented across:
   - `imageLoader/wadors/loadImageFromRegistry.ts` +
     `wadors/loadImage.ts` — WADO-RS loads now consult the registry first.
 - `@ohif/extension-default` `DicomWebDataSource` — `retrieve.prefetchInstanceFrames`.
+  `DicomWebProxyDataSource` forwards it to its delegate, and `MergeDataSource`
+  forwards it to the data source of the series (its `RetrieveAETitle`); a data
+  source that does not expose it loads every frame separately, with no warning.
+  `prefetchInstanceFrames` also returns the no-op result when the DICOMweb
+  configuration has `loadMultiframeAsPart10: false`, so the opt-out also works
+  through a wrapper.
 - `@ohif/extension-cornerstone-dicom-seg` `getSopClassHandlerModule.ts` — call
   site (resolves the config and awaits the prefetch).
 

@@ -56,6 +56,10 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
       series: {
         metadata: async (...args) => dicomWebDelegate.retrieve.series.metadata(...args),
       },
+      prefetchInstanceFrames: (...args) =>
+        dicomWebDelegate?.retrieve?.prefetchInstanceFrames?.(...args),
+      bulkDataURI: (...args) => dicomWebDelegate.retrieve.bulkDataURI(...args),
+      getWadoDicomWebClient: () => dicomWebDelegate?.retrieve?.getWadoDicomWebClient?.(),
     },
     store: {
       dicom: (...args) => dicomWebDelegate.store.dicom(...args),

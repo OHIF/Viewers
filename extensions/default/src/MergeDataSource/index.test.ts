@@ -1,10 +1,11 @@
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import {
   mergeMap,
   callForAllDataSourcesAsync,
   callForAllDataSources,
   callForDefaultDataSource,
   callByRetrieveAETitle,
+  createMergeDataSourceApi,
 } from './index';
 
 jest.mock('@ohif/core');
@@ -207,6 +208,52 @@ describe('MergeDataSource', () => {
       expect(extensionManager.getDataSources).toHaveBeenCalledTimes(1);
       expect(extensionManager.getDataSources).toHaveBeenCalledWith('dataSource2');
       expect(data).toEqual(['234']);
+    });
+  });
+
+  describe('createMergeDataSourceApi', () => {
+    afterEach(() => {
+      (IWebApiDataSource.create as jest.Mock).mockReset();
+      (DicomMetadataStore.getSeries as jest.Mock).mockReset();
+    });
+
+    it('sends instance calls to the data source that holds the series', () => {
+      (IWebApiDataSource.create as jest.Mock).mockImplementation(impl => impl);
+      (DicomMetadataStore.getSeries as jest.Mock).mockImplementation((_study, series) =>
+        series === '234' ? { RetrieveAETitle: 'dataSource2' } : undefined
+      );
+      const sources = {
+        dataSource1: { getImageIdsForInstance: jest.fn(), retrieve: {} },
+        dataSource2: {
+          getImageIdsForInstance: jest.fn(() => 'wadors:frame'),
+          retrieve: {
+            prefetchInstanceFrames: jest.fn(() => 'prefetch'),
+            bulkDataURI: jest.fn(() => 'bulk'),
+          },
+        },
+      };
+      const api = createMergeDataSourceApi(
+        {
+          seriesMerge: {
+            dataSourceNames: Object.keys(sources),
+            defaultDataSourceName: 'dataSource1',
+          },
+        } as never,
+        {} as never,
+        { getDataSources: (name: string) => [sources[name]] }
+      );
+      const instance = { StudyInstanceUID: '1', SeriesInstanceUID: '234' };
+
+      expect(api.getImageIdsForInstance({ instance })).toBe('wadors:frame');
+      expect(api.retrieve.prefetchInstanceFrames({ instance, imageId: 'x' })).toBe('prefetch');
+      expect(api.retrieve.bulkDataURI({ ...instance, BulkDataURI: 'b' })).toBe('bulk');
+      expect(sources.dataSource1.getImageIdsForInstance).not.toHaveBeenCalled();
+      // The default data source has no prefetchInstanceFrames, so the caller falls back.
+      expect(
+        api.retrieve.prefetchInstanceFrames({ instance: { SeriesInstanceUID: 'other' } })
+      ).toBeUndefined();
+      // A default data source without a DICOMweb client (JSON, local) gives no client.
+      expect(api.retrieve.getWadoDicomWebClient()).toBeUndefined();
     });
   });
 });
