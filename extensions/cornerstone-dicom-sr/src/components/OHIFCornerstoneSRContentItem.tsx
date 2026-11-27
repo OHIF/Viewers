@@ -7,8 +7,7 @@ const EMPTY_TAG_VALUE = '[empty]';
 function OHIFCornerstoneSRContentItem(props) {
   const { contentItem, nodeIndexesTree, continuityOfContent } = props;
   const { ConceptNameCodeSequence } = contentItem;
-  // Concept Name is optional on some content items (e.g. IMAGE items with a
-  // CONTAINS relationship, as written by ultrasound devices), so it may be absent.
+  // Concept Name is type 1C, so some content items omit it (for example IMAGE items under CONTAINS).
   const { CodeValue, CodeMeaning } = ConceptNameCodeSequence ?? {};
   const isChildFirstNode = nodeIndexesTree[nodeIndexesTree.length - 1] === 0;
   const formattedValue = formatContentItemValue(contentItem) ?? EMPTY_TAG_VALUE;
@@ -54,7 +53,5 @@ function OHIFCornerstoneSRContentItem(props) {
     </>
   );
 }
-
-
 
 export { OHIFCornerstoneSRContentItem };
