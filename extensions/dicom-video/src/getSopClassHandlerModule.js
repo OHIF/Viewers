@@ -12,6 +12,7 @@ const SOP_CLASS_UIDS = {
   MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.7.4',
 };
 
+const sopClassUids = Object.values(SOP_CLASS_UIDS);
 const videoSopClassUids = [
   SOP_CLASS_UIDS.VIDEO_MICROSCOPIC_IMAGE_STORAGE,
   SOP_CLASS_UIDS.VIDEO_PHOTOGRAPHIC_IMAGE_STORAGE,
@@ -21,7 +22,6 @@ const secondaryCaptureSopClassUids = [
   SOP_CLASS_UIDS.SECONDARY_CAPTURE_IMAGE_STORAGE,
   SOP_CLASS_UIDS.MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE,
 ];
-const sopClassUids = [...videoSopClassUids, ...secondaryCaptureSopClassUids];
 
 const SupportedTransferSyntaxes = {
   MPEG4_AVC_264_HIGH_PROFILE: '1.2.840.10008.1.2.4.102',

