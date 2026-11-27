@@ -40,6 +40,12 @@ type WaitForRenderCycleToCompleteOptions = {
   settle?: boolean;
 };
 
+/** Timeouts for an action that re-creates the viewports: a layout change, a maximize or a restore. */
+const RECREATE_VIEWPORTS_WAIT: WaitForRenderCycleToCompleteOptions = {
+  needsRenderTimeout: 20000,
+  renderedTimeout: 60000,
+};
+
 /**
  * Waits for a full render cycle:
  * 1) any viewport requests render (`needsRender`)
@@ -224,4 +230,5 @@ export {
   waitForViewportRenderCycle,
   waitForRenderCycleForAction,
   waitForPaintToSettle,
+  RECREATE_VIEWPORTS_WAIT,
 };

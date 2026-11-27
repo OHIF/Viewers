@@ -16,6 +16,20 @@ export class MainToolbarPageObject {
       },
     };
   }
+
+  get windowLevel() {
+    const page = this.page;
+    const button = page.getByTestId('WindowLevel-btn');
+    return {
+      button,
+      async click() {
+        await button.click();
+        // data-active is stamped on the tool's span wrapper, not the button.
+        await page.waitForSelector('[data-cy="WindowLevel"][data-active="true"]');
+      },
+    };
+  }
+
   get layoutSelection() {
     const page = this.page;
     const self = this;

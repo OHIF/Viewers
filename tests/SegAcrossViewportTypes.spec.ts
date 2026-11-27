@@ -4,6 +4,7 @@ import {
   checkForGridScreenshot,
   checkForViewportScreenshot,
   expect,
+  RECREATE_VIEWPORTS_WAIT,
   screenShotPaths,
   test,
   visitStudyAndHydrate,
@@ -23,10 +24,7 @@ const NEW_LIVER_CSS_RGB = 'rgb(30, 144, 255)';
 const MAX_DIFF_PIXEL_RATIO = 0.002;
 
 async function switchLayout(page: Page, selectLayout: () => Promise<void>) {
-  await waitForRenderCycleForAction(page, selectLayout, {
-    needsRenderTimeout: 20000,
-    renderedTimeout: 60000,
-  });
+  await waitForRenderCycleForAction(page, selectLayout, RECREATE_VIEWPORTS_WAIT);
 }
 
 test.beforeEach(

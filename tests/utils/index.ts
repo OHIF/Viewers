@@ -48,6 +48,7 @@ import {
   waitForViewportRenderCycle,
   waitForRenderCycleForAction,
   waitForPaintToSettle,
+  RECREATE_VIEWPORTS_WAIT,
 } from './waitForViewportsRendered';
 import { waitForViewportNotBlank } from './waitForViewportNotBlank';
 
@@ -97,6 +98,7 @@ export {
   waitForViewportRenderCycle,
   waitForRenderCycleForAction,
   waitForPaintToSettle,
+  RECREATE_VIEWPORTS_WAIT,
   waitForViewportNotBlank,
   press,
   withKeyHeld,
