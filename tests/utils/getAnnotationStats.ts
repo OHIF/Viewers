@@ -7,6 +7,8 @@ type AnnotationStats = {
   FrameOfReferenceUID?: string;
   label?: string;
   text?: string;
+  /** The annotation's handle points in world coordinates. */
+  points?: number[][];
   cachedStats: Record<string, TargetStats>;
   targetIds: string[];
   firstTargetStats: TargetStats | undefined;
@@ -49,6 +51,7 @@ const getAnnotationStats = async (page, options: Options = {}): Promise<Annotati
               FrameOfReferenceUID: a.metadata?.FrameOfReferenceUID,
               label: a?.data?.label,
               text: a?.data?.text,
+              points: a?.data?.handles?.points,
               cachedStats,
               targetIds,
               firstTargetStats: targetIds.length ? cachedStats[targetIds[0]] : undefined,
