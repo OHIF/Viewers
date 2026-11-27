@@ -55,6 +55,7 @@ function Viewport3DCompassMenu({
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
   const [spin, setSpin] = useState(0);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const interactedOutsideRef = useRef(false);
 
   const changeSpin = (speed: number) => {
     commandsManager.runCommand('setViewport3DSpin', { viewportId, speed });
@@ -111,10 +112,17 @@ function Viewport3DCompassMenu({
         </div>
       </PopoverTrigger>
       <PopoverContent
-        // The trigger is a wrapper div that cannot take focus; return focus to its button.
+        onInteractOutside={() => {
+          interactedOutsideRef.current = true;
+        }}
+        // The trigger is a wrapper div that cannot take focus; return focus to its button,
+        // except after a click outside, where the focus stays where the user put it.
         onCloseAutoFocus={event => {
           event.preventDefault();
-          triggerRef.current?.querySelector('button')?.focus();
+          if (!interactedOutsideRef.current) {
+            triggerRef.current?.querySelector('button')?.focus();
+          }
+          interactedOutsideRef.current = false;
         }}
         className="w-auto flex-shrink-0 rounded-lg border-0 bg-neutral-800 p-1 shadow-none"
         align={align}
