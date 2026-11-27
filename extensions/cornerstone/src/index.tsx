@@ -347,4 +347,13 @@ export {
 
 // Export constants
 export { VOLUME_LOADER_SCHEME, DYNAMIC_VOLUME_LOADER_SCHEME } from './constants';
+export {
+  GPU_SETTINGS_PRESET_CUSTOMIZATION_ID,
+  GPU_SETTINGS_PRESET_STORAGE_KEY,
+  USER_SELECTABLE_GPU_SETTINGS_PRESETS,
+  isUserSelectableGpuSettingsPreset,
+  readUserGpuSettingsPreset,
+  writeUserGpuSettingsPreset,
+} from './utils/gpuSettingsPresetPreference';
+export type { UserSelectableGpuSettingsPreset } from './utils/gpuSettingsPresetPreference';
 export default cornerstoneExtension;

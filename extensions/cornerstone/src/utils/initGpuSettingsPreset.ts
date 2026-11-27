@@ -1,6 +1,8 @@
 import { setGpuSettingsPreset, resetGpuSettingsPreset, setLossyDownsampling } from '@cornerstonejs/core';
-
-const CUSTOMIZATION_ID = 'cornerstone.gpuSettingsPreset';
+import {
+  GPU_SETTINGS_PRESET_CUSTOMIZATION_ID,
+  readUserGpuSettingsPreset,
+} from './gpuSettingsPresetPreference';
 
 /**
  * Applies the `cornerstone.gpuSettingsPreset` customization, and applies it
@@ -10,6 +12,9 @@ const CUSTOMIZATION_ID = 'cornerstone.gpuSettingsPreset';
  *   config that keeps `lossyDownsampling.final` off, such as `config/default.js`.
  * - `null` returns to the Cornerstone3D default preset and to
  *   `appConfig.lossyDownsampling.final`.
+ * - When User Preferences has stored a preset in localStorage, that value
+ *   overrides bootstrap / URL / config customizations so the choice sticks
+ *   after reload (for example over `medium` in `config/dev.js`).
  *
  * A volume viewport reads the preset when it adds its actor, so call this
  * before a mode opens a viewport. The `bootstrap` and `global` phases of a
@@ -22,7 +27,7 @@ export default function initGpuSettingsPreset({ customizationService, appConfig 
   let appliedId = null;
 
   const apply = () => {
-    const presetId = customizationService.getValue(CUSTOMIZATION_ID) ?? null;
+    const presetId = customizationService.getValue(GPU_SETTINGS_PRESET_CUSTOMIZATION_ID) ?? null;
 
     if (presetId === appliedId) {
       return;
@@ -40,9 +45,20 @@ export default function initGpuSettingsPreset({ customizationService, appConfig 
       setLossyDownsampling({ final: true });
       appliedId = presetId;
     } catch (error) {
-      console.warn(`${CUSTOMIZATION_ID} states "${presetId}", which is not a preset.`, error);
+      console.warn(
+        `${GPU_SETTINGS_PRESET_CUSTOMIZATION_ID} states "${presetId}", which is not a preset.`,
+        error
+      );
     }
   };
+
+  const storedPreset = readUserGpuSettingsPreset();
+  if (storedPreset) {
+    customizationService.setCustomizations(
+      { [GPU_SETTINGS_PRESET_CUSTOMIZATION_ID]: storedPreset },
+      customizationService.Scope.Global
+    );
+  }
 
   apply();
 

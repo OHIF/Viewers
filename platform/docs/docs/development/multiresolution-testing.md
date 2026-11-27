@@ -189,6 +189,12 @@ parameter, and the app stops at startup. To try a preset with `config/default.js
 `cornerstone.gpuSettingsPreset` through `customizationService` in a copy of the config. You
 can also use a config that sets `customizationUrlPrefixes`.
 
+Users can also change the preset from **User Preferences → GPU settings**. That choice is
+stored in the browser (`user-preferred-gpu-settings-preset`) and, when present, overrides
+bootstrap / config / `?customization=gpu/...` values so the preference sticks after reload.
+Choosing **Default** clears the stored preference so the deployer or URL value applies
+again.
+
 **`gpu/high-texture-4096` states an edge of 4096, and no device is tested to render an edge
 above 2048.** Some devices report a `MAX_3D_TEXTURE_SIZE` of 4096 or more, but a reported
 size is not a reliable limit. A real device can therefore fail to allocate the texture. The preset is the
