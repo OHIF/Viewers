@@ -33,7 +33,13 @@ createLabelmapForDisplaySet(
     label: string,
     segments?: {
       [segmentIndex: number]: Partial<Segment>
-    }
+    },
+    // 4D display sets only. 'all' (default): one labelmap for all time points.
+    // 'each': a separate labelmap for each time point.
+    timePointScope?: 'all' | 'each',
+    // 4D display sets with 'all' only: the time point of the labelmap images.
+    // The default is the middle time point.
+    timePointIndex?: number,
   }
 )
 
