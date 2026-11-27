@@ -1037,8 +1037,14 @@ class CornerstoneViewportService
     const viewportType = viewportInfo.getViewportType();
 
     let numberOfSlices;
-    if (viewportType === csEnums.ViewportType.STACK) {
+    // A native stack is PLANAR_NEXT, so the imageIds identify a stack mount.
+    if (viewportType === csEnums.ViewportType.STACK || imageIds) {
       numberOfSlices = imageIds.length;
+    } else if (viewportType === csEnums.ViewportType.PLANAR_NEXT) {
+      // Native volume: the slice count is in view order, as jumpToSlice expects.
+      numberOfSlices = this.getCornerstoneViewport(
+        viewportInfo.getViewportId()
+      ).getNumberOfSlices();
     } else if (viewportType === csEnums.ViewportType.ORTHOGRAPHIC) {
       const viewport = this.getCornerstoneViewport(viewportInfo.getViewportId());
       const imageSliceData = csUtils.getImageSliceDataForVolumeViewport(viewport);
@@ -1235,6 +1241,9 @@ class CornerstoneViewportService
       presentations,
     });
     if (handledByBackend) {
+      if (!presentations.positionPresentation) {
+        this._jumpToInitialImage(viewport, viewportInfo);
+      }
       this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, { viewportInfo });
       return;
     }
@@ -1325,18 +1334,23 @@ class CornerstoneViewportService
     viewport.render();
 
     if (!presentations.positionPresentation && !skippedIdenticalBaseVolumes) {
-      const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
-
-      if (imageIndex !== undefined) {
-        csUtils.jumpToSlice(viewport.element, {
-          imageIndex,
-        });
-      }
+      this._jumpToInitialImage(viewport, viewportInfo);
     }
 
     this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
       viewportInfo,
     });
+  }
+
+  /** Jumps a volume viewport to the hanging protocol `initialImageOptions`, in view order. */
+  private _jumpToInitialImage(viewport: Types.IViewport, viewportInfo: ViewportInfo): void {
+    const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
+
+    if (imageIndex !== undefined) {
+      csUtils.jumpToSlice(viewport.element, {
+        imageIndex,
+      });
+    }
   }
 
   private _processExtraDisplaySetsForViewport(
