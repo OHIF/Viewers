@@ -72,7 +72,7 @@ const determineActiveViewportId = (
   if (!currentActiveViewport) {
     // if there is no active viewport, we should just return the first viewport
     const firstViewport = newViewports.values().next().value;
-    return firstViewport.viewportOptions.viewportId;
+    return firstViewport?.viewportOptions?.viewportId ?? firstViewport?.viewportId ?? null;
   }
 
   // for the new viewports, we should rank them by the displaySetInstanceUIDs
@@ -113,7 +113,8 @@ const determineActiveViewportId = (
   });
 
   if (!sortedViewports?.length) {
-    return null;
+    const firstViewport = newViewports.values().next().value;
+    return firstViewport?.viewportOptions?.viewportId ?? firstViewport?.viewportId ?? null;
   }
 
   return sortedViewports[0].viewportId;
