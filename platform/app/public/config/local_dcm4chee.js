@@ -19,6 +19,7 @@ window.config = {
         name: 'DCM4CHEE',
         wadoUriRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
+        studySearchOrderBy: '-StudyDate,-StudyTime',
         wadoRoot: 'http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs',
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,
