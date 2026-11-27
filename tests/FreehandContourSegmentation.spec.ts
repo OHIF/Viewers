@@ -65,7 +65,6 @@ test('should keep a freehand contour drawn on a slice after navigating away and 
 
   //Force navigate to first slice
   await activeViewport.sliceNavigation.toFirstSlice();
-  await waitForViewportsRendered(page);
 
   const sliceIndicator = activeViewport.overlayText.bottomRight.instanceNumber;
   const drawingSliceInfo = await sliceIndicator.innerText();
@@ -86,13 +85,11 @@ test('should keep a freehand contour drawn on a slice after navigating away and 
 
   //Navigate to last slice
   await activeViewport.sliceNavigation.toLastSlice();
-  await waitForViewportsRendered(page);
   await expect(sliceIndicator, 'Expected to leave drawing slice').not.toHaveText(drawingSliceInfo);
   await expect(paths, 'Expected no contour on the other slice').toHaveCount(0);
 
   // Come back to first slice
   await activeViewport.sliceNavigation.toFirstSlice();
-  await waitForViewportsRendered(page);
   await expect(sliceIndicator, 'Expected to return to drawing slice').toHaveText(drawingSliceInfo);
   await expect(paths, 'Expected the contour to re-render on the drawing slice').toHaveCount(1);
   await expect(paths.nth(0), 'Expected the persisted contour to be visible').toBeVisible();

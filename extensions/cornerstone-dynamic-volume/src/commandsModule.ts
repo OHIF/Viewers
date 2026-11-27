@@ -32,12 +32,10 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       return dynamic4DDisplaySet;
     },
     getComputedDisplaySets: () => {
-      const displaySetCache = displaySetService.getDisplaySetCache();
-      const cachedDisplaySets = [...displaySetCache.values()];
-      const computedDisplaySets = cachedDisplaySets.filter(displaySet => {
-        return displaySet.isDerived;
-      });
-      return computedDisplaySets;
+      // The computed display set is in the store, not in the active list.
+      return [...displaySetService.getDisplaySetCache().values()].filter(
+        displaySet => displaySet.isDerived
+      );
     },
     exportTimeReportCSV: ({ segmentations, summaryStats }) => {
       const dynamic4DDisplaySet = actions.getDynamic4DDisplaySet();
@@ -210,12 +208,10 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
     swapDynamicWithComputedDisplaySet: ({ displaySet }) => {
       const computedDisplaySet = displaySet;
 
-      const displaySetCache = displaySetService.getDisplaySetCache();
-      const cachedDisplaySetKeys = [displaySetCache.keys()];
       const { displaySetInstanceUID } = computedDisplaySet;
-      // Check to see if computed display set is already in cache
-      if (!cachedDisplaySetKeys.includes(displaySetInstanceUID)) {
-        displaySetCache.set(displaySetInstanceUID, computedDisplaySet);
+      // Store only, as on master: the computed volume is not a new series.
+      if (!displaySetService.getDisplaySetByUID(displaySetInstanceUID)) {
+        displaySetService._addDisplaySetsToCache([computedDisplaySet]);
       }
 
       // Get all viewports and their corresponding indices
@@ -263,13 +259,9 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       // Todo: this assumes there is only one dynamic display set in the viewer
       const dynamicDisplaySet = actions.getDynamic4DDisplaySet();
 
-      const displaySetCache = displaySetService.getDisplaySetCache();
-      const cachedDisplaySetKeys = [...displaySetCache.keys()]; // Fix: Spread to get the array
       const { displaySetInstanceUID } = dynamicDisplaySet;
-
-      // Check to see if dynamic display set is already in cache
-      if (!cachedDisplaySetKeys.includes(displaySetInstanceUID)) {
-        displaySetCache.set(displaySetInstanceUID, dynamicDisplaySet);
+      if (!displaySetService.getDisplaySetByUID(displaySetInstanceUID)) {
+        displaySetService._addDisplaySetsToCache([dynamicDisplaySet]);
       }
 
       // Get all viewports and their corresponding indices

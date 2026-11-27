@@ -1,4 +1,4 @@
-import React, { type ReactNode, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataTable, useDataTable } from '../../DataTable';
 import type { DataTableProps } from '../../DataTable/DataTable';
@@ -110,13 +110,11 @@ function TableContent({
 }) {
   const { t } = useTranslation('StudyList');
   const { table } = useDataTable<StudyRow>();
-  const modalityOptions = useMemo(() => {
-    const rows = (table.options?.data as StudyRow[]) ?? [];
-    // Build a flat list of modality tokens across all rows.
-    // tokenizeModalities uppercases and splits on whitespace/slash/comma to produce unique modality codes for filtering.
-    const tokens = rows.flatMap(r => tokenizeModalities(String(r.modalities ?? '')));
-    return Array.from(new Set(tokens)).sort();
-  }, [table.options?.data]);
+  const rows = (table.options?.data as StudyRow[]) ?? [];
+  // Build a flat list of modality tokens across all rows.
+  // tokenizeModalities uppercases and splits on whitespace/slash/comma to produce unique modality codes for filtering.
+  const tokens = rows.flatMap(r => tokenizeModalities(String(r.modalities ?? '')));
+  const modalityOptions = Array.from(new Set(tokens)).sort();
   // Access workflow provider for default workflow + launch
   const { getDefaultWorkflowForStudy, getWorkflowsForStudy } = useWorkflows();
 
@@ -157,9 +155,7 @@ function TableContent({
             }
             if (columnId === COLUMN_IDS.STUDY_DATE_TIME) {
               const dateRange =
-                value && typeof value === 'object'
-                  ? (value as StudyDateRangeFilter)
-                  : {};
+                value && typeof value === 'object' ? (value as StudyDateRangeFilter) : {};
               const startDate = dateRange.startDate ?? '';
               const endDate = dateRange.endDate ?? '';
 
@@ -215,8 +211,7 @@ function TableContent({
             onClick: row => {
               const original = row.original as StudyRow;
               const canDoubleClickLaunch =
-                Boolean(onStudyDoubleClick) ||
-                getWorkflowsForStudy(original).length > 0;
+                Boolean(onStudyDoubleClick) || getWorkflowsForStudy(original).length > 0;
               // When a double click can launch, the second click must not read
               // as an unselect — clicking only ever selects. Otherwise toggle.
               if (canDoubleClickLaunch) {

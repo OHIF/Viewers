@@ -1,0 +1,31 @@
+// Example URL-loaded customization: legacyWorkList
+//
+// Mounts the pre-3.13 study list (`LegacyWorkList`) at `/` in place of the
+// ui-next `WorkList`. The route reads `workList.variant` one time, when
+// `createRoutes` builds the route table, so this file applies in the `global`
+// phase. The `global` phase runs before the application renders, and therefore
+// before `createRoutes` reads the value.
+//
+// Load it with `?customization=worklist/legacyWorkList`, or add
+// `worklist/legacyWorkList` to `appConfig.customizationService.requires`.
+//
+// The `?customization=` parameter is off unless the app config sets
+// `customizationUrlPrefixes`. The configs `dev.js`, `e2e.js`, `netlify.js` and
+// `customization.js` set that property. The default config does not set that
+// property.
+//
+// DEPRECATED: `LegacyWorkList` and the value `'legacy'` are deprecated. A future
+// release removes the component and the `workList.variant` customization id.
+// Use this file only to compare the two study lists, or as a short-term opt-out.
+//
+// The legacy list does not carry the 3.14 study-list features. The legacy list
+// also expects the server-paged `DataSourceWrapper` of 3.13. The 3.14
+// `DataSourceWrapper` does one query and pages on the client, so the page
+// controls and the sort control of the legacy list can behave incorrectly on a
+// large result set.
+{
+  "global": {
+    // `$set` replaces the default value `'default'`.
+    "workList.variant": { "$set": "legacy" }
+  }
+}

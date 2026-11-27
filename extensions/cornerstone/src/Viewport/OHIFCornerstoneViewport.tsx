@@ -1,7 +1,13 @@
+// React Compiler opt-out: this file reads and mutates external cornerstone3D
+// state (the enabled element, the camera, GL actors) during render and from
+// imperative event handlers. The compiler's memoization assumes referential
+// purity, so compiling it silently drops updates.
+'use no memo';
+
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
-import { MeasurementService, useViewportRef } from '@ohif/core';
+import { MeasurementService, useViewportElementRegistration } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
@@ -49,14 +55,6 @@ const OHIFCornerstoneViewport = React.memo(
       // to set the initial state of the viewport's first image to render
       // eslint-disable-next-line react/prop-types
       initialImageIndex,
-      // if the viewport is part of a hanging protocol layout
-      // we should not really rely on the old synchronizers and
-      // you see below we only rehydrate the synchronizers if the viewport
-      // is not part of the hanging protocol layout. HPs should
-      // define their own synchronizers. Since the synchronizers are
-      // viewportId dependent and
-      // eslint-disable-next-line react/prop-types
-      isHangingProtocolLayout,
     } = props;
     const viewportId = viewportOptions.viewportId;
 
@@ -80,14 +78,16 @@ const OHIFCornerstoneViewport = React.memo(
 
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
-    const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
-    const viewportRef = useViewportRef(viewportId);
+    const elementRef = useRef(undefined) as React.MutableRefObject<HTMLDivElement>;
+    const { register: registerViewportElement, unregister: unregisterViewportElement } =
+      useViewportElementRegistration(viewportId);
 
     const {
       displaySetService,
       toolbarService,
       toolGroupService,
       syncGroupService,
+      viewportGridService,
       cornerstoneViewportService,
       segmentationService,
       cornerstoneCacheService,
@@ -182,7 +182,10 @@ const OHIFCornerstoneViewport = React.memo(
 
         // we don't need reactivity here so just use state
         const { synchronizersStore } = useSynchronizersStore.getState();
-        if (synchronizersStore?.[viewportId]?.length && !isHangingProtocolLayout) {
+        // Read live, since this handler is registered once on mount and the prop goes stale
+        const { isHangingProtocolLayout: isHPLayout } = viewportGridService.getState();
+        // HPs define their own synchronizers, so only rehydrate the old ones outside of them
+        if (synchronizersStore?.[viewportId]?.length && !isHPLayout) {
           // If the viewport used to have a synchronizer, re apply it again
           _rehydrateSynchronizers(viewportId, syncGroupService);
         }
@@ -220,7 +223,7 @@ const OHIFCornerstoneViewport = React.memo(
         }
 
         cornerstoneViewportService.disableElement(viewportId);
-        viewportRef.unregister();
+        unregisterViewportElement();
 
         eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
       };
@@ -280,7 +283,15 @@ const OHIFCornerstoneViewport = React.memo(
           initialImageIndex
         );
 
-        const presentations = getViewportPresentations(viewportId, viewportOptions);
+        // displaySets is this viewport's new state; the segmentation
+        // presentation needs it to decide which hydrated segmentations are
+        // overlayable on this viewport's background.
+        const presentations = getViewportPresentations(
+          viewportId,
+          viewportOptions,
+          displaySets,
+          displaySetService
+        );
 
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
         // Used for segmentation hydration right now, since the logic to decide whether
@@ -318,7 +329,7 @@ const OHIFCornerstoneViewport = React.memo(
             ref={el => {
               elementRef.current = el;
               if (el) {
-                viewportRef.register(el);
+                registerViewportElement(el);
               }
             }}
           ></div>
