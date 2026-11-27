@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 import { CodeNameCodeSequenceValues } from '../enums';
 import formatContentItemValue from '../utils/formatContentItem';
 
@@ -10,7 +11,9 @@ function OHIFCornerstoneSRContentItem(props) {
   // Concept Name is type 1C, so some content items omit it (for example IMAGE items under CONTAINS).
   const { CodeValue, CodeMeaning } = ConceptNameCodeSequence ?? {};
   const isChildFirstNode = nodeIndexesTree[nodeIndexesTree.length - 1] === 0;
-  const formattedValue = formatContentItemValue(contentItem) ?? EMPTY_TAG_VALUE;
+  const { servicesManager } = useSystem();
+  const { displaySetService } = servicesManager.services;
+  const formattedValue = formatContentItemValue(contentItem, displaySetService) ?? EMPTY_TAG_VALUE;
   const startWithAlphaNumCharRegEx = /^[a-zA-Z0-9]/;
   const isContinuous = continuityOfContent === 'CONTINUOUS';
   const isFinding = CodeValue === CodeNameCodeSequenceValues.Finding;

@@ -2,10 +2,10 @@ import { utils } from '@ohif/core';
 
 /**
  * Formatters used to format each of the content items (SR "nodes") which can be
- * text, code, UID ref, number, person name, date, time and date time. Each
- * formatter must be a function with the following signature:
+ * text, code, UID ref, number, person name, date, time, date time and image
+ * reference. Each formatter must be a function with the following signature:
  *
- *    [VALUE_TYPE]: (contentItem) => string
+ *    [VALUE_TYPE]: (contentItem, displaySetService?) => string
  *
  */
 const contentItemFormatters = {
@@ -55,13 +55,29 @@ const contentItemFormatters = {
 
     return `${formattedDate} ${formattedTime}`;
   },
+  // Names the referenced image by its series and instance number, as found among the
+  // loaded display sets.
+  IMAGE: (contentItem, displaySetService) => {
+    const sopInstanceUID = contentItem.ReferencedSOPSequence?.[0]?.ReferencedSOPInstanceUID;
+
+    for (const displaySet of displaySetService?.getActiveDisplaySets() ?? []) {
+      const instance = displaySet.instances?.find(i => i.SOPInstanceUID === sopInstanceUID);
+
+      if (instance) {
+        const frames = instance.NumberOfFrames > 1 ? `, ${instance.NumberOfFrames} frames` : '';
+        return `Series ${instance.SeriesNumber}, image ${instance.InstanceNumber}${frames}`;
+      }
+    }
+
+    return '[referenced image not loaded]';
+  },
 };
 
-function formatContentItemValue(contentItem) {
+function formatContentItemValue(contentItem, displaySetService?) {
   const { ValueType } = contentItem;
   const fnFormat = contentItemFormatters[ValueType];
 
-  return fnFormat ? fnFormat(contentItem) : `[${ValueType} is not supported]`;
+  return fnFormat ? fnFormat(contentItem, displaySetService) : `[${ValueType} is not supported]`;
 }
 
 export { formatContentItemValue as default, formatContentItemValue };
