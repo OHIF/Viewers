@@ -53,7 +53,14 @@
  * "clickable widget" in several places (measurement rows, study items, the cine
  * player, …), and keying off it would suppress hotkeys on those clicked widgets.
  */
-const NATIVE_KEYS_SELECTOR = '[role="dialog"], .ohif-text-select';
+/**
+ * `[role="listbox"]` and `[role="menu"]` cover select and dropdown-menu content. Radix portals that content
+ * to `<body>`, outside the dialog that opened it, so a `[role="dialog"]` ancestor test alone misses it:
+ * typing a letter to jump within a select list in a modal (e.g. the language list in User Preferences)
+ * also fired the single-key hotkey bound to that letter on the viewport behind the modal.
+ */
+const NATIVE_KEYS_SELECTOR =
+  '[role="dialog"], [role="listbox"], [role="menu"], .ohif-text-select';
 
 function isNativeKeysRegion(element) {
   return typeof element?.closest === 'function' && !!element.closest(NATIVE_KEYS_SELECTOR);
