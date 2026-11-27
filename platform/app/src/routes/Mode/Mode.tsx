@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
+import type { To, NavigateOptions } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
 import { useSearchParams } from '../../hooks';
@@ -9,10 +9,72 @@ import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import loadModules from '../../pluginImports';
+import {
+  recordRegistrationError,
+  surfaceRuntimeExtensionFailures,
+} from '../../runtimeExtensionLoader';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
+
+/**
+ * The properties that the mode route gives to the `validateModeEntry` hook of a
+ * mode, and to the default hook below.
+ *
+ * `navigate` does nothing after the user leaves the route.
+ */
+export type ValidateModeEntryProps = {
+  studyInstanceUIDs?: string[];
+  dataSource: any;
+  navigate: (to: To, options?: NavigateOptions) => void;
+  servicesManager: AppTypes.ServicesManager;
+  extensionManager: AppTypes.ExtensionManager;
+  commandsManager: AppTypes.CommandsManager;
+  appConfig: AppTypes.Config;
+  query: URLSearchParams;
+};
+
+/**
+ * The default `validateModeEntry` hook. It checks that every study in the URL
+ * exists in the data source, and it navigates to `/notfoundstudy` when a study
+ * is absent or when the query fails.
+ *
+ * This check moved here from PanelStudyBrowser.tsx so that the check runs in
+ * all modes. A mode that does not load its data by StudyInstanceUID replaces
+ * this check with its own `validateModeEntry` - see `ModeRoute` below.
+ *
+ * @param props.studyInstanceUIDs the studies that the URL asks for
+ * @param props.dataSource the active data source
+ * @param props.navigate navigates away, and does nothing after an unmount
+ */
+async function validateStudies({
+  studyInstanceUIDs,
+  dataSource,
+  navigate,
+}: ValidateModeEntryProps) {
+  if (!studyInstanceUIDs?.length || !dataSource) {
+    return;
+  }
+
+  for (const studyInstanceUID of studyInstanceUIDs) {
+    try {
+      const qidoForStudyUID = await dataSource.query.studies.search({
+        studyInstanceUid: studyInstanceUID,
+      });
+
+      if (!qidoForStudyUID?.length) {
+        console.warn('Study not found:', studyInstanceUID);
+        navigate('/notfoundstudy');
+        return;
+      }
+    } catch (error) {
+      console.error('Error validating study:', studyInstanceUID, error);
+      navigate('/notfoundstudy');
+      return;
+    }
+  }
+}
 
 export default function ModeRoute({
   mode,
@@ -89,25 +151,37 @@ export default function ModeRoute({
 
   useEffect(() => {
     const loadExtensions = async () => {
-      const loadedExtensions = await loadModules(Object.keys(extensions));
-      for (const extension of loadedExtensions) {
-        const { id: extensionId } = extension;
-        if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
-          await extensionManager.registerExtension(extension);
+      try {
+        const loadedExtensions = await loadModules(Object.keys(extensions));
+        for (const extension of loadedExtensions) {
+          if (!extension) {
+            continue; // runtime load failure — already audited by the loader
+          }
+          const { id: extensionId } = extension;
+          if (extensionManager.registeredExtensionIds.indexOf(extensionId) === -1) {
+            try {
+              await extensionManager.registerExtension(extension);
+            } catch (error) {
+              console.error(`OHIF: extension "${extensionId}" failed to register`, error);
+              recordRegistrationError(extensionId, error, 'extension');
+            }
+          }
         }
-      }
 
-      // Mode dependency extensions register their customization modules here,
-      // but `registerExtension` does not merge them into the customization
-      // service — that otherwise only happens later in
-      // `extensionManager.onModeEnter`. Merge them now so anything that runs
-      // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
-      // the defaults these extensions provide.
-      // `init` is idempotent — each extension module is merged at most once.
-      customizationService.init(extensionManager);
+        // Mode dependency extensions register their customization modules here,
+        // but `registerExtension` does not merge them into the customization
+        // service — that otherwise only happens later in
+        // `extensionManager.onModeEnter`. Merge them now so anything that runs
+        // before setupRouteInit (e.g. a mode's layoutTemplate) can already read
+        // the defaults these extensions provide.
+        // `init` is idempotent — each extension module is merged at most once.
+        customizationService.init(extensionManager);
 
-      if (isMounted.current) {
-        setExtensionDependenciesLoaded(true);
+        if (isMounted.current) {
+          setExtensionDependenciesLoaded(true);
+        }
+      } finally {
+        surfaceRuntimeExtensionFailures(servicesManager.services.uiNotificationService);
       }
     };
 
@@ -141,38 +215,6 @@ export default function ModeRoute({
       layoutTemplateData.current = null;
     };
   }, [location, ExtensionDependenciesLoaded]);
-
-  /**
-   * Validates study existence before loading the viewer.
-   * Moved from PanelStudyBrowser.tsx to ensure validation runs in all modes
-   */
-  useEffect(() => {
-    if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length || !dataSource) {
-      return;
-    }
-
-    const validateStudies = async () => {
-      for (const studyInstanceUID of studyInstanceUIDs) {
-        try {
-          const qidoForStudyUID = await dataSource.query.studies.search({
-            studyInstanceUid: studyInstanceUID,
-          });
-
-          if (!qidoForStudyUID?.length) {
-            console.warn('Study not found:', studyInstanceUID);
-            navigate('/notfoundstudy');
-            return;
-          }
-        } catch (error) {
-          console.error('Error validating study:', studyInstanceUID, error);
-          navigate('/notfoundstudy');
-          return;
-        }
-      }
-    };
-
-    validateStudies();
-  }, [studyInstanceUIDs, ExtensionDependenciesLoaded, dataSource, navigate]);
 
   useEffect(() => {
     if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
@@ -221,6 +263,61 @@ export default function ModeRoute({
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
       return;
     }
+
+    // The validation can complete after the user leaves the route, so a
+    // navigation can happen after an unmount. A navigation after an unmount
+    // removes the user from the route that the user already moved to.
+    const navigateIfMounted = (to: To, options?: NavigateOptions) => {
+      if (isMounted.current) {
+        navigate(to, options);
+      }
+    };
+
+    // Starts the validation, and does not wait for the validation.
+    //
+    // `setupRouteInit` calls this function after `route.init`, and before
+    // `defaultRouteInit`. Every hook that sets a custom authentication token
+    // runs before that point: `onModeInit`, the `onModeEnter` of the
+    // extensions, the `onModeEnter` of the mode, and `route.init`. The
+    // validation query then uses that token.
+    //
+    // The validation does not use the promise of `setupRouteInit`, and the
+    // validation runs at the same time as the retrieve of the metadata. Two
+    // results come from this:
+    //
+    //   - The validation does not add a delay to the retrieve. This keeps the
+    //     behaviour of OHIF 3.13, where the validation ran in its own effect.
+    //   - The validation still runs when `defaultRouteInit` rejects. An
+    //     invalid StudyInstanceUID gives an undefined `activeStudy`, and
+    //     `hangingProtocolService.run` throws for that undefined study. A
+    //     validation that waits for the promise of `setupRouteInit` never runs
+    //     in that case, and the viewer never shows the "not found" page.
+    //     See `tests/StudyValidation.spec.ts`.
+    const startModeEntryValidation = () => {
+      // `mode.validateModeEntry` replaces the default study check. The hook can
+      // be an async function, and the hook can navigate away on its own.
+      const validateModeEntry = mode?.validateModeEntry ?? validateStudies;
+
+      // `Promise.resolve` starts the chain, so a hook that throws before the
+      // hook returns its promise also gives a rejection, and no rejection
+      // stays unhandled.
+      Promise.resolve()
+        .then(() =>
+          validateModeEntry({
+            studyInstanceUIDs,
+            dataSource,
+            navigate: navigateIfMounted,
+            servicesManager,
+            extensionManager,
+            commandsManager,
+            appConfig,
+            query,
+          })
+        )
+        .catch(e => {
+          console.warn('mode entry validation failure', e);
+        });
+    };
 
     const setupRouteInit = async () => {
       // TODO: For some reason this is running before the Providers
@@ -298,14 +395,14 @@ export default function ModeRoute({
         : hangingProtocol;
 
       // Determine the index of the stageId if the hangingProtocolIdToUse is defined
-      const stageIndex = Array.isArray(hangingProtocolIdToUse)
-        ? -1
-        : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
-            stageId: runTimeStageId || undefined,
-          });
-      // Ensure that the stage index is never negative
-      // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
-      const stageIndexToUse = Math.max(0, stageIndex);
+      const stageIndex =
+        runTimeStageId && !Array.isArray(hangingProtocolIdToUse)
+          ? hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
+              stageId: runTimeStageId,
+            })
+          : -1;
+      // With no stage, or an unknown stage, the protocol opens its first applicable stage
+      const stageIndexToUse = stageIndex >= 0 ? stageIndex : undefined;
 
       // Sets the active hanging protocols - if hangingProtocol is undefined,
       // resets to default.  Done before the onModeEnter to allow the onModeEnter
@@ -364,6 +461,11 @@ export default function ModeRoute({
           stageIndexToUse
         );
       }
+
+      // Every hook that can set a custom authentication token has run, so the
+      // validation starts here. The validation runs at the same time as the
+      // retrieve below.
+      startModeEntryValidation();
 
       return defaultRouteInit(
         {
@@ -496,12 +598,3 @@ function createCombinedContextProvider(extensionManager, servicesManager, comman
     return Compose({ components: contextModuleProviders, children });
   };
 }
-
-ModeRoute.propTypes = {
-  mode: PropTypes.object.isRequired,
-  dataSourceName: PropTypes.string,
-  extensionManager: PropTypes.object,
-  servicesManager: PropTypes.object,
-  hotkeysManager: PropTypes.object,
-  commandsManager: PropTypes.object,
-};

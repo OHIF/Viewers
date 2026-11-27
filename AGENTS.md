@@ -10,16 +10,16 @@ This is **OHIF** v3  (Open Health Imaging Foundation) - a medical imaging viewer
 ### Main Development
 ```bash
 # Start development server for all packages
-yarn dev
+pnpm run dev
 ```
 
 ### Building
 ```bash
 # Build all packages for production
-yarn build
+pnpm run build
 
-# Build specific packages
-cd platform/app && yarn build    # Main viewer app
+# Build the main viewer app
+pnpm --filter @ohif/app run build:viewer
 ```
 
 ## Architecture Overview
@@ -34,7 +34,7 @@ cd platform/app && yarn build    # Main viewer app
 
 ### Key Extension Architecture
 
-**Extension System**: Each extension exports modules (viewports, tools, panels, commands) that the app dynamically loads. Extensions are self-contained with their own webpack builds.
+**Extension System**: Each extension exports modules (viewports, tools, panels, commands) that the app dynamically loads. Extensions are self-contained with their own rspack builds (`.rspack/rspack.prod.js` against the shared root `.rspack/rspack.base.js`).
 
 
 **Core Extensions:**
@@ -88,13 +88,13 @@ Aggregates and exposes extension modules throughout the OHIF application, manage
 
 ### Build System
 
-**Yarn Workspaces**: Optimized monorepo builds with dependency caching
-**Webpack 5**: Module federation for dynamic extension loading
-**Plugin Import System**: Extensions auto-register via `writePluginImportsFile.js`
+**pnpm Workspaces**: monorepo management (`pnpm-workspace.yaml`: `platform/*`, `extensions/*`, `modes/*`)
+**Rsbuild (rspack-based)**: a single app build pipeline — repo-root `rsbuild.config.ts` — serves both production (`pnpm run build`) and dev (`pnpm run dev:fast`), gated on `NODE_ENV`. Custom rspack plugins (e.g. the service-worker manifest injector) are registered through `tools.rspack`. Per-package UMD builds stay raw rspack (`.rspack/rspack.prod.js`). `webpack-merge` and `@svgr/webpack` are kept deliberately — both are rspack-compatible despite the names.
+**Plugin Import System**: there is NO module federation. Extensions and modes declared in `platform/app/pluginConfig.json` are statically compiled into the app bundle: `platform/app/.rspack/writePluginImportsFile.js` generates `pluginImports.js` at build time. Runtime (no-rebuild) extensions are prebuilt UMD bundles declared in `window.config.extensions[]` and loaded by the same generated loader — also not module federation.
 
 ### Key Technologies
 
-- **React 18 + TypeScript**: UI framework
+- **React 19 + React Compiler + TypeScript**: UI framework. The compiler is on for all workspace source; see the `ohif-react-compiler` skill before editing components or hooks.
 - **Cornerstone.js**: Medical image rendering
 - **DICOM**: Medical imaging standard support
 - **ONNX Runtime**: AI model inference (SAM segmentation models)
@@ -178,12 +178,26 @@ Do not modify the core and always find a way to implement the solution via the e
 
 ## Skills
 
-The `ohif-test-agent` skill (Playwright E2E test guidance) lives at `.agents/skills/ohif-test-agent/`.
+- `ohif-test-agent` — Playwright E2E test guidance. `.agents/skills/ohif-test-agent/`
+- `ohif-react-compiler` — rules and workflow for editing React code under the React Compiler: the CI gates, the budgets, what is banned, and how to read a refusal. `.agents/skills/ohif-react-compiler/`
 
 ## Configuration
 
 ### Plugin Configuration
-Extensions are auto-discovered via `pluginConfig.json` and dynamically imported during build.
+Extensions and modes are explicitly declared in `platform/app/pluginConfig.json` (validated against a JSON Schema at config load — no auto-discovery) and statically imported at build time via the generated `pluginImports.js`.
+
+### Extension Contract (v1 summary)
+
+The full contract, with its requirements and the gate for contract v2, is the runtime plugins spec in `platform/docs/docs/development/specs/runtime-plugins/`.
+
+- An extension/mode is an npm package whose **`id` equals its package name**; `src/index.tsx` default-exports `{ id, preRegistration?, get*Module…, onModeEnter?, onModeExit? }`.
+- Third-party packages build a **single UMD bundle**: `output.library = { name: pkg.name, type: 'umd' }` → runtime global `window['@scope/name']`, holding the whole module (the extension or mode as `default`, plus its named exports), as a compiled-in plugin's global does.
+- **Never bundle host-provided packages.** The canonical externals list is `.rspack/pluginExternals.js`: `react`, `react-dom`, `react/jsx-runtime`, `react-router`, `react-router-dom`, `i18next`, `react-i18next`, `@ohif/*`, `@cornerstonejs/*`, `dcmjs`, `gl-matrix`, `vtk.js`. The host exposes these as globals via `platform/app/src/runtimeShared.ts`, which `shareHostPackages()` in `runtimeExtensionLoader.ts` loads just before the first runtime plugin is fetched; any new code path that fetches and runs plugin code must `await shareHostPackages()` first.
+- **The shared list is part of the plugin contract.** Adding or removing a `hostSharedPackages` entry, or moving a shared third-party package to a new major version, breaks runtime plugins that are already built. In the same PR, add a migration-guide entry (`platform/docs/docs/migration-guide/`) and update the versions under "Shared host packages" in `platform/docs/docs/configuration/configurationFiles.md`. `platform/app/src/runtimeShared.test.js` checks the installed majors against `platform/create-ohif/host-shared-majors.json` and fails until both are done and that file is updated.
+- Working-tree `package.json` entries point at `src/*`; `publishConfig` rewrites them to `dist/*` in the tarball — **publish with `pnpm publish` only** (the npm CLI ignores the rewrites).
+- Keywords `ohif-extension` / `ohif-mode` are the discovery convention.
+- Scaffold in this checkout with `node platform/create-ohif/bin/create-ohif.mjs <name> --template extension|mode --in-tree` (not `pnpm create ohif`, which the repo's two-day `minimumReleaseAge` refuses right after a publish); outside a checkout, `pnpm create ohif`. Manage `platform/app/pluginConfig.json` by hand or with `pnpm run plugin add|remove|list|link|unlink|doctor`.
+- Register at build time via `pluginConfig.json`, or at runtime via a `window.config.extensions[]` descriptor (`{ packageName, importPath, globalName?, coreVersionRange?, integrity?, styles? }`).
 
 ## Medical Imaging Specifics
 

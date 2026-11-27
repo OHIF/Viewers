@@ -47,6 +47,13 @@ export interface LutPresentation {
  * currently in the viewport. It's false if the representation was in the viewport
  * but has been removed.
  *
+ * It mirrors `DisplaySet.isHydrated` for this presentation: true means show the
+ * segmentation in the standard viewports matching this presentation id, false
+ * means it was explicitly removed and must not be shown in them again. The
+ * viewport converges on this value, so false actively removes the
+ * representation rather than merely being the absence of an add - otherwise a
+ * stale true would silently restore a segmentation the user dismissed.
+ *
  * Config is the segmentation config, Todo: add stuff here
  */
 export type SegmentationPresentationItem = {

@@ -15,6 +15,34 @@ This recipe no longer ships working credential values. Before `docker compose up
   credential - it both provisions the `keycloak` database role and is what
   Keycloak uses to connect (the compose file derives `KC_DB_PASSWORD` from it),
   so there is one database password to set, not two.
+- Replace the `cookie_secret` placeholder in `config/oauth2-proxy.cfg` with a
+  random value of exactly 16, 24 or 32 characters (for example the output of
+  `openssl rand -hex 16`). oauth2-proxy signs and encrypts its session cookie
+  with this secret. The placeholder is a valid value, so oauth2-proxy starts
+  with it without a warning, but it is public: anyone could forge a session
+  cookie for a deployment that keeps it. If yours still does, replace it and
+  restart the viewer container (this signs everyone out).
+
+## Default users
+
+`config/ohif-keycloak-realm.json` creates two users in the `ohif` realm, with
+their usernames as passwords: `viewer` (password `viewer`), who can use the
+viewer, and `pacsadmin` (password `pacsadmin`), who can also open the PACS admin
+UI. Before the first `docker compose up`, change their passwords in that file
+(each user's `credentials` -> `value`), or remove the users you don't need from
+its `users` list. Until you do, anyone who can reach the server can sign in
+with them.
+
+Keycloak imports the realm file only while the realm does not exist yet. After
+the first start, edits to the file have no effect: change the passwords in the
+Keycloak admin console instead (realm `ohif` -> Users -> the user ->
+Credentials -> Reset password), or delete the users there.
+
+If the server was reachable while the default passwords were still set,
+someone may already be signed in with them, and a password reset does not end
+existing sessions. Also sign out those users' sessions (realm `ohif` -> Users
+-> the user -> Sessions), and replace the `cookie_secret` and restart the
+viewer container, which ends every existing oauth2-proxy sign-in.
 
 ## Rotate if you deployed from an earlier checkout
 

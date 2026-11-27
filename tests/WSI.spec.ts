@@ -1,4 +1,4 @@
-import { test, visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { test, visitStudy, checkForViewportScreenshot, screenShotPaths } from './utils';
 
 // A DICOM VL Whole Slide Microscopy (SM) study. Opened in `viewer` mode it is
 // routed to the cornerstone3D WHOLE_SLIDE viewport (mode-basic registers
@@ -15,9 +15,11 @@ test.beforeEach(async ({ page }) => {
 test('should render the WSI viewport', async ({ page, viewportPageObject }) => {
   // WSI tiles load progressively; checkForScreenshot's built-in retry loop
   // gives the viewport time to paint before comparing against the baseline.
-  await checkForScreenshot({
+  const activeViewport = await viewportPageObject.active;
+
+  await checkForViewportScreenshot({
     page,
-    locator: viewportPageObject.grid,
+    viewport: activeViewport,
     screenshotPath: screenShotPaths.wsi.wsiDisplayedCorrectly,
   });
 });

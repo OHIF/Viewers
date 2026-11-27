@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * A map of session storage items that should be cleared out of session storage
@@ -47,7 +47,7 @@ const useSessionStorage = ({
   const storageValue = valueFromStorage ? JSON.parse(valueFromStorage) : defaultValue;
   const [sessionItem, setSessionItem] = useState({ ...storageValue });
 
-  const updateSessionItem = useCallback(value => {
+  const updateSessionItem = value => {
     setSessionItem({ ...value });
 
     const valueAsStr = JSON.stringify(value);
@@ -59,7 +59,7 @@ const useSessionStorage = ({
     if (clearOnUnload) {
       sessionItemsToClearOnUnload.set(key, valueAsStr);
     }
-  }, []);
+  };
 
   useEffect(() => {
     updateSessionItem(sessionItem);
