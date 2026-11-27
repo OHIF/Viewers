@@ -51,6 +51,10 @@ import {
   useSelectedSegmentationsForViewportStore,
 } from './stores';
 import { toolNames } from './initCornerstoneTools';
+import getVolumeCroppingToolGroup, {
+  getVolumeCroppingState,
+  setDisjointSegmentationMode,
+} from './utils/getVolumeCroppingToolGroup';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
@@ -181,6 +185,10 @@ function commandsModule({
     const viewport = _getActiveViewportEnabledElement();
     const toolGroup = viewport && toolGroupService.getToolGroupForViewport(viewport.id);
     return toolGroup?.id;
+  }
+
+  function _getVolumeCroppingToolGroup(viewportId?: string) {
+    return getVolumeCroppingToolGroup(toolGroupService, viewportId);
   }
 
   function _usesPrimaryActivation(bindings) {
@@ -1215,6 +1223,96 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
+    /**
+     * Steps the crop tool through its three states: off -> Active -> Passive -> off, or sets
+     * `mode` directly. Active: VolumeCropping owns the primary button (drag a handle to crop,
+     * drag elsewhere to rotate). Passive: the crop box stays, and the previous primary tool
+     * comes back. VolumeCroppingControl shows the same box in the MPR viewports.
+     */
+    cycleVolumeCropping: ({ mode, viewportId }: { mode?: string; viewportId?: string } = {}) => {
+      const toolGroup = _getVolumeCroppingToolGroup(
+        viewportId ?? viewportGridService.getActiveViewportId()
+      );
+      if (!toolGroup) {
+        return;
+      }
+      const { Active, Passive, Disabled } = Enums.ToolModes;
+      const current = getVolumeCroppingState(toolGroup);
+      const next = mode ?? (current === Active ? Passive : current === Passive ? Disabled : Active);
+      if (next === current) {
+        // A second activation would record VolumeCropping as its own previous primary tool.
+        return;
+      }
+      const tool = toolGroup.getToolInstance(toolNames.VolumeCropping);
+
+      // The crop box is built in onSetToolActive, so Disabled -> Passive activates first.
+      if (next === Active || current === Disabled) {
+        actions.setToolActive({
+          toolName: toolNames.VolumeCropping,
+          toolGroupId: toolGroup.id,
+          bindings: [
+            { mouseButton: Enums.MouseBindings.Primary },
+            {
+              mouseButton: Enums.MouseBindings.Primary,
+              modifierKey: Enums.KeyboardBindings.Shift,
+            },
+          ],
+        });
+        // onSetToolActive hides the box, so show it after activation.
+        tool.setClippingPlanesVisible(true);
+      }
+      if (next !== Active && current !== Passive) {
+        actions.setToolActive({
+          toolName: toolGroup.getPrevActivePrimaryToolName(),
+          toolGroupId: toolGroup.id,
+        });
+        // The SHIFT binding would otherwise keep VolumeCropping in Active mode.
+        toolGroup.setToolPassive(toolNames.VolumeCropping, { removeAllBindings: true });
+      }
+      if (next === Disabled) {
+        tool.setClippingPlanesVisible(false);
+        toolGroup.setToolDisabled(toolNames.VolumeCropping);
+      }
+
+      toolGroupService.getToolGroupIds().forEach(toolGroupId => {
+        const controlGroup = toolGroupService.getToolGroup(toolGroupId);
+        if (!controlGroup?.hasTool(toolNames.VolumeCroppingControl)) {
+          return;
+        }
+        if (next === Disabled) {
+          controlGroup.setToolDisabled(toolNames.VolumeCroppingControl);
+        } else if (current === Disabled) {
+          // Enabled adds the listener that follows the 3D handles; Active adds the box.
+          // No binding: handles of an Active tool drag anyway, and a Primary binding would
+          // overwrite the MPR group's previous primary tool.
+          controlGroup.setToolEnabled(toolNames.VolumeCroppingControl);
+          controlGroup.setToolActive(toolNames.VolumeCroppingControl);
+        }
+      });
+    },
+    /** Shows or hides the drag handles of the crop box. */
+    toggle3Dhandles: ({ viewportId, visible }: { viewportId?: string; visible?: boolean } = {}) => {
+      const tool = _getVolumeCroppingToolGroup(viewportId)?.getToolInstance(
+        toolNames.VolumeCropping
+      );
+      tool?.setHandlesVisible(visible ?? !tool.getHandlesVisible());
+    },
+    /** Makes a plain drag rotate the crop planes, not the camera (SHIFT-drag always does). */
+    togglePlaneRotation: ({
+      viewportId,
+      enabled,
+    }: { viewportId?: string; enabled?: boolean } = {}) => {
+      const tool = _getVolumeCroppingToolGroup(viewportId)?.getToolInstance(
+        toolNames.VolumeCropping
+      );
+      tool?.setRotatePlanesOnDrag(enabled ?? !tool.getRotatePlanesOnDrag());
+    },
+    /** Shows the segmentation only outside the crop box (toggles when `enabled` is undefined). */
+    setVolumeCroppingDisjointMode: ({
+      viewportId,
+      enabled,
+    }: { viewportId?: string; enabled?: boolean } = {}) =>
+      setDisjointSegmentationMode(_getVolumeCroppingToolGroup(viewportId), enabled),
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
       toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
@@ -2810,6 +2908,18 @@ function commandsModule({
     },
     updateVolumeData: {
       commandFn: actions.updateVolumeData,
+    },
+    cycleVolumeCropping: {
+      commandFn: actions.cycleVolumeCropping,
+    },
+    toggle3Dhandles: {
+      commandFn: actions.toggle3Dhandles,
+    },
+    togglePlaneRotation: {
+      commandFn: actions.togglePlaneRotation,
+    },
+    setVolumeCroppingDisjointMode: {
+      commandFn: actions.setVolumeCroppingDisjointMode,
     },
     toggleEnabledDisabledToolbar: {
       commandFn: actions.toggleEnabledDisabledToolbar,
