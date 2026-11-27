@@ -107,4 +107,47 @@ describe('MetadataProvider', () => {
       });
     });
   });
+
+  describe('the Image Plane module of an instance with empty values', () => {
+    // A topogram or scout often sends SliceThickness, SliceLocation and
+    // SpacingBetweenSlices with no value. Cornerstone derives the z-spacing of a
+    // single-image volume with `if (sliceThickness) return sliceThickness`, so an
+    // empty array there blanked the viewport once the series became a volume.
+    const instance = {
+      SOPInstanceUID: 'sop-topogram',
+      Rows: 512,
+      Columns: 512,
+      PixelSpacing: [2, 2],
+      ImageOrientationPatient: [1, 0, 0, 0, 1, 0],
+      ImagePositionPatient: [0, 0, 0],
+      SliceThickness: [],
+      SliceLocation: [],
+      SpacingBetweenSlices: [],
+    };
+
+    it('reports the empty single-valued attributes as absent', () => {
+      const imagePlane = metadataProvider.getTagFromInstance('imagePlaneModule', instance);
+
+      expect(imagePlane.sliceThickness).toBeUndefined();
+      expect(imagePlane.sliceLocation).toBeUndefined();
+      expect(imagePlane.spacingBetweenSlices).toBeUndefined();
+    });
+
+    it('still reads the attributes that carry a value', () => {
+      const imagePlane = metadataProvider.getTagFromInstance('imagePlaneModule', {
+        ...instance,
+        SliceThickness: ['0.6'],
+        SliceLocation: '-12.5',
+        SpacingBetweenSlices: 0.6,
+      });
+
+      expect(imagePlane).toMatchObject({
+        rows: 512,
+        columns: 512,
+        sliceThickness: 0.6,
+        sliceLocation: -12.5,
+        spacingBetweenSlices: 0.6,
+      });
+    });
+  });
 });

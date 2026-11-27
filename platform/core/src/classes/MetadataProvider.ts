@@ -6,6 +6,7 @@ import { baseImageURIForMetadata } from '../utils/imageIdToURI';
 import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
+import toScalarNumber from '../utils/toScalarNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
@@ -602,19 +603,24 @@ const WADO_IMAGE_LOADER = {
       usingDefaultValues = true;
     }
 
+    // The single-valued attributes go through `toScalarNumber`, which reports a tag
+    // that was sent empty as absent instead of as `[]`. `[]` is truthy, so consumers
+    // guarding with `if (value)` took it for a measurement: an empty
+    // `SliceThickness` became the z-spacing of a single-image volume and blanked the
+    // viewport. The multi-valued ones below keep `toNumber`.
     return {
       frameOfReferenceUID: instance.FrameOfReferenceUID,
-      rows: toNumber(instance.Rows),
-      columns: toNumber(instance.Columns),
-      spacingBetweenSlices: toNumber(instance.SpacingBetweenSlices),
+      rows: toScalarNumber(instance.Rows),
+      columns: toScalarNumber(instance.Columns),
+      spacingBetweenSlices: toScalarNumber(instance.SpacingBetweenSlices),
       imageOrientationPatient,
       rowCosines,
       isDefaultValueSetForRowCosine,
       columnCosines,
       isDefaultValueSetForColumnCosine,
       imagePositionPatient,
-      sliceThickness: toNumber(instance.SliceThickness),
-      sliceLocation: toNumber(instance.SliceLocation),
+      sliceThickness: toScalarNumber(instance.SliceThickness),
+      sliceLocation: toScalarNumber(instance.SliceLocation),
       pixelSpacing: toNumber(PixelSpacing || 1),
       rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
       columnPixelSpacing: columnPixelSpacing ? toNumber(columnPixelSpacing) : null,
