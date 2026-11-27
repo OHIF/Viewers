@@ -291,6 +291,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
         exports: {
           toolNames,
           Enums: cs3DToolsEnums,
+          // Lets a mode leave out tools that do not support generic ("next") viewports.
+          isNextViewportsEnabled,
         },
       },
       {

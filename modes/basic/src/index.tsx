@@ -232,7 +232,7 @@ export function onModeEnter({ servicesManager, extensionManager, commandsManager
   );
 }
 
-export function onModeExit({ servicesManager }: withAppTypes) {
+export function onModeExit({ servicesManager, extensionManager }: withAppTypes) {
   const {
     toolGroupService,
     syncGroupService,
@@ -247,6 +247,15 @@ export function onModeExit({ servicesManager }: withAppTypes) {
 
   uiDialogService.hideAll();
   uiModalService.hide();
+  // CS3D destroys tool groups without disabling their tools; the controller's global
+  // viewport listeners would otherwise add a second controller on the next mode entry.
+  const { toolNames } =
+    extensionManager?.getModuleEntry('@ohif/extension-cornerstone.utilityModule.tools')?.exports ??
+    {};
+  const volume3d = toolGroupService.getToolGroup('volume3d');
+  if (toolNames && volume3d?.hasTool(toolNames.OrientationController)) {
+    volume3d.setToolDisabled(toolNames.OrientationController);
+  }
   toolGroupService.destroy();
   syncGroupService.destroy();
   segmentationService.destroy();

@@ -46,6 +46,12 @@ import {
 import { viewportOperations as ops } from './services/ViewportService/backends/viewportOperations';
 import { getViewportAdapter } from './services/ViewportService/adapter';
 import {
+  rotateVolume3D,
+  setVolume3DSpin,
+  setVolume3DViewDirection,
+  type ViewDirection,
+} from './utils/volume3dView';
+import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSelectedSegmentationsForViewportStore,
@@ -1214,6 +1220,29 @@ function commandsModule({
 
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
+    },
+    /** Looks at a volume3d viewport from an anatomical direction (S, I, R, L, A, P). */
+    setViewport3DViewDirection: ({
+      viewportId,
+      direction,
+    }: {
+      viewportId: string;
+      direction: ViewDirection;
+    }) => {
+      setVolume3DViewDirection(
+        cornerstoneViewportService.getCornerstoneViewport(viewportId),
+        direction
+      );
+    },
+    /** Orbits a volume3d viewport camera by `angle` degrees about the patient superior axis. */
+    rotateViewport3DBy: ({ viewportId, angle }: { viewportId: string; angle: number }) => {
+      rotateVolume3D(cornerstoneViewportService.getCornerstoneViewport(viewportId), angle);
+    },
+    /** Spins a volume3d viewport continuously; `speed` 0 stops it, a negative value reverses it. */
+    setViewport3DSpin: ({ viewportId, speed }: { viewportId: string; speed: number }) => {
+      setVolume3DSpin(viewportId, speed, id =>
+        cornerstoneViewportService.getCornerstoneViewport(id)
+      );
     },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
@@ -2810,6 +2839,15 @@ function commandsModule({
     },
     updateVolumeData: {
       commandFn: actions.updateVolumeData,
+    },
+    setViewport3DViewDirection: {
+      commandFn: actions.setViewport3DViewDirection,
+    },
+    rotateViewport3DBy: {
+      commandFn: actions.rotateViewport3DBy,
+    },
+    setViewport3DSpin: {
+      commandFn: actions.setViewport3DSpin,
     },
     toggleEnabledDisabledToolbar: {
       commandFn: actions.toggleEnabledDisabledToolbar,
