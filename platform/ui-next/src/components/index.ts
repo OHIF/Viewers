@@ -147,6 +147,7 @@ import { ContextMenuViewport } from './ContextMenuViewport';
 export * from './DataTable';
 export * from './StudyList';
 export { DataRow } from './DataRow';
+export { localStorageTourPersistence, type TourPersistence } from './Onboarding';
 export { MeasurementTable } from './MeasurementTable';
 export * from './ColorCircle';
 export { default as AllInOneMenu } from './AllInOneMenu';
