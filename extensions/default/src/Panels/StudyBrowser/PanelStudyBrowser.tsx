@@ -393,7 +393,13 @@ function PanelStudyBrowser({
     mapDisplaySetsWithState,
   ]);
 
-  const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
+  const tabs = createStudyBrowserTabs(
+    StudyInstanceUIDs,
+    studyDisplayList,
+    displaySets,
+    undefined,
+    displaySetService
+  );
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {

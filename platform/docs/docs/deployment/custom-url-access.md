@@ -51,7 +51,7 @@ Some libraries (especially ones using WASM) load assets using **relative paths**
 
 - Set `routerBasename` to `/abc`
 - Set `PUBLIC_URL` to `/my-private-assets/`
-- Webpack will load assets from the specified public URL.
+- The build will load assets from the specified public URL.
 
 ### Local Development Notes
 

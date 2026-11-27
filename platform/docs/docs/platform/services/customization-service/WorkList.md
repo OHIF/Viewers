@@ -1,7 +1,7 @@
 ---
 sidebar_label: Work List
 title: Work List Customization
-summary: Documentation for configuring the OHIF WorkList study-list route — selecting between the new (default) and legacy variants, the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
+summary: Documentation for configuring the OHIF WorkList study-list route — the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
 sidebar_position: 10
 ---
 
@@ -9,16 +9,13 @@ sidebar_position: 10
 
 The `workList.*` namespace customizes the WorkList study-list route used as the default landing page in OHIF.
 
-With the exception of `workList.variant` itself, the customizations below only apply when `workList.variant` is `'default'`; they are ignored when the legacy study list is mounted.
-
-## `workList.variant`
-
-Selects which study-list route is mounted at `/`.
-
-- `'default'` (default customization value): the new ui-next WorkList, introduced in 3.13.
-- `'legacy'`: the pre-3.13 WorkList (internally `LegacyWorkList`). Use this as an opt-out while migrating to the new study list.
-
-The customization is read once during route registration, so changing it requires a reload.
+:::warning Deprecated: `workList.variant`
+`workList.variant: 'legacy'` still mounts the `LegacyWorkList` route in 3.14, but
+it is deprecated: a future release removes the route and the customization id
+together. The other customizations on this page apply to the ui-next WorkList.
+See the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/work-list.md)
+for how to move off the legacy list.
+:::
 
 ### Turning on the legacy list
 
@@ -140,7 +137,7 @@ A column can only display data that's already on the study row. The default DICO
    ```js
    const commaSeparatedFields = [
      '00081030', // Study Description
-     '00080060', // Modality
+     '00080061', // Modalities In Study
      '00080090', // Referring Physician's Name
      '00321032', // Requesting Physician
    ].join(',');
@@ -154,7 +151,7 @@ A column can only display data that's already on the study row. The default DICO
 
 Now any column can read `row.requestingPhysician` (e.g. `StudyList.textColumn('requestingPhysician', 'Requesting Physician')`). Note that **`StudyRow` does not need editing** — it carries an index signature, so data-source-mapped fields are readable without a type change.
 
-Two caveats: the server must actually return the tag (it has to support `includefield` — see the data source's `qidoSupportsIncludeField` — and the studies must carry the attribute), and this is a data-source-wide change, not scoped to the worklist.
+Two caveats: the server must actually return the tag (it has to support `includefield`, and the studies must carry the attribute), and this is a data-source-wide change, not scoped to the worklist.
 
 ### Gotchas and limitations
 

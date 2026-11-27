@@ -36,9 +36,12 @@ const combineFrameInstance = (frame, instance) => {
     instance.DetectorInformationSequence &&
     (!instance.ImagePositionPatient || !instance.ImageOrientationPatient);
 
+  // An RTDOSE has one root ImagePositionPatient for all its frames: the RTDOSE
+  // branch below places each frame by its GridFrameOffsetVector entry.
   if (
     (PerFrameFunctionalGroupsSequence && SharedFunctionalGroupsSequence) ||
-    hasDetectorButMissingSpatialInfo || NumberOfFrames > 1
+    hasDetectorButMissingSpatialInfo ||
+    (NumberOfFrames > 1 && !instance.GridFrameOffsetVector)
   ) {
     // this is to fix NM multiframe datasets with position and orientation
     // information inside DetectorInformationSequence
@@ -140,7 +143,9 @@ const combineFrameInstance = (frame, instance) => {
       frameNumber
     );
 
-    const origin = newInstance.ImagePositionPatient?.map(Number);
+    // The grid origin comes from the frame-independent instance: newInstance is
+    // cached per frame and already holds the shifted position after a first call.
+    const origin = sharedInstance.ImagePositionPatient?.map(Number);
     const orientation = newInstance.ImageOrientationPatient?.map(Number);
     const offset = Number(instance.GridFrameOffsetVector[frameNumber - 1]);
 

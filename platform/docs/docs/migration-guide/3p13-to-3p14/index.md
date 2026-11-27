@@ -11,6 +11,10 @@ import DocCardList from '@theme/DocCardList';
 
 This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
 
+- **[Display set storage](./display-set-store.md)** — display sets now live in
+  the `@cornerstonejs/metadata` typed metadata cache.
+  `DisplaySetService.getDisplaySetCache()` is deprecated and returns a
+  read-only snapshot.
 - **[React 19](./react-19.md)** — the monorepo moves to **React 19.2.7**.
   `@ohif/ui-next` now declares react/react-dom as `peerDependencies`, so
   consuming applications must supply React 19, and extensions and modes require
@@ -73,5 +77,57 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `@ohif/ui-next`; if you imported it from source, use React's own
   `createContext` and `useContext` — the compiler now provides the memoization it
   was hand-rolling.
+
+- **[Hanging protocol comparisons](./hanging-protocol-comparisons.md)** — the
+  `greaterThan` and `lessThan` constraints are now strict. Before, they tested `>=`
+  and `<=`. The new `greaterThanOrEqual` and `lessThanOrEqual` constraints keep the old
+  meaning. `equals` and `doesNotEqual` compare the whole value of a multi-valued
+  attribute, and `includes` and `doesNotInclude` accept a single test value. A numeric
+  string and a boolean can now equal a number. The number constraints read a numeric
+  string or the first element of an array, and so does `range`. The text constraints read
+  a number value as text, and hold or fail on a missing value instead of an error.
+  `notNull` reads `''` and `[]` as no value. An operand `0`, `false` or `''` now runs its
+  constraint; before, the constraint always passed. Some matches of the OHIF protocols
+  change (`@ohif/hpMammo` with no `PatientOrientation`, a text `numImageFrames`, and the
+  `OneOrMoreSeries` weight of `@ohif/mnGrid`, `@ohif/mnGrid8` and `@ohif/hpScale`); the page
+  lists them.
+
+- **[Multi-resolution volumes and Cornerstone3D 5.17](./multi-resolution-volumes.md)** —
+  every volume loads with `coarseInterleavedRetrieveStages`, and the `mpr` protocol no longer
+  sets `imageLoadStrategy: 'nth'`. The data source `volumeRetrieveOptions` and a copy of `mpr`
+  with `nth` restore the 3.13 load. The Cornerstone3D "Transient Low Fidelity" label shows
+  while a volume loads, until the OHIF indicator
+  ([#6413](https://github.com/OHIF/Viewers/pull/6413)) replaces it. Cornerstone3D 5.17 makes
+  `volume.vtkOpenGLTexture` a getter that can return `undefined`, and removes
+  `RenderingCapabilities.webgl2`; use `volume.modified()` in place of the per-frame
+  texture updates. The developer configs select the `medium` GPU settings preset.
+
+- **[Display set split rules](./display-set-split-rules.md)** — the split rules of
+  `@cornerstonejs/metadata` are an opt-in customization, off by default. With the rules on, a
+  SOP class handler of another extension runs only when it declares `handlerNames` and
+  `extendDisplaySet`, and a rule names it. Otherwise its series shows as an unsupported display
+  set.
+
+- **[Build tooling](./build-tooling.md)** — the `.webpack/` config directories
+  are renamed `.rspack/`, and the app's production build and every dev server run
+  through one root `rsbuild.config.ts`. `webpack.pwa.js`, `rspack serve` and
+  `build:legacy` are gone; `dev:fast` is now an alias of `dev`.
+
+- **[OHIF CLI removal](./cli-removal.md)** — `platform/cli` and the root `cli`
+  script are gone. Each CLI command maps to a replacement: `pnpm create ohif` to
+  scaffold, `pnpm run plugin` or `platform/app/pluginConfig.json` to add, link or
+  remove plugins, and `create-ohif migrate` to port a CLI-era package.
+
+- **[Published packages](./published-packages.md)** — npm releases narrow to
+  `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`, `@ohif/extension-default`,
+  `@ohif/extension-cornerstone`, `create-ohif` and `@ohif/app`. The
+  other extensions and modes, and `@ohif/ui`, are no longer published; their
+  3.13.x releases stay on npm.
+
+- **[Dynamic config URLs](./dynamic-config.md)** — `dangerouslyUseDynamicConfig`
+  now requires an `origins` list or a `regex` that starts with `^`, and checks
+  the absolute URL the browser will fetch. A deployment with `regex: /.*/` or
+  `regex: /hospital\.com/` has its `configUrl` refused after the upgrade, and the
+  viewer starts with its built-in configuration.
 
 <DocCardList />
