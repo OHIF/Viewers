@@ -1,7 +1,7 @@
 ---
 sidebar_label: Work List
 title: Work List Customization
-summary: Documentation for configuring the OHIF WorkList study-list route — selecting between the new (default) and legacy variants, the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
+summary: Documentation for configuring the OHIF WorkList study-list route — the preview panel's series view (thumbnails, list, or both), and the columns shown in the study-list table.
 sidebar_position: 10
 ---
 
@@ -9,16 +9,58 @@ sidebar_position: 10
 
 The `workList.*` namespace customizes the WorkList study-list route used as the default landing page in OHIF.
 
-With the exception of `workList.variant` itself, the customizations below only apply when `workList.variant` is `'default'`; they are ignored when the legacy study list is mounted.
+:::warning Deprecated: `workList.variant`
+`workList.variant: 'legacy'` still mounts the `LegacyWorkList` route in 3.14, but
+it is deprecated: a future release removes the route and the customization id
+together. The other customizations on this page apply to the ui-next WorkList.
+See the [3.13 to 3.14 migration guide](../../../migration-guide/3p13-to-3p14/work-list.md)
+for how to move off the legacy list.
+:::
 
-## `workList.variant`
+### Turning on the legacy list
 
-Selects which study-list route is mounted at `/`.
+The viewer ships a URL customization file that sets this value, at
+`platform/app/public/customizations/worklist/legacyWorkList.jsonc`:
 
-- `'default'` (default customization value): the new ui-next WorkList, introduced in 3.13.
-- `'legacy'`: the pre-3.13 WorkList (internally `LegacyWorkList`). Use this as an opt-out while migrating to the new study list.
+```jsonc
+{
+  "global": {
+    "workList.variant": { "$set": "legacy" }
+  }
+}
+```
 
-The customization is read once during route registration, so changing it requires a reload.
+Load it in either of two ways:
+
+- Append `?customization=worklist/legacyWorkList` to the viewer URL.
+- Add `worklist/legacyWorkList` to `appConfig.customizationService.requires`.
+
+The `?customization=` parameter is off unless the app config sets
+`customizationUrlPrefixes`. The configs `dev.js`, `e2e.js`, `netlify.js` and
+`customization.js` set that property; `default.js` does not. `pnpm run dev`
+selects `dev.js`, so `http://localhost:3000/?customization=worklist/legacyWorkList`
+works with no config change.
+
+The file applies in the `global` phase. That phase is applied before the app
+renders, and therefore before route registration reads `workList.variant`.
+
+The legacy study list was verified in 3.14 through this customization file.
+
+:::warning The legacy list expects 3.13 paging
+`LegacyWorkList` still contains the server-paged rolling-window arithmetic of
+3.13, and it hard-codes its sort threshold at 100 results. The 3.14
+`DataSourceWrapper` issues one query and pages on the client. On a result set
+larger than one page, the page controls and the column sorting of the legacy
+list can behave incorrectly. Use a small result set when you compare the two
+study lists.
+:::
+
+:::warning Deprecated
+`'legacy'` and `LegacyWorkList` are deprecated and will be removed in a future
+release. Use the opt-out to finish migrating to the `workList.*`
+customizations below, then remove it. See the
+[3.13 to 3.14 WorkList guide](../../../migration-guide/3p13-to-3p14/work-list.md).
+:::
 
 ## `workList.previewSeriesView`
 
@@ -95,7 +137,7 @@ A column can only display data that's already on the study row. The default DICO
    ```js
    const commaSeparatedFields = [
      '00081030', // Study Description
-     '00080060', // Modality
+     '00080061', // Modalities In Study
      '00080090', // Referring Physician's Name
      '00321032', // Requesting Physician
    ].join(',');
@@ -109,11 +151,11 @@ A column can only display data that's already on the study row. The default DICO
 
 Now any column can read `row.requestingPhysician` (e.g. `StudyList.textColumn('requestingPhysician', 'Requesting Physician')`). Note that **`StudyRow` does not need editing** — it carries an index signature, so data-source-mapped fields are readable without a type change.
 
-Two caveats: the server must actually return the tag (it has to support `includefield` — see the data source's `qidoSupportsIncludeField` — and the studies must carry the attribute), and this is a data-source-wide change, not scoped to the worklist.
+Two caveats: the server must actually return the tag (it has to support `includefield`, and the studies must carry the attribute), and this is a data-source-wide change, not scoped to the worklist.
 
 ### Gotchas and limitations
 
-- **Renderers aren't serializable.** A column's `accessorFn`, `cell`, `header`, `filterFn`, and `sortingFn` are functions. `$set`/`$push` accept them, but a column that renders anything beyond plain text still requires code — you can't express it as pure JSON config. `StudyList.textColumn` covers the simple text case.
+- **Renderers aren't serializable.** A column's `accessorFn`, `cell`, `header`, `filterFn`, and `sortFn` are functions. `$set`/`$push` accept them, but a column that renders anything beyond plain text still requires code — you can't express it as pure JSON config. `StudyList.textColumn` covers the simple text case.
 - **The `actions` column should stay last (cosmetic).** Its hover menu is right-aligned to anchor the row end, so placing it mid-row just looks wrong — it's not a functional requirement. Insert new columns *before* it (e.g. `$splice` at its index, or the `$apply` pattern above); a bare `$push` lands *after* it, leaving the actions menu mid-row.
 - **Index-based commands are position-fragile.** `{ 2: { … } }` targets whatever is at index 2, which shifts if earlier columns are added/removed. Prefer `$apply` with a `findIndex`/`id` lookup for edits that should survive reordering.
 - If the merged value is not an array, WorkList falls back to `StudyList.defaultColumns`.

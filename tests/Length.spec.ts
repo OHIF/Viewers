@@ -1,4 +1,12 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForViewportScreenshot,
+  expect,
+  expectAnnotationStatsText,
+  measurementTextFormatters,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -10,6 +18,7 @@ test('should display the length tool', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.length.click();
@@ -20,9 +29,26 @@ test('should display the length tool', async ({
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await checkForScreenshot(
+  await checkForViewportScreenshot({
     page,
-    viewportPageObject.grid,
-    screenShotPaths.length.lengthDisplayedCorrectly
-  );
+    viewport: activeViewport,
+    screenshotPath: screenShotPaths.length.lengthDisplayedCorrectly,
+  });
+
+  await rightPanelPageObject.measurementsPanel.select();
+
+  const expectedValue = 278;
+
+  await expectAnnotationStatsText({
+    page,
+    activeViewport,
+    rightPanelPageObject,
+    toolName: 'Length',
+    expectedPanelPrimaryLines: [measurementTextFormatters.lengthLine(`${expectedValue}`)],
+    expectedSvgLines: [measurementTextFormatters.lengthLine(`${expectedValue}`)],
+    assertStats: stats => {
+      expect(stats.unit).toBe('mm');
+      expect(Math.round(stats.length as number)).toBe(expectedValue);
+    },
+  });
 });

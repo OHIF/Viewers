@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface ByteArrayHandle {
+  /** Marked positions. A new identity is published whenever the contents change. */
   bytes: Uint8Array;
-  version: number;
   /** True when every byte in the array is set (all positions marked). */
   isFull: boolean;
   setByte: (index: number) => void;
@@ -12,22 +12,37 @@ export interface ByteArrayHandle {
 
 /**
  * Manages a mutable Uint8Array (one byte per position) with React change
- * detection via an incrementing version counter.
+ * detection.
  *
- * @param size       - Number of positions (e.g. total slices in a viewport).
+ * Writes mutate a single buffer in place, so marking a position costs nothing
+ * and never reallocates. Change is published by `commit()`, which swaps in a
+ * fresh view over that same buffer via `subarray()` — an O(1) identity change
+ * with no copy.
+ *
+ * Publishing a new identity is load-bearing, not cosmetic. The React Compiler
+ * infers memoization dependencies from the values a callback actually reads, so
+ * a separate change token would be dropped from the emitted cache guard, and a
+ * consumer memoizing on `bytes` alone would never recompute.
+ *
+ * @param requestedSize - Number of positions (e.g. total slices in a viewport).
+ *                        A non-finite or negative value (e.g. a degenerate
+ *                        volume that reports Infinity slices) gives 0 positions.
  * @param batchIntervalMs - When > 0, writes are coalesced into a scheduled
  *                          flush: the first write starts a timer, the next
- *                          flush bumps `version`, and the timer stops. New
- *                          writes start a new interval window. Omit or pass 0
- *                          for immediate re-renders on every write.
+ *                          flush publishes, and the timer stops. New writes
+ *                          start a new interval window. Omit or pass 0 for
+ *                          immediate re-renders on every write.
  */
-export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle {
-  // A non-finite or negative size (e.g. a degenerate volume reporting
-  // Infinity slices) must not crash the Uint8Array allocation.
-  size = Number.isFinite(size) && size > 0 ? Math.floor(size) : 0;
-  const bytesRef = useRef(new Uint8Array(size));
+export function useByteArray(requestedSize: number, batchIntervalMs = 0): ByteArrayHandle {
+  const size = Number.isFinite(requestedSize) && requestedSize > 0 ? Math.floor(requestedSize) : 0;
+  // State is declared first so the initial buffer comes from it rather than
+  // from a ref read during render, which the compiler rightly rejects.
+  const [published, setPublished] = useState(() => ({
+    bytes: new Uint8Array(size),
+    count: 0,
+  }));
+  const bytesRef = useRef(published.bytes);
   const countRef = useRef(0);
-  const [version, setVersion] = useState(0);
   const timeoutIdRef = useRef<number | null>(null);
 
   const clearScheduledFlush = useCallback(() => {
@@ -37,22 +52,28 @@ export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle
     }
   }, []);
 
-  const flushScheduledVersion = useCallback(() => {
+  // Publish the buffer's current contents: a new view identity over the same
+  // memory, plus the count that goes with it, in one state update.
+  const commit = useCallback(() => {
+    setPublished({ bytes: bytesRef.current.subarray(), count: countRef.current });
+  }, []);
+
+  const flushScheduled = useCallback(() => {
     // End this timeout window after the scheduled flush.
     clearScheduledFlush();
-    setVersion(v => v + 1);
-  }, [clearScheduledFlush]);
+    commit();
+  }, [clearScheduledFlush, commit]);
 
   // Reset array only when size actually changes — skip on initial mount since
-  // bytesRef is already initialised to the correct size via useRef.
+  // bytesRef is already initialized to the correct size via useState.
   useEffect(() => {
     if (bytesRef.current.length === size) return;
     // Drop any in-flight timeout window when resetting the underlying array.
     clearScheduledFlush();
     bytesRef.current = new Uint8Array(size);
     countRef.current = 0;
-    setVersion(v => v + 1);
-  }, [size, clearScheduledFlush]);
+    commit();
+  }, [size, clearScheduledFlush, commit]);
 
   useEffect(() => {
     // If timing changes mid-window, restart that timeout using the new timing.
@@ -60,26 +81,26 @@ export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle
     clearScheduledFlush();
     if (batchIntervalMs <= 0) {
       if (pendingTimeoutId !== null) {
-        setVersion(v => v + 1);
+        commit();
       }
       return;
     }
     if (pendingTimeoutId !== null) {
-      timeoutIdRef.current = window.setTimeout(flushScheduledVersion, batchIntervalMs);
+      timeoutIdRef.current = window.setTimeout(flushScheduled, batchIntervalMs);
     }
     return () => clearScheduledFlush();
-  }, [batchIntervalMs, clearScheduledFlush, flushScheduledVersion]);
+  }, [batchIntervalMs, clearScheduledFlush, commit, flushScheduled]);
 
   const bump = useCallback(() => {
     if (batchIntervalMs <= 0) {
-      setVersion(v => v + 1);
+      commit();
       return;
     }
 
     if (timeoutIdRef.current === null) {
-      timeoutIdRef.current = window.setTimeout(flushScheduledVersion, batchIntervalMs);
+      timeoutIdRef.current = window.setTimeout(flushScheduled, batchIntervalMs);
     }
-  }, [batchIntervalMs, flushScheduledVersion]);
+  }, [batchIntervalMs, commit, flushScheduled]);
 
   const setByte = useCallback(
     (index: number) => {
@@ -119,11 +140,8 @@ export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle
   );
 
   return {
-    bytes: bytesRef.current,
-    version,
-    // countRef.current is read at render time (triggered by version bump) so
-    // it is always up to date when this value is consumed.
-    isFull: size > 0 && countRef.current === size,
+    bytes: published.bytes,
+    isFull: size > 0 && published.count === size,
     setByte,
     clearByte,
     resetWith,

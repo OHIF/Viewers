@@ -116,8 +116,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   id,
 
   onModeEnter: ({ servicesManager, commandsManager, extensionManager }: withAppTypes): void => {
-    const { cornerstoneViewportService, toolbarService, segmentationService } =
-      servicesManager.services;
+    const {
+      cornerstoneViewportService,
+      toolbarService,
+      segmentationService,
+      customizationService,
+    } = servicesManager.services;
 
     const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
       servicesManager,
@@ -142,15 +146,32 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
     ]);
 
+    // Apply the undo/redo history size on mode entry rather than in
+    // preRegistration, because the global customizations are applied after
+    // the extensions register.
+    cornerstone.utilities.HistoryMemo.DefaultHistoryMemo.size =
+      customizationService.getCustomization('cornerstone.maxUndoRedoCacheSize') || 50;
+
+    const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
+
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();
-    // The default volume interleaved options are to interleave the
-    // image retrieve, but don't perform progressive loading per image
-    // This interleaves images and replicates them for low-resolution depth volume
-    // reconstruction, which progressively improves
+    // Volumes load every 64th image first and copy it to the empty frames around it, then refine.
+    // The data source `volumeRetrieveOptions` can name another ProgressiveRetrieveImages stage set
+    // (for example 'interleavedRetrieveStages', the 3.13 default) or give a `{ stages }` object.
+    const volumeOptions = sourceConfig.volumeRetrieveOptions ?? 'coarseInterleavedRetrieveStages';
+    const volumeStages =
+      typeof volumeOptions === 'string'
+        ? cornerstone.ProgressiveRetrieveImages[volumeOptions]
+        : volumeOptions;
+    if (!volumeStages?.stages) {
+      console.warn('volumeRetrieveOptions is not a retrieve stage set:', volumeOptions);
+    }
     imageRetrieveMetadataProvider.add(
       'volume',
-      cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
+      volumeStages?.stages
+        ? volumeStages
+        : cornerstone.ProgressiveRetrieveImages.coarseInterleavedRetrieveStages
     );
 
     /**
@@ -159,7 +180,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
      * stackRetrieveOptions to customize. Plain object is treated as $merge for backward compat.
      * Set streaming: false for uncompressed DICOM that requires full file before decode.
      */
-    const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
     const config = sourceConfig.stackRetrieveOptions ?? {};
     const stackOptions = update(
       DEFAULT_STACK_RETRIEVE_OPTIONS,

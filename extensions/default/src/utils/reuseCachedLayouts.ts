@@ -68,9 +68,7 @@ const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService
       if (displaySetOptions[i]?.id && displaySetOptions[i].id !== 'activeDisplaySet') {
         // TODO: handle multiple layers/display sets for the non-active viewports
         setDisplaySetSelector(
-          `${activeStudyUID}:${displaySetOptions[i].id}:${
-            displaySetOptions[i].matchedDisplaySetsIndex || 0
-          }`,
+          hangingProtocolService.getDisplaySetSelectorMapKey(activeStudyUID, displaySetOptions[i]),
           [displaySetUID]
         );
       }

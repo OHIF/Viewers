@@ -94,6 +94,12 @@ In this snippet, the `transform` function:
 
 ---
 
+**See also**
+- [Typing Customizations](./typing.md): declared types describe the value *after*
+  `inheritsFrom` and `$transform` have resolved, so a key can be typed as its
+  final shape while still being written with `inheritsFrom` / `$transform` /
+  `$reference`.
+
 **Key Points**
 - `inheritsFrom` is a reference to another customization’s ID.
 - If `transform` is defined, it always runs after inheritance is resolved.
