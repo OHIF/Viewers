@@ -42,7 +42,7 @@ When an assertion needs to wait for async render / propagation:
 ```ts
 await expect(async () => {
   await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Spleen').click();
-  await expect(activeViewport.overlayText.bottomRight.instanceNumber).toContainText('17/');
+  await expect(activeViewport.overlayText.bottomRight.instanceNumber).toHaveText('I:17 (17/94)');
 }).toPass({ timeout: 10_000 });
 ```
 

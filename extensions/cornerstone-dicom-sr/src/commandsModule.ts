@@ -1,48 +1,9 @@
-import { metaData } from '@cornerstonejs/core';
+import OHIF, { utils } from '@ohif/core';
 
-import OHIF from '@ohif/core';
-import { adaptersSR } from '@cornerstonejs/adapters';
-
-import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
+import generateReport from './utils/generateReport';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
 
-const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
-
-interface Options {
-  SeriesDescription?: string;
-  SeriesInstanceUID?: string;
-  SeriesNumber?: number;
-  InstanceNumber?: number;
-  SeriesDate?: string;
-  SeriesTime?: string;
-}
-
-/**
- * @param measurementData An array of measurements from the measurements service
- * that you wish to serialize.
- * @param additionalFindingTypes toolTypes that should be stored with labels as Findings
- * @param options Naturalized DICOM JSON headers to merge into the displaySet.
- *
- */
-const _generateReport = (measurementData, additionalFindingTypes, options: Options = {}) => {
-  const filteredToolState = getFilteredCornerstoneToolState(
-    measurementData,
-    additionalFindingTypes
-  );
-
-  const report = MeasurementReport.generateReport(filteredToolState, metaData, options);
-
-  const { dataset } = report;
-
-  // Set the default character set as UTF-8
-  // https://dicom.innolitics.com/ciods/nm-image/sop-common/00080005
-  if (typeof dataset.SpecificCharacterSet === 'undefined') {
-    dataset.SpecificCharacterSet = 'ISO_IR 192';
-  }
-
-  return dataset;
-};
 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager, extensionManager, commandsManager } = props;
@@ -97,11 +58,24 @@ const commandsModule = (props: withAppTypes) => {
       }
 
       try {
-        const naturalizedReport = _generateReport(
-          measurementData,
-          additionalFindingTypes,
-          options
-        );
+        // dcmjs stamps the series date/time of the series it derives in UTC,
+        // which is the wrong wall clock reading anywhere else and, around
+        // midnight, the wrong day - DICOM DA and TM are displayed as they are
+        // stored.  So the series being created here is given the current
+        // date/time in its own zone instead.  A report added to an existing
+        // series takes that series' date and time, which the adapter copies
+        // from the predecessor instance.
+        const { date, time } = utils.getCurrentDicomDateTime();
+        const naturalizedReport = generateReport(measurementData, additionalFindingTypes, {
+          ...(options.predecessorImageId ? {} : { SeriesDate: date, SeriesTime: time }),
+          ...options,
+        });
+
+        // A report saved into an existing series inherits that series' date and
+        // time, and its instance number is derived from the one predecessor
+        // instance, which is not necessarily the highest in the series.  Stamp
+        // both so this report is identifiable as the most recent instance.
+        utils.updateNewInstanceMetadata(naturalizedReport);
 
         const { ContentSequence } = naturalizedReport;
         // The content sequence has 5 or more elements, of which

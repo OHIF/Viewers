@@ -263,7 +263,7 @@ function modeFactory({ modeConfiguration }) {
         ],
       });
     },
-    onModeExit: ({ servicesManager }: withAppTypes) => {
+    onModeExit: ({ servicesManager, appConfig }: withAppTypes) => {
       appConfig.disableConfirmationPrompts = settingsSaved.disableConfirmationPrompts;
       appConfig.measurementTrackingMode = settingsSaved.measurementTrackingMode;
 

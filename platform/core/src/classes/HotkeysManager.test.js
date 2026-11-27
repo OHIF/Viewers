@@ -157,6 +157,33 @@ describe('HotkeysManager', () => {
       expect(hotkeys.unbind.mock.calls.length).toBe(1);
       expect(hotkeys.unbind.mock.calls[0][0]).toBe('alt+e');
     });
+    it('keeps the context when the stored definitions are applied again with new keys', () => {
+      hotkeysManager.registerHotkeys({ commandName: 'nextStage', context: 'DEFAULT', keys: '.' });
+
+      // The User Preferences save applies the stored definitions with the edited keys.
+      const edited = Object.values(hotkeysManager.hotkeyDefinitions).map(definition => ({
+        ...definition,
+        keys: 'n',
+      }));
+      hotkeysManager.setHotkeys(edited);
+
+      const [boundKeys, callback] = hotkeys.bind.mock.calls.at(-1);
+      callback({ preventDefault: jest.fn(), stopPropagation: jest.fn() });
+
+      expect(boundKeys).toBe('n');
+      expect(commandsManager.runCommand).toHaveBeenLastCalledWith(
+        'nextStage',
+        expect.any(Object),
+        'DEFAULT'
+      );
+    });
+    it('stores commandOptions as {} when the definition has no commandOptions', () => {
+      hotkeysManager.registerHotkeys({ commandName: 'dance', keys: '+' });
+
+      const [definition] = Object.values(hotkeysManager.hotkeyDefinitions);
+
+      expect(definition.commandOptions).toEqual({});
+    });
   });
 
   describe('restoreDefaults()', () => {

@@ -15,7 +15,7 @@ function ItemListComponent({
   itemLabel,
   itemList,
   onItemClicked,
-}: ItemListComponentProps): ReactElement {
+}: ItemListComponentProps): ReactElement<any> {
   const { servicesManager } = useSystem();
   const { t } = useTranslation('DataSourceConfiguration');
   const [filterValue, setFilterValue] = useState('');
