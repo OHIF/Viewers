@@ -53,7 +53,6 @@ COPY --link --exclude=pnpm-lock.yaml --exclude=package.json --exclude=Dockerfile
 # Build here
 # After install it should hopefully be stable until the local directory changes
 ENV QUICK_BUILD true
-# ENV GENERATE_SOURCEMAP=false
 ARG APP_CONFIG=config/default.js
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}

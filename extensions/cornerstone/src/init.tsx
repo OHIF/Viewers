@@ -75,9 +75,12 @@ export default async function init({
   const statsOverlay =
     new URLSearchParams(window.location.search).get('debug') === 'true';
 
+  // OHIF owns the fidelity indicator (top-right action corner); turn off CS3D's .fi-root
+  // so it cannot cover menus (z-index 1000).
   await cs3DInit({
     peerImport: appConfig.peerImport,
     debug: { statsOverlay },
+    dangerouslyDisableFidelityIndicator: true,
     ...(appConfig.lossyDownsampling && {
       rendering: { lossyDownsampling: appConfig.lossyDownsampling },
     }),
@@ -323,7 +326,9 @@ export default async function init({
    */
   const imageLoadFailedHandler = ({ detail }) => {
     const handler = errorHandler.getHTTPErrorHandler();
-    handler(detail.error);
+    if (typeof handler === 'function') {
+      handler(detail.error);
+    }
   };
 
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
