@@ -595,7 +595,7 @@ full package name, just before it loads the first runtime plugin; runtime
 plugin builds externalize them instead of bundling their own copies: `react`,
 `react-dom`, `react/jsx-runtime`, `@ohif/core`, `@ohif/ui-next`, `@ohif/i18n`,
 `@ohif/extension-default`, `@ohif/extension-cornerstone`, `@cornerstonejs/core`,
-`@cornerstonejs/tools`, `dcmjs`, `gl-matrix`, `react-router`, `react-router-dom`,
+`@cornerstonejs/tools`, `@dcmjs-org/dcmjs`, `gl-matrix`, `react-router`, `react-router-dom`,
 `i18next`, `react-i18next`. `@ohif/ui` is NOT shared: it is legacy and a
 forbidden import for runtime plugins (use `@ohif/ui-next`).
 
@@ -614,12 +614,13 @@ packages, and get the host's copies when they load:
 | `i18next` | 19 |
 | `react-i18next` | 12 |
 | `@cornerstonejs/core`, `@cornerstonejs/tools` | 5 |
-| `dcmjs` | 0.52 |
+| `@dcmjs-org/dcmjs` | 1 |
 | `gl-matrix` | 3 |
 
 Set your plugin's peer ranges to match. A new major version of any of these
-(for `dcmjs`, a new 0.x minor) is a breaking change for runtime plugins and is
-listed in the migration guide.
+is a breaking change for runtime plugins and is listed in the migration guide.
+The host does not share the old `dcmjs` 0.x package: a plugin that imports
+`dcmjs` bundles its own copy.
 
 Every extension and mode built into the viewer is also shared on `window`
 under its package name once it has loaded (the whole module, named exports

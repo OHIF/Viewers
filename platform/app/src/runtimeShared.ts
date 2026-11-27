@@ -44,7 +44,7 @@ import * as ohifExtensionDefault from '@ohif/extension-default';
 import * as ohifExtensionCornerstone from '@ohif/extension-cornerstone';
 import * as cornerstoneCore from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
-import * as dcmjs from 'dcmjs';
+import * as dcmjs from '@dcmjs-org/dcmjs';
 import * as glMatrix from 'gl-matrix';
 import * as reactRouter from 'react-router';
 import * as reactRouterDom from 'react-router-dom';
@@ -62,7 +62,7 @@ const shared: Record<string, unknown> = {
   '@ohif/extension-cornerstone': ohifExtensionCornerstone,
   '@cornerstonejs/core': cornerstoneCore,
   '@cornerstonejs/tools': cornerstoneTools,
-  dcmjs,
+  '@dcmjs-org/dcmjs': dcmjs,
   'gl-matrix': glMatrix,
   'react-router': reactRouter,
   'react-router-dom': reactRouterDom,

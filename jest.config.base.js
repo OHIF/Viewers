@@ -10,7 +10,8 @@ module.exports = {
   // roots: ['<rootDir>/src'],
   testMatch: ['<rootDir>/src/**/*.test.js', '<rootDir>/src/**/*.test.ts'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
-  testEnvironment: 'jsdom',
+  // jsdom with TextEncoder and TextDecoder, which dcmjs 1.0 needs when it loads.
+  testEnvironment: path.join(__dirname, 'jest.environment.js'),
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
   transform: {
     '^.+\\.[jt]sx?$': 'babel-jest',
@@ -29,7 +30,7 @@ module.exports = {
     '^@cornerstonejs/([^/]+)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm',
   },
   // Setup
-  setupFiles: [path.join(__dirname, 'jest.setup.js')],
+  // setupFiles: ["jest-canvas-mock/lib/index.js"],
   // Coverage
   reporters: [
     'default',

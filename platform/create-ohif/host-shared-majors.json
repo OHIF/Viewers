@@ -3,7 +3,7 @@
   "react-dom": "19",
   "@cornerstonejs/core": "5",
   "@cornerstonejs/tools": "5",
-  "dcmjs": "0.52",
+  "@dcmjs-org/dcmjs": "1",
   "gl-matrix": "3",
   "react-router": "6",
   "react-router-dom": "6",

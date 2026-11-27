@@ -307,7 +307,7 @@ This section is for a fork that builds its own viewer, with its own changes to
 OHIF, and loads its extensions and modes as runtime plugins.
 
 A plugin's build leaves out every import that matches `@ohif/*`,
-`@cornerstonejs/*`, `vtk.js`, `dcmjs`, `gl-matrix`, React, React Router or
+`@cornerstonejs/*`, `vtk.js`, `@dcmjs-org/dcmjs`, `gl-matrix`, React, React Router or
 i18next. The plugin reads those from `window` when its script runs. The viewer
 puts its [shared host packages](../configuration/configurationFiles.md#shared-host-packages)
 there, and every extension and mode compiled into it. Any other import that

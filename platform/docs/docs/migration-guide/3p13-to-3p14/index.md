@@ -135,4 +135,9 @@ This guide covers changes when upgrading from OHIF version 3.13 to version 3.14.
   `regex: /hospital\.com/` has its `configUrl` refused after the upgrade, and the
   viewer starts with its built-in configuration.
 
+- **[dcmjs 1.0](./dcmjs-1.md)** — OHIF moves from `dcmjs` 0.52 to
+  `@dcmjs-org/dcmjs` 1.0.0. The host shares only `@dcmjs-org/dcmjs` with
+  runtime plugins, so a runtime plugin imports `@dcmjs-org/dcmjs`, not `dcmjs`.
+  Instance metadata has the dcmjs 1.0 shapes.
+
 <DocCardList />

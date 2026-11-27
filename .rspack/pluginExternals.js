@@ -2,15 +2,15 @@
 //
 // Contract v1: the single source of truth for what an OHIF plugin bundle must
 // NOT bundle. Imported by every per-package .rspack/rspack.prod.js.
-// The bare-specifier string entries (React, React Router and i18next) are
-// matched exactly; under UMD they resolve to root[<full package name>], so
+// The bare-specifier string entries (React, React Router, i18next and
+// @dcmjs-org/dcmjs) are matched exactly; under UMD they resolve to root[<full package name>], so
 // platform/app/src/runtimeShared.ts (shared-deps workstream) must assign a
 // window global for every string entry AND for the packages matched by the
 // /^@ohif/ and /^@cornerstonejs/ regexes that the host provides as singletons.
 // A unit test in that workstream asserts the two lists stay in sync.
 module.exports = [
   /\b(vtk.js)/,
-  /\b(dcmjs)/,
+  '@dcmjs-org/dcmjs',
   /\b(gl-matrix)/,
   /^@ohif/,
   /^@cornerstonejs/,
@@ -54,7 +54,7 @@ const hostSharedPackages = [
   '@ohif/extension-cornerstone',
   '@cornerstonejs/core',
   '@cornerstonejs/tools',
-  'dcmjs',
+  '@dcmjs-org/dcmjs',
   'gl-matrix',
   'react-router',
   'react-router-dom',
