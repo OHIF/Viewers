@@ -141,7 +141,10 @@ function App({
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],
     [NotificationProvider, { service: uiNotificationService }],
-    [TooltipProvider],
+    // Tooltips hold plain text, never controls. Hoverable content makes Radix keep a tooltip open while the
+    // pointer crosses toward it, and blocks every other trigger meanwhile, so moving to a neighbouring
+    // button showed the previous tooltip instead of its own.
+    [TooltipProvider, { disableHoverableContent: true }],
     [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
     [ModalProvider, { service: uiModalService, modal: ModalNext }],
   ];
