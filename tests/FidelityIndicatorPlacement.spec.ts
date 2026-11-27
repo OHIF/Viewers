@@ -93,6 +93,8 @@ test.describe('Fidelity indicator placement', () => {
       expect(itemBox).toBeTruthy();
       expect(fidelityBox).toBeTruthy();
       expect(itemBox!.x + itemBox!.width).toBeLessThanOrEqual(fidelityBox!.x + 1);
+      // Level with the item beside it, not centred in the taller toolbar row (VF-VIS-9).
+      expect(Math.abs(itemBox!.y - fidelityBox!.y)).toBeLessThanOrEqual(2);
     }).toPass({ timeout: 5_000 });
   });
 

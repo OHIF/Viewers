@@ -100,10 +100,15 @@ function FidelityIndicator({
         <button
           type="button"
           data-cy="fidelity-indicator"
-          className={classNames('inline-flex cursor-default items-center gap-1.5 leading-none', {
-            // Invisible hover target after the recovered hold (VF-VIS-1d).
-            'h-3 w-3 opacity-0': isIdle,
-          })}
+          // self-start: level with the toolbar buttons beside it. They sit at the top of a
+          // taller wrapper, so a centred indicator would drop when they show (VF-VIS-9).
+          className={classNames(
+            'inline-flex cursor-default items-center gap-1.5 self-start leading-none',
+            {
+              // Invisible hover target after the recovered hold (VF-VIS-1d).
+              'h-3 w-3 opacity-0': isIdle,
+            }
+          )}
           aria-label={t(ariaKeyOf(ariaPresentation))}
           onMouseEnter={revealRecovered}
           onMouseLeave={hideRecoveredReveal}
