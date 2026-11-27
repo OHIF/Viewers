@@ -178,7 +178,8 @@ const DefaultFallback = ({
       title,
       message: subtitle,
       type: 'error',
-      duration: 0,
+      // sonner treats 0 as "use the default" (4 s); Infinity keeps the toast until dismissed.
+      duration: Infinity,
       id: errorId,
       action: isShowDetailsButtonVisible
         ? {

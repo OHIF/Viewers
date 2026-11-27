@@ -112,6 +112,18 @@ const NotificationProvider = ({
           console.debug(
             `Prevented duplicate notification: "${title}" (${timeSinceLastShown}ms < ${notificationDeduplicationInterval}ms)`
           );
+          // The visible toast's action is a closure from the caller that created it. Rebind it to the
+          // latest caller (sonner updates a toast in place when called again with the same id), so an
+          // action like the error boundary's "Show Details" never points at an unmounted component.
+          if (action && action.label && typeof action.onClick === 'function') {
+            toast[type](title, {
+              duration,
+              position,
+              description: message,
+              id: cachedNotification.id,
+              action: { label: action.label, onClick: action.onClick },
+            });
+          }
           // Return the existing notification ID
           return cachedNotification.id;
         }
