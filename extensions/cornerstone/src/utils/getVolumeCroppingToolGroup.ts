@@ -18,6 +18,21 @@ export function getVolumeCroppingState(toolGroup): Enums.ToolModes {
 }
 
 /**
+ * Sets the disjoint segmentation mode of the crop tool of `toolGroup`: the segmentation
+ * shows only outside the crop box. Toggles the mode when `enabled` is undefined. Returns
+ * the new state, or undefined when the tool group or the CS3D tool has no such mode.
+ */
+export function setDisjointSegmentationMode(toolGroup, enabled?: boolean): boolean | undefined {
+  const tool = toolGroup?.getToolInstance(toolNames.VolumeCropping);
+  if (!tool?.setDisjointSegmentation) {
+    return undefined;
+  }
+  const next = enabled ?? !tool.getDisjointSegmentation();
+  tool.setDisjointSegmentation(next);
+  return next;
+}
+
+/**
  * The tool group that holds VolumeCropping: the group of `viewportId` when it has the
  * tool, otherwise the first group with the tool that has viewports. The second case
  * lets the main toolbar work while an MPR viewport is active.

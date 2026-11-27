@@ -53,6 +53,7 @@ import {
 import { toolNames } from './initCornerstoneTools';
 import getVolumeCroppingToolGroup, {
   getVolumeCroppingState,
+  setDisjointSegmentationMode,
 } from './utils/getVolumeCroppingToolGroup';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
@@ -1237,8 +1238,7 @@ function commandsModule({
       }
       const { Active, Passive, Disabled } = Enums.ToolModes;
       const current = getVolumeCroppingState(toolGroup);
-      const next =
-        mode ?? (current === Active ? Passive : current === Passive ? Disabled : Active);
+      const next = mode ?? (current === Active ? Passive : current === Passive ? Disabled : Active);
       if (next === current) {
         // A second activation would record VolumeCropping as its own previous primary tool.
         return;
@@ -1298,12 +1298,21 @@ function commandsModule({
       tool?.setHandlesVisible(visible ?? !tool.getHandlesVisible());
     },
     /** Makes a plain drag rotate the crop planes, not the camera (SHIFT-drag always does). */
-    togglePlaneRotation: ({ viewportId, enabled }: { viewportId?: string; enabled?: boolean } = {}) => {
+    togglePlaneRotation: ({
+      viewportId,
+      enabled,
+    }: { viewportId?: string; enabled?: boolean } = {}) => {
       const tool = _getVolumeCroppingToolGroup(viewportId)?.getToolInstance(
         toolNames.VolumeCropping
       );
       tool?.setRotatePlanesOnDrag(enabled ?? !tool.getRotatePlanesOnDrag());
     },
+    /** Shows the segmentation only outside the crop box (toggles when `enabled` is undefined). */
+    setVolumeCroppingDisjointMode: ({
+      viewportId,
+      enabled,
+    }: { viewportId?: string; enabled?: boolean } = {}) =>
+      setDisjointSegmentationMode(_getVolumeCroppingToolGroup(viewportId), enabled),
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
       toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
@@ -2908,6 +2917,9 @@ function commandsModule({
     },
     togglePlaneRotation: {
       commandFn: actions.togglePlaneRotation,
+    },
+    setVolumeCroppingDisjointMode: {
+      commandFn: actions.setVolumeCroppingDisjointMode,
     },
     toggleEnabledDisabledToolbar: {
       commandFn: actions.toggleEnabledDisabledToolbar,

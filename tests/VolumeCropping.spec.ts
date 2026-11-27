@@ -57,6 +57,21 @@ test.describe('Volume cropping', () => {
       )
       .toBe('TrackballRotate');
 
+    // The corner menu switch turns the disjoint segmentation mode of the crop tool on.
+    await cropMenu.click();
+    await page.getByRole('switch', { name: 'Segmentation outside the crop box' }).click();
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          (window as any).cornerstoneTools.ToolGroupManager.getAllToolGroups()
+            .find(toolGroup => toolGroup.hasTool('VolumeCropping'))
+            ?.getToolInstance('VolumeCropping')
+            .getDisjointSegmentation?.()
+        )
+      )
+      .toBe(true);
+    await page.keyboard.press('Escape');
+
     // Off: the corner menu and the crop box go away.
     await mainToolbarPageObject.moreTools.volumeCropping.click();
     await expect(cropMenu).toBeHidden();

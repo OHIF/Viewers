@@ -14,11 +14,12 @@ import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from '../../initCornerstoneTools';
 import { getVolumeCroppingState } from '../../utils/getVolumeCroppingToolGroup';
 
-type CroppingState = { handles: boolean; rotatePlanes: boolean };
+type CroppingState = { handles: boolean; rotatePlanes: boolean; disjoint: boolean };
 
 /**
  * Viewport corner menu for the VolumeCropping tool of a volume3d viewport, shown while
- * the crop box is on: the drag handles, and whether a plain drag rotates the crop planes.
+ * the crop box is on: the drag handles, whether a plain drag rotates the crop planes, and
+ * whether the segmentation shows only outside the crop box.
  * The VolumeCropping toolbar button turns the crop box on and off.
  */
 function VolumeCroppingMenu({
@@ -40,7 +41,11 @@ function VolumeCroppingMenu({
   const { servicesManager, commandsManager } = useSystem();
   const { toolGroupService, toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
-  const [state, setState] = useState<CroppingState>({ handles: false, rotatePlanes: false });
+  const [state, setState] = useState<CroppingState>({
+    handles: false,
+    rotatePlanes: false,
+    disjoint: false,
+  });
 
   // The tool owns this state, and hotkeys or other code can change it, so read it on open.
   const readState = () => {
@@ -50,6 +55,7 @@ function VolumeCroppingMenu({
     setState({
       handles: !!tool?.getHandlesVisible(),
       rotatePlanes: !!tool?.getRotatePlanesOnDrag(),
+      disjoint: !!tool?.getDisjointSegmentation?.(),
     });
   };
 
@@ -94,6 +100,14 @@ function VolumeCroppingMenu({
       ),
       checked: state.rotatePlanes,
       onChange: (enabled: boolean) => run('togglePlaneRotation', { enabled }),
+    },
+    {
+      label: i18n.t('Buttons:Segmentation outside the crop box'),
+      tooltip: i18n.t(
+        'Buttons:Show the segmentation only outside the crop box. When off, the crop box also crops the segmentation'
+      ),
+      checked: state.disjoint,
+      onChange: (enabled: boolean) => run('setVolumeCroppingDisjointMode', { enabled }),
     },
   ];
 

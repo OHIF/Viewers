@@ -1,4 +1,7 @@
-import getVolumeCroppingToolGroup, { getVolumeCroppingState } from './getVolumeCroppingToolGroup';
+import getVolumeCroppingToolGroup, {
+  getVolumeCroppingState,
+  setDisjointSegmentationMode,
+} from './getVolumeCroppingToolGroup';
 
 jest.mock('@cornerstonejs/tools', () => ({
   Enums: { ToolModes: { Active: 'Active', Passive: 'Passive', Disabled: 'Disabled' } },
@@ -7,7 +10,11 @@ jest.mock('../initCornerstoneTools', () => ({
   toolNames: { VolumeCropping: 'VolumeCropping' },
 }));
 
-const makeGroup = ({ mode = undefined, primary = 'TrackballRotate', viewportIds = ['v3d'] } = {}) => ({
+const makeGroup = ({
+  mode = undefined,
+  primary = 'TrackballRotate',
+  viewportIds = ['v3d'],
+} = {}) => ({
   hasTool: name => name === 'VolumeCropping',
   getToolOptions: () => (mode ? { mode } : undefined),
   getActivePrimaryMouseButtonTool: () => primary,
@@ -37,5 +44,20 @@ describe('getVolumeCroppingToolGroup', () => {
     };
     expect(getVolumeCroppingToolGroup(service as never, 'v3d')).toBe(populated);
     expect(getVolumeCroppingToolGroup(service as never, 'mpr')).toBe(populated);
+  });
+});
+
+describe('setDisjointSegmentationMode', () => {
+  it('sets the mode on the crop tool of the tool group, and toggles it without a value', () => {
+    let disjoint = false;
+    const tool = {
+      getDisjointSegmentation: () => disjoint,
+      setDisjointSegmentation: jest.fn(value => (disjoint = value)),
+    };
+    const toolGroup = { getToolInstance: name => (name === 'VolumeCropping' ? tool : undefined) };
+    expect(setDisjointSegmentationMode(toolGroup, true)).toBe(true);
+    expect(tool.setDisjointSegmentation).toHaveBeenLastCalledWith(true);
+    expect(setDisjointSegmentationMode(toolGroup)).toBe(false);
+    expect(disjoint).toBe(false);
   });
 });
