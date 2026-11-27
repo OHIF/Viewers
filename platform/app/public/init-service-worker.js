@@ -1,5 +1,5 @@
 // navigator.serviceWorker is undefined outside a secure context (plain HTTP on a
-// non-localhost host); calling it unguarded throws and leaves the viewer blank.
+// non-localhost host), so an unguarded call throws a TypeError.
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(function (registrations) {
     for (let registration of registrations) {
