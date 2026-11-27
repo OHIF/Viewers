@@ -248,7 +248,7 @@ function PanelStudyBrowser({
         thumbnailSrc = await displaySet.getThumbnailSrc({ getImageSrc });
       }
       if (!thumbnailSrc && imageId) {
-        const thumbnailSrc = await getImageSrc(imageId);
+        thumbnailSrc = await getImageSrc(imageId);
         displaySet.thumbnailSrc = thumbnailSrc;
       }
       newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
