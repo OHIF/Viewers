@@ -59,7 +59,7 @@
     "classnames": "2.5.1",
     "core-js": "3.45.1",
     "cornerstone-math": "0.1.10",
-    "dcmjs": "npm:@dcmjs-org/dcmjs@1.0.2",
+    "dcmjs": "1.1.0",
     "detect-gpu": "4.0.50",
     "dicom-parser": "1.8.21",
     "file-loader": "6.2.0",

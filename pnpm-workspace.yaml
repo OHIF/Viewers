@@ -14,8 +14,9 @@ minimumReleaseAge: 2880
 # bunfig.toml `minimumReleaseAgeExcludes` list (pnpm supports glob patterns).
 minimumReleaseAgeExclude:
   - '@cornerstonejs/*'
-  # dcmjs 1.0 is pinned to an exact version (1.0.2) that may be newer than the
-  # cutoff.
+  # dcmjs 1.x (dcmjs and @dcmjs-org/*) is pinned to an exact version (1.1.0)
+  # that may be newer than the cutoff.
+  - 'dcmjs'
   - '@dcmjs-org/*'
 frozenLockfile: true
 

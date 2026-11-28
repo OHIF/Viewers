@@ -619,8 +619,7 @@ packages, and get the host's copies when they load:
 
 Set your plugin's peer ranges to match. A new major version of any of these
 is a breaking change for runtime plugins and is listed in the migration guide.
-The shared `dcmjs` is dcmjs 1.0. Until `dcmjs` 1.x is on npm, OHIF installs it
-with the alias `"dcmjs": "npm:@dcmjs-org/dcmjs@1.0.2"`.
+The shared `dcmjs` is `dcmjs` 1.1.0, a wrapper of `@dcmjs-org/dcmjs`.
 
 Every extension and mode built into the viewer is also shared on `window`
 under its package name once it has loaded (the whole module, named exports

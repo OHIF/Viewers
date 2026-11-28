@@ -7,18 +7,16 @@ const path = require('path');
  * dcmjs has no runtime version export, and its `exports` map hides
  * package.json. So this resolves dcmjs from the directory of the writer, as
  * the bundler does, and walks up from the resolved file to the package.json
- * of dcmjs. While `dcmjs` is an alias of `@dcmjs-org/dcmjs`, that package.json
- * has the scoped name.
+ * whose name is `dcmjs`.
  */
 const writerDir = path.join(__dirname, '../extensions/dicom-microscopy/src/utils');
-const dcmjsNames = ['dcmjs', '@dcmjs-org/dcmjs'];
 let dir = path.dirname(require.resolve('dcmjs', { paths: [writerDir] }));
 let version;
 while (!version) {
   const packageJson = path.join(dir, 'package.json');
   if (fs.existsSync(packageJson)) {
     const { name, version: found } = JSON.parse(fs.readFileSync(packageJson, 'utf8'));
-    if (dcmjsNames.includes(name)) {
+    if (name === 'dcmjs') {
       version = found;
     }
   }
