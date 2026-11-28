@@ -1,4 +1,4 @@
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 
 /**
  * Converts a CIELAB color to an RGB color using the dcmjs library.

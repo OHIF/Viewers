@@ -1,4 +1,4 @@
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 
 import DCM_CODE_VALUES from './dcmCodeValues';
 import toArray from './toArray';

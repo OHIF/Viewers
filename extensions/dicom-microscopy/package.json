@@ -28,11 +28,11 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@dcmjs-org/dcmjs": "1.0.0",
     "@ohif/core": "workspace:*",
     "@ohif/extension-default": "workspace:*",
     "@ohif/i18n": "workspace:*",
     "@ohif/ui-next": "workspace:*",
+    "dcmjs": "npm:@dcmjs-org/dcmjs@1.0.2",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-i18next": "12.3.1",

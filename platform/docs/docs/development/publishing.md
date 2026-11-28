@@ -61,7 +61,7 @@ object as `default`, plus every named export.
 
 Host-provided packages must stay **externals** — React (`react`, `react-dom`,
 `react/jsx-runtime`), React Router (`react-router`, `react-router-dom`),
-`i18next`, `react-i18next`, `@ohif/*`, `@cornerstonejs/*`, `vtk.js`, `@dcmjs-org/dcmjs`,
+`i18next`, `react-i18next`, `@ohif/*`, `@cornerstonejs/*`, `vtk.js`, `dcmjs`,
 and `gl-matrix`. The scaffolded `.rspack/pluginExternals.js` already lists them; do
 not bundle them, or the plugin ships a second copy of React and fails to load.
 See [Develop Out-of-Tree](./out-of-tree.md) for the shared-package rationale.

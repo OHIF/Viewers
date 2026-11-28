@@ -16,7 +16,7 @@ jest.mock('@ohif/core', () => {
   return { __esModule: true, default: core, utils: core.utils };
 });
 
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { utilities as csMetadataUtilities } from '@cornerstonejs/metadata';

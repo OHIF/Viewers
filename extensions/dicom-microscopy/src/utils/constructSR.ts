@@ -1,4 +1,4 @@
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 import { utils } from '@ohif/core';
 import DEVICE_OBSERVER_UID from './DEVICE_OBSERVER_UID';
 

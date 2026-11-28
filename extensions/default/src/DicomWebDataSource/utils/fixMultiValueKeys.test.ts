@@ -1,4 +1,4 @@
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 import { fixMultiValueKeys } from './fixMultiValueKeys';
 
 const { naturalizeDataset, denaturalizeDataset } = dcmjs.data.DicomMetaDictionary;

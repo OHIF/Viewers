@@ -1,4 +1,4 @@
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 import loadRTStruct from './loadRTStruct';
 
 const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;

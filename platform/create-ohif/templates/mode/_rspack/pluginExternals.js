@@ -2,7 +2,7 @@
 // Do not edit by hand — create-ohif's externals-parity test enforces sync.
 module.exports = [
   /\b(vtk.js)/,
-  '@dcmjs-org/dcmjs',
+  'dcmjs',
   /\b(gl-matrix)/,
   /^@ohif/,
   /^@cornerstonejs/,

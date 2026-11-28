@@ -46,8 +46,8 @@
     "classnames": "2.5.1"
   },
   "devDependencies": {
-    "@dcmjs-org/dcmjs": "1.0.0",
-    "cross-env": "7.0.3"
+    "cross-env": "7.0.3",
+    "dcmjs": "npm:@dcmjs-org/dcmjs@1.0.2"
   },
   "keywords": [
     "ohif-extension"

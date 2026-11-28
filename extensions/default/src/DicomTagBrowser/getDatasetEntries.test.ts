@@ -1,4 +1,4 @@
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 import getDatasetEntries from './getDatasetEntries';
 
 const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;

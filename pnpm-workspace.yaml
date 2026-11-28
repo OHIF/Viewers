@@ -14,7 +14,7 @@ minimumReleaseAge: 2880
 # bunfig.toml `minimumReleaseAgeExcludes` list (pnpm supports glob patterns).
 minimumReleaseAgeExclude:
   - '@cornerstonejs/*'
-  # dcmjs 1.0 is pinned to an exact version (1.0.0) that may be newer than the
+  # dcmjs 1.0 is pinned to an exact version (1.0.2) that may be newer than the
   # cutoff.
   - '@dcmjs-org/*'
 frozenLockfile: true
@@ -78,10 +78,6 @@ overrides:
   'netlify-cli>commander': 12.1.0
   cross-env: 7.0.3
   cross-spawn: 7.0.6
-  # @cornerstonejs/adapters, metadata, utils and ai 5.19.7 and dicom-microscopy-viewer
-  # (^0.41.0) still depend on dcmjs; OHIF itself imports and shares only
-  # @dcmjs-org/dcmjs. Remove this pin after the Cornerstone3D release with dcmjs 1.0.
-  dcmjs: 0.52.0
   path-to-regexp: 0.1.13
   nth-check: 2.1.1
   trim-newlines: 5.0.0

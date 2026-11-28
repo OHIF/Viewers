@@ -33,10 +33,10 @@
   },
   "peerDependencies": {
     "@cornerstonejs/metadata": "5.19.7",
-    "@dcmjs-org/dcmjs": "1.0.0",
     "@ohif/core": "workspace:*",
     "@ohif/i18n": "workspace:*",
     "@ohif/ui-next": "workspace:*",
+    "dcmjs": "npm:@dcmjs-org/dcmjs@1.0.2",
     "dicomweb-client": "0.10.4",
     "react": "19.2.7",
     "react-dom": "19.2.7",

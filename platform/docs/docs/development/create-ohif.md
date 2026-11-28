@@ -186,7 +186,7 @@ its own. It removes nested copies of those two files, and names any settings in
 them beyond the template's, to move to the checkout's root files.
 
 `migrate` sets host-provided packages (React, React Router, i18next,
-cornerstone, `@dcmjs-org/dcmjs`, `gl-matrix` and the `@ohif` packages) to the versions the
+cornerstone, `dcmjs`, `gl-matrix` and the `@ohif` packages) to the versions the
 viewer shares. Outside a checkout they become peers; inside one they stay in
 the section you list them in, on the checkout's versions. That can move a
 package to a new major version: if your code was written for an older one,

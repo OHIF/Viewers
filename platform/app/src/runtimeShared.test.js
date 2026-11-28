@@ -26,7 +26,7 @@ const SETTLED_LIST = [
   '@ohif/extension-cornerstone',
   '@cornerstonejs/core',
   '@cornerstonejs/tools',
-  '@dcmjs-org/dcmjs',
+  'dcmjs',
   'gl-matrix',
   'react-router',
   'react-router-dom',

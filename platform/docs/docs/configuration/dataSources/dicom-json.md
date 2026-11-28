@@ -49,7 +49,7 @@ The script preserves SR CodeSequences such as `ConceptNameCodeSequence` when
 they are present in the source metadata so measurements can be displayed in the
 viewer.
 
-The script uses `@dcmjs-org/dcmjs` 1.0, and writes the naturalized shapes of dcmjs 1.0:
+The script uses `dcmjs` 1.0, and writes the naturalized shapes of dcmjs 1.0:
 
 - A sequence with one item is the item object, not a list with one item.
 - A value with a VM of `1-n` is a list, also for one value, for example `"ImageType": ["ORIGINAL"]`.

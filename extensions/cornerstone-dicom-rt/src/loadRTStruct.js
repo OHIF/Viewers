@@ -1,4 +1,4 @@
-import dcmjs from '@dcmjs-org/dcmjs';
+import dcmjs from 'dcmjs';
 import { asArray } from '@cornerstonejs/utils';
 const { DicomMessage, DicomMetaDictionary } = dcmjs.data;
 const dicomlab2RGB = dcmjs.data.Colors.dicomlab2RGB;
