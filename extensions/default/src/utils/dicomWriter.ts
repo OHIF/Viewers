@@ -24,7 +24,6 @@ export const RUNTIME_INSTANCE_PROPERTY_KEYS = [
   'wadoUriRoot',
   'imageRendering',
   'imageId',
-  '_parentInstance',
   'frameNumber',
 ] as const;
 

@@ -26,7 +26,9 @@
     "dev:dicom-seg": "pnpm run dev",
     "build": "cross-env NODE_ENV=production rspack build --config .rspack/rspack.prod.js",
     "build:package-1": "pnpm run build",
-    "start": "pnpm run dev"
+    "start": "pnpm run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
     "@ohif/core": "workspace:*",
@@ -34,6 +36,7 @@
     "@ohif/extension-default": "workspace:*",
     "@ohif/i18n": "workspace:*",
     "@ohif/ui-next": "workspace:*",
+    "dcmjs": "1.1.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-i18next": "12.3.1",
@@ -41,7 +44,8 @@
     "react-router-dom": "6.30.3"
   },
   "dependencies": {
-    "@babel/runtime": "7.29.7"
+    "@babel/runtime": "7.29.7",
+    "@cornerstonejs/utils": "5.19.7"
   },
   "devDependencies": {
     "cross-env": "7.0.3"

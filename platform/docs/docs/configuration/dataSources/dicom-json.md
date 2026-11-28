@@ -48,6 +48,33 @@ can read more about the
 The script preserves SR CodeSequences such as `ConceptNameCodeSequence` when
 they are present in the source metadata so measurements can be displayed in the
 viewer.
+
+The script uses `dcmjs` 1.0, and writes the naturalized shapes of dcmjs 1.0:
+
+- A sequence with one item is the item object, not a list with one item.
+- A value with a VM of `1-n` is a list, also for one value, for example `"ImageType": ["ORIGINAL"]`.
+- A person name is a list of name objects, for example `"PatientName": [{ "Alphabetic": "Doe^John" }]`.
+
+The script copies only a fixed list of standard attributes, so it writes no private elements.
+
+A JSON file that `JSON.stringify` makes from a dcmjs 1.0 naturalized dataset can contain private
+elements. dcmjs 1.0 puts the private elements of one reserved block in one key, `gggg:creator`. The
+key holds `creator`, `reservedBlock` (the block number of the source file) and one `xEE` key for each
+element. `_vrMap` holds the VRs under the same key. The file has no hex tag keys, such as `70531009`,
+for these elements:
+
+```json
+{
+  "_vrMap": { "7053:Philips PET Private Group": { "x09": "DS" } },
+  "7053:Philips PET Private Group": { "creator": "Philips PET Private Group", "reservedBlock": 16, "x09": [1.88] }
+}
+```
+
+OHIF reads the files that the earlier script (dcmjs 0.x) wrote, and the files that this script writes.
+The DICOM JSON data source wraps each sequence. OHIF reads a private tag with `getPrivateTagValue`
+of `@cornerstonejs/utils`, by its group, its private creator and its element number. The reader reads
+the `gggg:creator` block, and it also reads the hex-key form of dcmjs 0.x (`70530010`, `70531009`).
+A different reader of these files must accept both shapes.
 :::
 
 :::note

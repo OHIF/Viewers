@@ -34,7 +34,7 @@ function _extendDisplaySet(displaySet, options) {
 function _getReferencedFrameOfReferenceUID(naturalizedDataset) {
   const { ContentSequence } = naturalizedDataset;
 
-  const imagingMeasurementsContentItem = ContentSequence.find(
+  const imagingMeasurementsContentItem = toArray(ContentSequence).find(
     ci => ci.ConceptNameCodeSequence.CodeValue === DCM_CODE_VALUES.IMAGING_MEASUREMENTS
   );
 

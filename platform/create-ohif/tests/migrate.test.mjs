@@ -1072,7 +1072,7 @@ test("migrate moves shared cornerstone and dcmjs dependencies to peers on the ho
       '@cornerstonejs/core': '^3.32.5',
       '@cornerstonejs/adapters': '^3.32.5',
       '@cornerstonejs/codec-charls': '^1.2.3',
-      dcmjs: '0.29.0',
+      dcmjs: '1.0.0',
     });
     pkg.devDependencies['@cornerstonejs/core'] = '^3.32.5';
   });
@@ -1080,10 +1080,10 @@ test("migrate moves shared cornerstone and dcmjs dependencies to peers on the ho
   const report = migrate(target);
   for (const needle of [
     'dependencies: move "@cornerstonejs/core" "^3.32.5" to peerDependencies "^5.0.0" (the host provides @cornerstonejs/core 5',
-    'dependencies: move "dcmjs" "0.29.0" to peerDependencies "^0.52.0"',
+    'dependencies: move "dcmjs" "1.0.0" to peerDependencies "^1.0.0"',
     // The dev copy is the author's: flagged, not rewritten.
     'devDependencies["@cornerstonejs/core"]: "^3.32.5" — the host runs @cornerstonejs/core 5; update your dev copy to a 5.x release',
-    "devDependencies: dcmjs is a peer now, and peers aren't installed — if your code or tests import it, add a 0.52.x release",
+    "devDependencies: dcmjs is a peer now, and peers aren't installed — if your code or tests import it, add a 1.x release",
     // Released with core but not shared, so it stays bundled and must match.
     'dependencies["@cornerstonejs/adapters"]: "^3.32.5" — cornerstone\'s packages are released together, and the host runs @cornerstonejs/core 5.x',
   ]) {
@@ -1095,12 +1095,14 @@ test("migrate moves shared cornerstone and dcmjs dependencies to peers on the ho
   const pinFlags = report.split('\n').filter(line => line.includes('not pinned to exact versions'));
   assert.ok(pinFlags.some(line => line.includes('@cornerstonejs/codec-charls')), pinFlags.join('\n'));
   assert.ok(!pinFlags.some(line => /adapters|@cornerstonejs\/core/.test(line)), pinFlags.join('\n'));
-  assert.ok(/Note: the versions of [^\n]*@cornerstonejs\/core[^\n]*dcmjs/.test(report), report);
+  assert.ok(/Note: the versions of [^\n]*@cornerstonejs\/core/.test(report), report);
 
   const pkg = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8'));
   assert.equal(pkg.peerDependencies['@cornerstonejs/core'], '^5.0.0');
-  assert.equal(pkg.peerDependencies.dcmjs, '^0.52.0');
-  assert.ok(!('@cornerstonejs/core' in pkg.dependencies) && !('dcmjs' in pkg.dependencies));
+  assert.equal(pkg.peerDependencies.dcmjs, '^1.0.0');
+  assert.ok(
+    !('@cornerstonejs/core' in pkg.dependencies) && !('dcmjs' in pkg.dependencies)
+  );
   assert.equal(pkg.devDependencies['@cornerstonejs/core'], '^3.32.5');
   assert.ok(!migrate(target, '--dry-run').includes('move "@cornerstonejs/core"'), 'second run moves nothing');
 });

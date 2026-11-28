@@ -36,7 +36,7 @@
     "@ohif/core": "workspace:*",
     "@ohif/i18n": "workspace:*",
     "@ohif/ui-next": "workspace:*",
-    "dcmjs": "0.52.0",
+    "dcmjs": "1.1.0",
     "dicomweb-client": "0.10.4",
     "react": "19.2.7",
     "react-dom": "19.2.7",
@@ -47,6 +47,7 @@
   "dependencies": {
     "@babel/runtime": "7.29.7",
     "@cornerstonejs/calculate-suv": "1.1.0",
+    "@cornerstonejs/utils": "5.19.7",
     "lodash.get": "4.4.2",
     "lodash.uniqby": "4.7.0",
     "query-string": "10.0.0",

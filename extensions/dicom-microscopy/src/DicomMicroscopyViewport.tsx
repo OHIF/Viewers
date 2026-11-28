@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { cleanDenaturalizedDataset } from '@ohif/extension-default';
+import { cleanDenaturalizedDataset, dicomWebUtils } from '@ohif/extension-default';
 
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
@@ -98,9 +98,8 @@ const DicomMicroscopyViewport = React.memo(
           // }
 
           metadata.forEach(m => {
-            // NOTE: depending on different data source, image.ImageType sometimes
-            //    is a string, not a string array.
-            m.ImageType = typeof m.ImageType === 'string' ? m.ImageType.split('\\') : m.ImageType;
+            // Some data sources give ImageType as one backslash-joined value.
+            dicomWebUtils.fixMultiValueKeys(m);
 
             const inst = cleanDenaturalizedDataset(
               dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m),

@@ -1,6 +1,6 @@
 /*
  * This script uses nodejs to generate a JSON file from a DICOM study folder.
- * You need to have dcmjs installed in your project.
+ * You need to have dcmjs 1.x installed in your project.
  * The JSON file can be used to load the study into the OHIF Viewer. You can get more detail
  * in the DICOM JSON Data source on docs.ohif.org
  *

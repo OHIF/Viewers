@@ -1,4 +1,5 @@
 import React from 'react';
+import { asArray } from '@cornerstonejs/utils';
 import { OHIFCornerstoneSRContentItem } from './OHIFCornerstoneSRContentItem';
 
 /**
@@ -17,7 +18,7 @@ function renderContentItems(container, nodeIndexesTree, containerNumberedTree) {
 
   let childContainerIndex = 1;
 
-  return contentSequence.map((contentItem, i) => {
+  return asArray(contentSequence).map((contentItem, i) => {
     const { ValueType } = contentItem;
     const childNodeLevel = [...nodeIndexesTree, i];
     const key = childNodeLevel.join('.');

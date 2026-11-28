@@ -106,6 +106,25 @@ describe('resolveBulkDataTags', () => {
     expect(instance[AC_TAG]).toBeCloseTo(1.881732, 6);
   });
 
+  it('writes the number into the dcmjs 1.0 private block, so a copy keeps it', async () => {
+    const instance: Record<string, unknown> = {
+      Modality: 'PT',
+      '7053:Philips PET Private Group': {
+        creator: 'Philips PET Private Group',
+        reservedBlock: 0x11,
+        x00: {
+          BulkDataURI: 'http://x/bulk/70531100',
+          retrieveBulkData: jest.fn().mockResolvedValue(textBuffer('0.00038 ')),
+        },
+      },
+    };
+
+    await resolveBulkDataTags([instance]);
+
+    const copy = JSON.parse(JSON.stringify(instance));
+    expect(copy['7053:Philips PET Private Group'].x00).toBeCloseTo(0.00038, 8);
+  });
+
   it('resolves registered tags regardless of modality', async () => {
     const instance: Record<string, unknown> = {
       Modality: 'CT',

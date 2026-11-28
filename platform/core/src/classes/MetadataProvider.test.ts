@@ -1,4 +1,5 @@
 import metadataProvider from './MetadataProvider';
+import DicomMetadataStore from '../services/DicomMetadataStore';
 
 beforeEach(() => {
   (
@@ -78,6 +79,24 @@ describe('MetadataProvider', () => {
       SOPInstanceUID: 'sop-frame',
       frameNumber: '3',
     });
+  });
+
+  // The user experience must have this: the frames of a US or XA cine with no
+  // position stay distinct, so an RTSTRUCT contour shows on its own frame (#5811).
+  it('gives [0, 0, frameNumber] to a frame of a multi-frame image with no position', () => {
+    const imageId = 'blob:http://localhost/cine-no-position';
+    const instance = { NumberOfFrames: 3, Modality: 'US' };
+    jest.spyOn(DicomMetadataStore, 'getInstance').mockReturnValue(instance);
+    metadataProvider.addImageIdToUIDs(imageId, {
+      StudyInstanceUID: 'study-cine',
+      SeriesInstanceUID: 'series-cine',
+      SOPInstanceUID: 'sop-cine',
+      frameNumber: '2',
+    });
+
+    expect(metadataProvider.get('imagePlaneModule', imageId).imagePositionPatient).toEqual([
+      0, 0, 2,
+    ]);
   });
 
   describe('the module a UID belongs to', () => {
